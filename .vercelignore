@@ -1,0 +1,11 @@
+﻿.next
+.turbo
+node_modules
+.git
+coverage
+dist
+build
+.env
+.env.*
+*.log
+**/*.map
