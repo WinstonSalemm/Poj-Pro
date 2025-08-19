@@ -142,7 +142,7 @@ export default function Header() {
 
             {/* Auth — компактная бренд-кнопка на мобилке */}
             <div className="shrink max-[360px]:max-w-[82px] max-w-[110px]">
-              <AuthButton size="sm" variant="brand" />
+              <AuthButton />
             </div>
 
             {/* Language small */}
@@ -204,7 +204,7 @@ export default function Header() {
             </div>
 
             {/* На десктопе можно тоже использовать бренд-кнопку обычного размера */}
-            <AuthButton variant="brand" />
+            <AuthButton />
 
             {/* Language (desktop) */}
             <div className="relative" ref={switcherRef}>

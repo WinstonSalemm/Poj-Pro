@@ -320,7 +320,7 @@ export default function CatalogCategoryPage() {
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="max-w-[1280px] mx-auto px-4 py-10 mt-[100px]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#660000]">
+            <h1 className="text-3xl md:text-4xl font-bold !text-[#660000]">
               {categoryTitle}
             </h1>
             <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
@@ -330,12 +330,12 @@ export default function CatalogCategoryPage() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder={t("search.placeholder", "Search products...")}
-                  className="w-full px-4 py-2.5 text-[#660000] rounded-xl border border-[#660000] bg-white hover:bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#660000] focus:ring-opacity-50 transition-all duration-200"
+                  className="w-full px-4 py-2.5 !text-[#660000] rounded-xl border border-[#660000] bg-white hover:bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#660000] focus:ring-opacity-50 transition-all duration-200"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#660000] hover:text-[#4d0000]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 !text-[#660000] hover:text-[#4d0000]"
                     aria-label="Clear search"
                   >
                     ✕
@@ -343,7 +343,7 @@ export default function CatalogCategoryPage() {
                 )}
               </div>
               <button
-                className="px-6 py-2.5 text-[#660000] rounded-xl border border-[#660000] bg-white hover:bg-[#fafafa] hover:shadow-md transition-all duration-200 whitespace-nowrap flex items-center justify-center cursor-pointer gap-2"
+                className="px-6 py-2.5 !text-[#660000] rounded-xl border border-[#660000] bg-white hover:bg-[#fafafa] hover:shadow-md transition-all duration-200 whitespace-nowrap flex items-center justify-center cursor-pointer gap-2"
                 onClick={() => router.push("/catalog")}
               >
                 <span>←</span>
@@ -371,7 +371,7 @@ export default function CatalogCategoryPage() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="mt-2 text-[#660000] hover:underline"
+                  className="mt-2 !text-[#660000] hover:underline"
                 >
                   {t("search.clearSearch", "Clear search")}
                 </button>

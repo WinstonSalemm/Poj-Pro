@@ -359,10 +359,10 @@ export default function CartPage() {
 
                 <div className="pt-2">
                   <a
-                    href="tel:+9989099309101"
+                    href="tel:+998712536616"
                     className="block w-full text-center border border-[#660000] !text-[#660000] py-3 px-4 rounded-md hover:bg-[#660000] hover:!text-white transition-colors font-medium"
                   >
-                    +998 90 (99) 309 10 01
+                    +998 71 253 66 16
                   </a>
                 </div>
 

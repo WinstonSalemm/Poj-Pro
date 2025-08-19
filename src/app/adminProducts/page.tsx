@@ -1,5 +1,10 @@
 'use client';
 
+// Prevent indexing of this hidden admin route
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminGate from '@/components/admin/AdminGate';

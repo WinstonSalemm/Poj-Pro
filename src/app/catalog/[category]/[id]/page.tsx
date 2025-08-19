@@ -121,7 +121,7 @@ export default async function ProductPage({
             <div className="space-y-6">
               {product.description && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-2"><T k="productDetail.description" /></h2>
+                  <h2 className="text-lg !text-[#660000] font-semibold mb-2"><T k="productDetail.description" /></h2>
                   <div className="prose max-w-none text-gray-700">
                     {product.description}
                   </div>
@@ -130,7 +130,7 @@ export default async function ProductPage({
 
               {specs.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-3"><T k="productDetail.characteristics" /></h2>
+                  <h2 className="text-lg font-semibold !text-[#660000] mb-3"><T k="productDetail.characteristics" /></h2>
                   <ProductSpecs specs={specs} />
                 </div>
               )}
@@ -140,7 +140,7 @@ export default async function ProductPage({
               <QuantityAddToCart productId={product.id} className="flex-1" />
               <Link
                 href={`/catalog/${product.category?.slug || params.category}`}
-                className="flex-1 border border-gray-300 rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#660000]"
+                className="flex-1 border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium !text-[#660000] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#660000]"
               >
                 <T k="common.backToCatalog" />
               </Link>

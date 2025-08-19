@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /adminProducts
+
+# Allow all other paths
+Allow: /
+
+Sitemap: /sitemap.xml

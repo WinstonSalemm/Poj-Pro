@@ -1,7 +1,8 @@
 "use client";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import L, { LatLngExpression } from "leaflet";
+import * as L from "leaflet";
+import { LatLngExpression } from "leaflet";
 import Link from "next/link";
 
 // Fix for TypeScript errors with react-leaflet

@@ -22,8 +22,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["node", "react", "react-dom", "next", "next-i18next"]
+    "types": ["node", "react", "react-dom", "next-i18next"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/types/**/*.d.ts"],
   "exclude": ["node_modules"]

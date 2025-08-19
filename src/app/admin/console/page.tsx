@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import AdminGate from '@/components/admin/AdminGate';
 import SupplyForm from '@/components/admin/SupplyForm';
 import { toast } from 'react-hot-toast';
+import Link from 'next/link';
 
 // -------------------- Shared types --------------------
 type ProductRow = {
@@ -529,6 +530,95 @@ function SuppliesTab() {
   );
 }
 
+// -------------------- Users tab --------------------
+function UsersTab() {
+  const [rows, setRows] = useState<UserRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const reload = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/admin/users', { cache: 'no-cache' });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+        throw new Error((typeof j.error === 'string' ? j.error : '') || `HTTP ${res.status}`);
+      }
+      const data: UserRow[] = await res.json();
+      setRows(data);
+    } catch (e: unknown) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : 'Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { reload(); }, []);
+
+  if (loading) return <div className="p-8 text-center text-gray-600">Загрузка пользователей...</div>;
+  if (error) return (
+    <div className="p-8 text-center">
+      <div className="text-red-600 mb-2">{error}</div>
+      <div className="text-gray-600">Войдите через аккаунт администратора, затем обновите страницу.</div>
+    </div>
+  );
+
+  return (
+    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+        <h2 className="text-lg leading-6 font-medium text-gray-900">Пользователи</h2>
+        <p className="mt-1 max-w-2xl text-sm text-gray-500">Сводка по зарегистрированным пользователям и их заказам</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Пользователь</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Регистрация</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Заказов</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Недавние заказы</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {rows.map((u) => (
+              <tr key={u.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">{u.name || 'Без имени'}</div>
+                  <div className="text-sm text-gray-500">{u.isAdmin ? 'Admin' : 'User'}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{u.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(u.createdAt).toLocaleDateString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{u._count.orders}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="space-y-1">
+                    {u.orders.length > 0 ? (
+                      u.orders.map((o) => (
+                        <div key={o.id} className="text-sm text-gray-900">
+                          <span className="font-medium">{o.total.toLocaleString('ru-RU', { style: 'currency', currency: 'USD' })}</span>
+                          <span className="text-gray-500"> • {new Date(o.createdAt).toLocaleDateString()}</span>
+                          <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            o.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
+                            o.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>{o.status}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-sm text-gray-500">Нет заказов</span>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 // -------------------- Console page with tabs --------------------
 export default function AdminConsolePage() {
   const tabs = [
@@ -545,8 +635,8 @@ export default function AdminConsolePage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Единая админ-панель</h1>
           <div className="text-sm text-gray-600 space-x-3">
-            <a className="underline hover:no-underline" href="/admin">Пользователи (NextAuth)</a>
-            <a className="underline hover:no-underline" href="/admin/orders/last">Заказы</a>
+            <Link className="underline hover:no-underline" href="/admin">Пользователи (NextAuth)</Link>
+            <Link className="underline hover:no-underline" href="/admin/orders/last/">Заказы</Link>
           </div>
         </div>
 
