@@ -1,0 +1,20 @@
+{
+  "title": "Yetkazib berishlar",
+  "subtitle": "Yetkazib berishlar bo'yicha dolzarb ma'lumotlar",
+  "searchPlaceholder": "Yetkazib berishlarni qidirish...",
+  "noSupplies": "Yetkazib berishlar topilmadi",
+  "showAll": "Barchasini ko'rsatish",
+  "showLess": "Yopish",
+  "tryDifferentSearch": "Qidiruv so'zlarini o'zgartirib ko'ring",
+  "noSuppliesDescription": "Hozircha faol yetkazib berishlar mavjud emas",
+  "error": {
+    "loadingError": "Ma'lumotlarni yuklashda xatolik",
+    "tryAgain": "Iltimos, keyinroq qayta urinib ko'ring",
+    "reloadPage": "Sahifani yangilash"
+  },
+  "popularProductsBlock": {
+    "title": "Ommabop mahsulotlar",
+    "loading": "Ommabop mahsulotlar yuklanmoqda...",
+    "noProducts": "Hozircha ommabop mahsulotlar mavjud emas."
+  }
+}

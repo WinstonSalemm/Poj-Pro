@@ -1,0 +1,40 @@
+[
+    {
+      "id": "op-4",
+      "slug": "op-4",
+      "link":"/catalog/ognetushiteli/ognetushiteli-3",
+      "category": "ognetushiteli",
+      "titles": {
+        "ru": "Огнетушитель ОП-4",
+        "en": "Fire Extinguisher OP-4",
+        "uz": "O‘t o‘chirgich OP-4"
+      },
+      "image": "/ProductImages/Op-4.png",
+      "price": "240000"
+    },
+    {
+      "id": "bbp-20",
+      "slug": "bbp-20",
+      "category": "pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva",
+      "titles": {
+        "ru": "ББП-20",
+        "en": "BBP-20 Power Supply",
+        "uz": "BBP-20 Quvvat manbai"
+      },
+      "image": "/ProductImages/bbp-20.png",
+      "price": "320000"
+    },
+    {
+      "id": "rukav-51",
+      "slug": "rukav-51-8bar-china",
+      "category": "rukava_i_pozharnaya_armatura",
+      "titles": {
+        "ru": "Рукав 51 мм 8 бар (Китай)",
+        "en": "Fire Hose 51 mm 8 bar (China)",
+        "uz": "Yong‘in shlangi 51 mm 8 bar (Xitoy)"
+      },
+      "image": "/ProductImages/rukav51-8China.png",
+      "price": "75000"
+    }
+  ]
+  

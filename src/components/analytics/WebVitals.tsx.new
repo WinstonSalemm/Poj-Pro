@@ -1,0 +1,88 @@
+'use client';
+
+import { useReportWebVitals } from 'next/web-vitals';
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+
+interface WebVitalsMetric {
+  id: string;
+  name: string;
+  label: string;
+  value: number;
+}
+
+declare global {
+  interface Window {
+    gtag: (command: string, ...args: unknown[]) => void;
+  }
+}
+
+export function WebVitals() {
+  const pathname = usePathname();
+
+  // Track page load performance metrics
+  useEffect(() => {
+    // Only run in production
+    if (process.env.NODE_ENV !== 'production') return;
+    
+    const handleLoad = () => {
+      // Use PerformanceNavigationTiming if available
+      const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+      
+      if (navEntries.length > 0 && window.gtag) {
+        const navEntry = navEntries[0];
+        const pageLoadTime = navEntry.loadEventEnd - navEntry.startTime;
+        const domReadyTime = navEntry.domComplete - navEntry.domContentLoadedEventEnd;
+        
+        // Track page load time
+        window.gtag('event', 'timing_complete', {
+          name: 'page_load',
+          value: Math.round(pageLoadTime),
+          event_category: 'Page Load',
+          event_label: pathname,
+        });
+        
+        // Track DOM ready time
+        window.gtag('event', 'timing_complete', {
+          name: 'dom_ready',
+          value: Math.round(domReadyTime),
+          event_category: 'DOM Ready',
+          event_label: pathname,
+        });
+      }
+    };
+    
+    // Add event listener for page load
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, [pathname]);
+  
+  // Track Web Vitals
+  useReportWebVitals((metric: WebVitalsMetric) => {
+    // Only track in production
+    if (process.env.NODE_ENV !== 'production') return;
+    
+    // Send to Google Analytics
+    if (typeof window !== 'undefined' && window.gtag) {
+      const { id, name, value } = metric;
+      
+      window.gtag('event', name, {
+        event_category: 'Web Vitals',
+        event_label: id,
+        value: Math.round(name === 'CLS' ? value * 1000 : value),
+        non_interaction: true, // avoids affecting bounce rate
+      });
+    }
+    
+    // Log to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Web Vitals]', metric);
+    }
+  });
+
+  return null;
+}

@@ -1,103 +1,240 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { useTranslation } from 'next-i18next';
+import ImageSlider from '@/components/ImageSlider/ImageSlider';
+import SmallAboutUs from '@/components/SmallAboutUs/SmallAboutUs';
+import dynamic from 'next/dynamic';
+import CategoryBlock from '@/components/CategoryBlock/CategoryBlock';
+import MapSection from '@/components/MapSection/MapSection';
+
+// Dynamically import PopularProductsBlock with no SSR
+const PopularProductsBlock = dynamic(
+  () => import('@/components/PopularProductsBlock/PopularProductsBlock'),
+  { ssr: false }
+);
+
+interface Product {
+  id: string | number;
+  name: string;
+  description: string;
+  short_description: string;
+  price: number;
+  category: string;
+  image: string;
+  images: string[];
+  characteristics: Record<string, string>;
+  sku: string;
+  in_stock: boolean;
+  rating: number;
+  reviews_count: number;
+}
+
+// Normalize app/lang codes to API-accepted ones
+const normLocale = (lang: string) => {
+  const s = (lang || '').toLowerCase();
+  if (s === 'en' || s === 'eng') return 'en';
+  if (s === 'uz' || s === 'uzb') return 'uz';
+  return 'ru';
+};
+
+// Function to fetch products from API
+const fetchProducts = async (locale: string): Promise<Product[]> => {
+  try {
+    const response = await fetch(`/api/products?locale=${normLocale(locale)}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    const data = await response.json();
+    
+    if (!data.success || !Array.isArray(data.data?.products)) {
+      throw new Error(data.message || 'Invalid products data');
+    }
+
+    // Transform the API response to match the Product type
+    return data.data.products.map((product: any) => ({
+      id: product.id,
+      name: product.title,
+      description: product.description || '',
+      short_description: product.summary || '',
+      price: typeof product.price === 'number' ? product.price : 0,
+      category: product.category?.name || '',
+      image: product.image || '',
+      images: product.image ? [product.image] : [],
+      characteristics: {},
+      sku: '',
+      in_stock: true,
+      rating: 0,
+      reviews_count: 0
+    }));
+  } catch (error) {
+    console.error(`Error loading products for locale ${locale}:`, error);
+    return [];
+  }
+};
+
+export default function HomePage() {
+  const { i18n } = useTranslation();
+  const [bootLoading, setBootLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  // Get current language from i18n
+  const currentLang = i18n?.language || 'ru';
+  const apiLocale = normLocale(currentLang);
+
+  useEffect(() => {
+    // Load products when component mounts or language changes
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        // We're keeping this call to ensure translations are loaded
+        await fetchProducts(apiLocale);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Set a minimum loading time for better UX on initial load
+    if (bootLoading) {
+      const timer = setTimeout(() => {
+        loadProducts();
+        setBootLoading(false);
+      }, 700);
+      return () => clearTimeout(timer);
+    } else {
+      loadProducts();
+    }
+  }, [apiLocale, bootLoading]);
+
+  // Only show loading indicator if we're still booting or loading products
+  const showLoading = bootLoading || loading;
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="relative min-h-screen bg-white">
+      {/* Loading overlay */}
+      {showLoading && (
+        <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
+          <div className="text-2xl font-semibold tracking-wide mb-6">Загрузка...</div>
+          <div className="w-[240px] h-[6px] rounded-full bg-black/20 overflow-hidden">
+            <div className="h-full w-1/3 animate-slideBar rounded-full bg-black" />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
+
+      {/* Контент с каскадной анимацией появления */}
+      <section className={`transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
+        <div className="animate-in-up" style={{ animationDelay: '0.05s' }}>
+          {/* Скелетон на слайдер (виден только пока bootLoading=true) */}
+          {bootLoading ? (
+            <div className="h-[320px] md:h-[420px] w-full shimmer rounded-none" />
+          ) : (
+            <ImageSlider />
+          )}
+        </div>
+
+        <div className="animate-in-up" style={{ animationDelay: '0.12s' }}>
+          {bootLoading ? (
+            <SectionSkeleton title widthClass="w-40" lines={3} />
+          ) : (
+            <SmallAboutUs />
+          )}
+        </div>
+
+        <div className="animate-in-up" style={{ animationDelay: '0.18s' }}>
+          {bootLoading ? (
+            <CardsSkeleton count={6} />
+          ) : (
+            <PopularProductsBlock />
+          )}
+        </div>
+
+        <div className="animate-in-up" style={{ animationDelay: '0.24s' }}>
+          {bootLoading ? (
+            <SectionSkeleton title widthClass="w-48" lines={2} />
+          ) : (
+            <CategoryBlock />
+          )}
+        </div>
+
+        <div className="!bg-[#F8F9FA] animate-in-up" style={{ animationDelay: '0.30s' }}>
+          {bootLoading ? (
+            <div className="h-[320px] w-full shimmer rounded-xl  mx-auto max-w-[1260px]" />
+          ) : (
+            <MapSection />
+          )}
+        </div>
+      </section>
+
+      {/* keyframes и утилиты */}
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0 }
+          to { opacity: 1 }
+        }
+        .animate-fadeIn { animation: fadeIn .25s ease-out }
+
+        @keyframes slideBar {
+          0% { transform: translateX(-120%) }
+          60% { transform: translateX(160%) }
+          100% { transform: translateX(160%) }
+        }
+        .animate-slideBar { animation: slideBar 1.2s ease-in-out infinite }
+
+        /* Каскадное появление секций */
+        @keyframes inUp {
+          0% { opacity: 0; transform: translateY(16px) }
+          100% { opacity: 1; transform: translateY(0) }
+        }
+        .animate-in-up {
+          animation: inUp .6s cubic-bezier(.22,.61,.36,1) both;
+        }
+
+        /* Шимер-скелетон */
+        .shimmer {
+          position: relative;
+          background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+          background-size: 400% 100%;
+          animation: shimmerMove 1.2s ease-in-out infinite;
+        }
+        @keyframes shimmerMove {
+          0% { background-position: 100% 0 }
+          100% { background-position: 0 0 }
+        }
+      `}</style>
+    </main>
+  );
+}
+
+/* --- Локальные скелетоны --- */
+
+function SectionSkeleton({ title = true, widthClass = "w-32", lines = 2 }: { title?: boolean; widthClass?: string; lines?: number }) {
+  return (
+    <div className="max-w-[1260px] mx-auto px-4 py-10">
+      {title && <div className={`h-7 ${widthClass} shimmer rounded-md mb-6`} />}
+      <div className="space-y-3">
+        {Array.from({ length: lines }).map((_, i) => (
+          <div key={i} className="h-4 shimmer rounded-md" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CardsSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <div className="max-w-[1260px] mx-auto px-4 py-10">
+      <div className="h-7 w-44 shimmer rounded-md mb-6" />
+      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-6">
+        {Array.from({ length: count }).map((_, i) => (
+          <div key={i} className="rounded-2xl border border-[#eee] p-3">
+            <div className="h-[150px] shimmer rounded-xl mb-3" />
+            <div className="h-4 w-3/4 shimmer rounded-md mb-2" />
+            <div className="h-4 w-1/2 shimmer rounded-md" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

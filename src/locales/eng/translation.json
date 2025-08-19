@@ -1,0 +1,474 @@
+{
+  "search": {
+    "title": "Search",
+    "placeholder": "Search products..."
+  },
+  "popularProductsBlock": {
+    "title": "Most Popular Products",
+    "details": "Details"
+  },
+  "common": {
+    "tryAgain": "Try again",
+    "backToHome": "Back to home",
+    "backToCatalog": "Back to catalog",
+    "officialWebsite": "Official website",
+    "close": "Close",
+    "currency": "UZS",
+    "priceOnRequest": "Price on request",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "partners": {
+    "title": "Our Partners",
+    "subtitle": "We provide them with fire equipment and maintenance services."
+  },
+  "supplies": {
+    "noDate": "No date specified",
+    "title": "Below are our official suppliers and partners.",
+    "subtitle": "We have been working together reliably for over 10 years.",
+    "searchPlaceholder": "Search by items and suppliers...",
+    "noSupplies": "No supplies found",
+    "noSuppliesDescription": "There are currently no active supplies",
+    "tryDifferentSearch": "Try changing your search criteria",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "showAll": "Show all",
+    "itemsCount": "{{count}} position(s)",
+    "status": {
+      "planned": "Planned",
+      "in_transit": "In Transit",
+      "arrived": "Arrived"
+    },
+    "eta": "Expected",
+    "soon": "soon",
+    "items": {
+      "name": "Name",
+      "quantity": "Quantity",
+      "supplier": "Supplier",
+      "notes": "Notes",
+      "showItems": "Show items",
+      "hideItems": "Hide items"
+    },
+    "error": {
+      "loadingError": "Failed to load supplies",
+      "tryAgain": "Try again",
+      "reloadPage": "Reload page"
+    },
+    "admin": {
+      "addSupply": "Add Supply",
+      "editSupply": "Edit Supply",
+      "deleteSupply": "Delete Supply",
+      "confirmDelete": "Are you sure you want to delete this supply?",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "supplyTitle": "Supply Title",
+      "etaDate": "Arrival Date",
+      "status": "Status",
+      "items": "Items in Supply",
+      "bulkAdd": "Bulk Add",
+      "bulkAddHelp": "Enter data in format: Name — Quantity — Supplier (optional)",
+      "addItems": "Add Items",
+      "addItem": "Add Item",
+      "name": "Name",
+      "quantity": "Quantity",
+      "supplier": "Supplier",
+      "notes": "Notes",
+      "requiredField": "Required field",
+      "minItemsRequired": "At least one item is required",
+      "positiveQuantity": "Quantity must be greater than 0"
+    }
+  },
+  "header": {
+    "catalog": "Catalog",
+    "promotions": "Promotions",
+    "hotOffers": "Hot Offers",
+    "about": "About Us",
+    "contacts": "Contacts",
+    "documents": "Documents",
+    "news": "Supplies",
+    "cart": "Bucket",
+    "language": "Language",
+    "russian": "Russian",
+    "english": "English",
+    "uzbek": "Uzbek"
+  },
+  "searchbar": {
+    "search_placeholder": "Enter model name...",
+    "search_aria": "Search products",
+    "catalog_aria": "Catalog search"
+  },
+  "catalog": {
+    "categoriesTitle": "Catalog Categories",
+    "backToCategories": "Back to Categories"
+  },
+  "items": {
+    "showItems": "Show items",
+    "hideItems": "Hide items"
+  },
+  "aboutus": {
+    "title": "About Us",
+    "subtitle": "Our Advantages",
+    "more": "Read more",
+    "suppliers": {
+      "title": "Below are our official suppliers and partners.",
+      "subtitle": "We have been working together reliably for over 10 years."
+    },
+    "welcome": "Welcome to POJ PRO online store. Our company specializes in selling fire safety equipment and fire protection products in Uzbekistan.",
+    "mission": "Our mission is to ensure the safety of your home and business by offering only high-quality, certified equipment from trusted manufacturers.",
+    "meta": {
+      "description": "POJ PRO - reliable supplier of fire safety equipment in Uzbekistan. Wide range, quality guarantee, fast delivery.",
+      "keywords": "fire equipment, fire safety, fire extinguishers, fire cabinets, fire hydrants, fire alarm, Tashkent, Uzbekistan"
+    },
+    "contacts": {
+      "title": "Contact Information",
+      "description": "If you have any questions or need advice on equipment, please contact us in any way that’s convenient for you.",
+      "address": {
+        "title": "Adress",
+        "value": "Tashkent, Example St., 10"
+      },
+      "phone": {
+        "title": "Phone"
+      },
+      "phoneValue": "+998 90 123 45 67",
+      "email": "Email",
+      "emailValue": "info@pojpro.uz",
+      "hours": {
+        "title": "Working Hours",
+        "weekdays":"Mon-Fri: 09:00–18:00",
+        "saturday":"Sat: 10:00–15:00",
+        "sunday":"Sun: 12:00–17:00"
+      }
+    },
+    "reasons": {
+      "first": {
+        "title": "Wide Selection",
+        "text": "Over 1,000 certified fire safety products from trusted manufacturers worldwide. Our extensive range ensures you get exactly what you need, precisely when you need it."
+      },
+      "delivery": {
+        "title": "Fast Delivery",
+        "text": "Fast and reliable delivery across Uzbekistan. We ensure safe next-day delivery of your order with tracking available."
+      },
+      "stock": {
+        "title": "Always in Stock",
+        "text": "Essential fire safety equipment is always available. We maintain optimal stock levels of key items to ensure uninterrupted protection for your business."
+      },
+      "honest": {
+        "title": "Direct Supply from Manufacturers",
+        "text": "Direct procurement from manufacturers ensures the best prices without compromising on quality. Request a commercial offer and see for yourself — we are confident in our pricing policy."
+      },
+      "support": {
+        "title": "Expert Support",
+        "text": "Our safety specialists provide professional consultations and help you choose the ideal solution tailored to your specific needs."
+      },
+      "stability": {
+        "title": "Proven Reliability",
+        "text": "Over 12 years of flawless performance in the fire safety market. Thousands of satisfied clients trust us with their critical safety needs."
+      }
+    }
+  },
+  "categories": {
+    "ognetushiteli": "Fire Extinguishers",
+    "pozharnye_shkafy": "Fire Cabinets",
+    "rukava_i_pozharnaya_armatura": "Hoses and Fire Fittings",
+    "sistemy_pozharotusheniya_sprinkler": "Sprinkler Fire Extinguishing Systems",
+    "furnitura_dlya_ognetushiteley": "Fire Extinguisher Fittings",
+    "oborudovanie_proizvodstva_npo_bolid_rossiya": "NPO Bolid Equipment (Russia)",
+    "pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva": "Fire Alarm and Sound-Light Devices",
+    "sistemy_opovescheniya_o_pozhare_dsppa_abk": "Fire Alarm Systems DSPPA ABK",
+    "kontrolnye_paneli_adresnye_pozharno_ohrannye": "Addressable Fire and Security Control Panels",
+    "audiosistema_i_opoveschenie": "Audio System and Notification",
+    "dinamiki_potolochnye": "Ceiling Speakers",
+    "paneli_gsm_i_besprovodnye_sistemy_ipro": "GSM Panels and Wireless Systems IPro",
+    "metakom": "Metakom",
+    "tsifral": "Tsifral",
+    "usiliteli": "Amplifiers",
+    "videoregistratory_usiliteli_signala_haby": "DVRs / Signal Amplifiers / Hubs",
+    "monitory_i_krepleniya": "Monitors and Mounts",
+    "istochniki_pitaniya": "Power Supplies",
+    "oborudovanie_kontrolya_dostupa": "Access Control Equipment",
+    "zamki_i_aksessuary": "Locks and Accessories",
+    "siz": "Personal Protective Equipment (PPE)",
+    "siz_zashita_golovy": "Head Protection",
+    "siz_zashita_glaz": "Eye and Face Protection",
+    "siz_zashita_dyhaniya": "Respiratory Protection",
+    "siz_zashita_ruk": "Hand Protection",
+    "siz_odezhda": "Protective Clothing",
+    "siz_komplekty": "PPE Kits",
+    "ballony": "Balloon"
+  },
+  "popularProducts": "Popular Products",
+  "category": {
+    "goto": "Go to category {{name}}",
+    "image": "Category image {{name}}"
+  },
+  "product": {
+    "not_found": "Products not found",
+    "details": "More details",
+    "order": "Order now",
+    "characteristics": "Characteristics",
+    "contact_us": "Contact us",
+    "noImage": "No image",
+    "image": "Product image"
+  },
+  "modal": {
+    "close": "Close modal",
+    "contact_info": "Contact information and feedback form",
+    "email": "Email",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "phone1": "Phone 1",
+    "phone2": "Phone 2",
+    "phone3": "Phone 3",
+    "phone4": "Phone 4"
+  },
+  "promotions": {
+    "errors": {
+      "hotOffersLoad": "Failed to load hot offers",
+      "promosLoad": "Failed to load promotions list",
+      "productsLoad": "Failed to load products list"
+    },
+    "pageTitle": "Promotions",
+    "title": "Our Offers",
+    "metaDescription": "Special offers, promotions, and the opportunity to request a product you're interested in",
+    "loading": "Loading promotions",
+    "error": "Error",
+    "hotOffers": "Hot Offers",
+    "hotOffersDescription": "Special conditions for our customers. Take advantage of our great offers today!",
+    "allPromotions": "All Promotions",
+    "allPromotionsDescription": "Special offers on our products and services.",
+    "promoCode": "Promo code",
+    "code": "Code",
+    "copyCode": "Copy code",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "details": "Details",
+    "validUntil": "Valid until",
+    "close": "Close",
+    "feedback": {
+      "title": "Leave a Request",
+      "description": "Can't find the product you need? Want to suggest a website improvement? Leave a request, and we'll contact you."
+    }
+  },
+  "emailform": {
+    "name": "Your name",
+    "email": "Your email",
+    "message": "Your message",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Sent!",
+    "error": "An error occurred. Please try again later."
+  },
+  "admin": {
+    "back": "⬅ RETURN WITHOUT CHANGES",
+    "promotions": "Promotions",
+    "news": "News",
+    "images": "Images",
+    "documents": "Documents",
+    "settings": "Settings",
+    "popular_products_settings": "Popular Products Settings",
+    "current_popular_products": "Current Popular Products",
+    "product_id": "Product ID",
+    "remove": "Remove",
+    "add_product": "Add Product",
+    "add": "Add",
+    "save": "SAVE CHANGES",
+    "success": "Changes saved successfully!",
+    "error": "Error saving changes"
+  },
+  "news": {
+    "no_news": "No supply news yet."
+  },
+  "searchPlaceholder": "Enter name...",
+  "errors": {
+    "loadingProducts": "Error loading products. Please try again later."
+  },
+  "productCard": {
+    "viewDetails": "Details",
+    "addToCart": "Add to Cart",
+    "backToList": "← Back to products list"
+  },
+  "productDetail": {
+    "back": "Go Back",
+    "description": "Description",
+    "characteristics": "Characteristics"
+  },
+  "productSpecs": {
+    "Тип": "Type",
+    "Подходит для": "Suitable for",
+    "Назначение": "Purpose",
+    "Срок выполнения": "Lead time",
+    "Стандарты": "Standards",
+    "Объем": "Volume",
+    "Масса заряда": "Charge weight",
+    "Рабочее давление": "Working pressure",
+    "Длина струи": "Jet length",
+    "Продолжительность подачи": "Discharge time",
+    "Классы пожара": "Fire classes",
+    "Производитель": "Manufacturer",
+    "Применение": "Application",
+    "Температура эксплуатации": "Operating temperature",
+    "Срок службы": "Service life",
+    "Перезарядка": "Recharge"
+  },
+  "documents": {
+    "title": "Technical documentation",
+    "subtitle": "All the necessary documentation in one place",
+    "meta_description": "Download technical documentation for fire safety equipment in PDF format.",
+    "search_placeholder": "Search documents...",
+    "no_documents": "No documents found.",
+    "type": "Type",
+    "load_more": "Load more",
+    "download": "Download",
+    "loading": "Loading documents...",
+    "error": {
+      "title": "Loading error",
+      "message": "Failed to load documents",
+      "retry": "Try again"
+    },
+    "address": {
+      "address_title": "Address",
+      "location": "Tashkent, Usta Shirin Street, 115"
+    },
+    "email": {
+      "title": "Email"
+    },
+    "phone": {
+      "title": "Phone"
+    },
+    "hours": {
+      "title": "Working Hours",
+      "weekdays": "Mon-Fri: 9:00 AM - 6:00 PM",
+      "saturday": "Sat: 10:00 AM - 3:00 PM",
+      "sunday": "Sun: Closed"
+    },
+    "normsTitle": "Fire norms of Uzbekistan",
+    "normColumn": "Normative",
+    "descColumn": "Description",
+    "regulation": "Normative",
+    "description": "Description",
+    "certificatesLink": "Certificates",
+    "certificatesTitle": "Certificates",
+    "certificatesPageTitle": "Certificates",
+    "certificatesEmpty": "No certificates found.",
+    "certificatesDownload": "Download",
+    "certificatesBack": "\u2190 Back"
+  },
+  "certificates": {
+    "title": "Certificates",
+    "noFiles": "No certificates found.",
+    "download": "Download"
+  },
+  "footer": {
+    "logoAlt": "POJ PRO Logo — Fire Safety",
+    "marketingText": "We provide great products at low prices, with quality guarantee and fast delivery!",
+    "tagline": "Poj Pro — reliability in everything!",
+    "navigation": {
+      "title": "Navigation",
+      "home": "Home",
+      "homeTitle": "Main page",
+      "catalog": "Catalog",
+      "catalogTitle": "Product catalog",
+      "about": "About Us",
+      "aboutTitle": "About POJ PRO",
+      "contacts": "Contacts",
+      "contactsTitle": "Contact information"
+    },
+    "phones": {
+      "title": "Phones",
+      "call": "Call number"
+    },
+    "social": {
+      "title": "Social Media",
+      "instagram": "Instagram",
+      "instagramTitle": "Go to Instagram",
+      "telegram": "Telegram channel",
+      "telegramTitle": "Open Telegram channel"
+    },
+    "adminLink": "ADMIN PANEL"
+  },
+  "categoryBlock": {
+    "loadError": "Failed to load categories",
+    "loading": "Loading categories...",
+    "empty": "No categories found",
+    "sectionAriaLabel": "Product categories",
+    "catalog": "Catalog"
+  },
+  "mapSection": {
+    "ariaLabel": "Store location map",
+    "title": "How to find us",
+    "subtitle": "POJ PRO (BOLID store)",
+    "iframeTitle": "Map of POJ PRO (BOLID store)"
+  },
+  "map": {
+    "how_to_find": "How to find us",
+    "store": "POJ PRO (BOLID store)",
+    "map_title": "Map of POJ PRO (BOLID store)"
+  },
+  "imageSlider": {
+    "slide": "Product image {{index}}",
+    "nextSlide": "Next slide",
+    "previousSlide": "Previous slide",
+    "goToSlide": "Go to slide {{index}}"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "register": "Register",
+    "loginPage": {
+      "title": "Sign In",
+      "email": "Email",
+      "password": "Password",
+      "noAccount": "Don't have an account? Register",
+      "signingIn": "Signing in...",
+      "signIn": "Sign In",
+      "errors": {
+        "invalidCredentials": "Invalid email or password",
+        "generic": "An error occurred during sign in"
+      }
+    },
+    "registerPage": {
+      "title": "Create Account",
+      "name": "Name (required)",
+      "email": "Email",
+      "password": "Password (minimum 6 characters)",
+      "haveAccount": "Already have an account? ",
+      "signIn": "Sign In",
+      "register": "Register",
+      "registering": "Registering...",
+      "errors": {
+        "passwordLength": "Password must be at least 6 characters",
+        "generic": "Error during registration"
+      }
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "loading": "Loading your cart...",
+    "emptyTitle": "Your cart is empty",
+    "emptyDescription": "Looks like you haven't added any products to your cart yet.",
+    "removeConfirm": "Remove this item from cart?",
+    "remove": "Remove",
+    "decreaseQuantity": "Decrease quantity",
+    "increaseQuantity": "Increase quantity",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "continueShopping": "Continue Shopping",
+    "clearCart": "Clear Shopping Cart",
+    "orderSummary": "Order Summary",
+    "checkout": "Very soon... in the meantime, you can contact us directly by phone or via Telegram.",
+    "shippingNote": "Shipping & taxes calculated at checkout",
+    "needHelp": "Need help or have questions?",
+    "contactUs": "Call Customer Service at",
+    "returnPolicy": "See our return policy",
+    "addToCart": "Add to Cart",
+    "adding": "Adding...",
+    "addedToCart": "Added!",
+    "inCart": "In Cart",
+    "product": "Product",
+    "noImage": "No Image",
+    "loginToCheckout": "Login to Checkout"
+  }
+}

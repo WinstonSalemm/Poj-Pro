@@ -1,0 +1,1235 @@
+{
+  "ru": [
+    {
+      "id": 1,
+      "name": "СНиП 21-01-97* «Пожарная безопасность зданий и сооружений»",
+      "type": "СНиП",
+      "description": "Основные требования пожарной безопасности к проектированию и эксплуатации зданий.",
+      "link": "https://docs.cntd.ru/document/901734222",
+      "code": "СНиП 21-01-97*",
+      "year": 1997,
+      "jurisdiction": "RU",
+      "status": "заменён",
+      "applies_to": "Все здания и сооружения при проектировании и эксплуатации",
+      "key_requirements": [
+        "Обеспечение путей эвакуации",
+        "Противопожарные разрывы",
+        "Противодымная защита",
+        "Огнестойкость конструкций"
+      ],
+      "notes": "Позднее заменён СП 112.13330.2011",
+      "last_updated": "2003-01-01"
+    },
+    {
+      "id": 2,
+      "name": "СП 112.13330.2011 (актуализированная редакция СНиП 21-01-97*)",
+      "type": "СП",
+      "description": "Обновлённые правила противопожарной защиты для зданий и сооружений.",
+      "link": "https://docs.cntd.ru/document/1200086540",
+      "code": "СП 112.13330.2011",
+      "year": 2011,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Проектирование зданий всех классов",
+      "key_requirements": [
+        "Эвакуационные пути",
+        "Зонирование по пожарной опасности",
+        "Системы автоматического пожаротушения",
+        "Огнестойкость строительных конструкций"
+      ],
+      "notes": "Актуализированная редакция СНиП 21-01-97*",
+      "last_updated": "2019-01-01"
+    },
+    {
+      "id": 3,
+      "name": "СП 6.13130 — Электроустановки низковольтные. Требования пожарной безопасности",
+      "type": "СП",
+      "description": "Регулирует противопожарную защиту электрических сетей и установок.",
+      "link": "https://docs.cntd.ru/document/1200094636",
+      "code": "СП 6.13130",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Электроустановки зданий и сооружений",
+      "key_requirements": [
+        "Использование кабелей с пониженной горючестью",
+        "Защита от перегрузок",
+        "Пожарная изоляция проводки"
+      ],
+      "notes": "",
+      "last_updated": "2018-01-01"
+    },
+    {
+      "id": 4,
+      "name": "СП 486.1311500.2020 — Перечень объектов, подлежащих защите АУПТ и сигнализацией",
+      "type": "СП",
+      "description": "Определяет, какие здания и помещения обязательно оборудуются пожарной сигнализацией и тушением.",
+      "link": "https://docs.cntd.ru/document/566083936",
+      "code": "СП 486.1311500.2020",
+      "year": 2020,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Здания и помещения по видам назначения",
+      "key_requirements": [
+        "Обязательная установка АУПТ",
+        "Обязательная пожарная сигнализация",
+        "Перечень категорий зданий"
+      ],
+      "notes": "",
+      "last_updated": "2020-07-01"
+    },
+    {
+      "id": 5,
+      "name": "ФЗ №69-ФЗ «О пожарной безопасности» (1994)",
+      "type": "Федеральный закон",
+      "description": "Базовый закон, регулирующий организацию пожарной безопасности в России.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_5295/",
+      "code": "ФЗ-69",
+      "year": 1994,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Органы власти, организации, граждане",
+      "key_requirements": [
+        "Определяет основы пожарной безопасности",
+        "Закрепляет полномочия органов власти",
+        "Устанавливает права и обязанности граждан"
+      ],
+      "notes": "",
+      "last_updated": "2022-01-01"
+    },
+    {
+      "id": 6,
+      "name": "ФЗ №123-ФЗ «Технический регламент о требованиях пожарной безопасности» (2008)",
+      "type": "Федеральный закон",
+      "description": "Основной технический регламент: устанавливает обязательные требования к пожарной защите объектов.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_78699/",
+      "code": "ФЗ-123",
+      "year": 2008,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Все объекты строительства и эксплуатации",
+      "key_requirements": [
+        "Огнестойкость зданий",
+        "Эвакуация людей",
+        "Противопожарное водоснабжение",
+        "Противодымная защита"
+      ],
+      "notes": "Ключевой закон для проектировщиков",
+      "last_updated": "2021-01-01"
+    },
+    {
+      "id": 7,
+      "name": "ФЗ №384-ФЗ «О безопасности зданий и сооружений» (2009)",
+      "type": "Федеральный закон",
+      "description": "Закон о безопасности зданий, включая требования к защите от пожаров.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_93978/",
+      "code": "ФЗ-384",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Проектирование и эксплуатация зданий",
+      "key_requirements": [
+        "Надёжность конструкций",
+        "Безопасность эксплуатации",
+        "Противопожарные требования"
+      ],
+      "notes": "",
+      "last_updated": "2020-01-01"
+    },
+    {
+      "id": 8,
+      "name": "ГОСТ 12.1.004-91 — Пожарная безопасность. Общие требования",
+      "type": "ГОСТ",
+      "description": "Системные требования пожарной безопасности на всех стадиях строительства и эксплуатации.",
+      "link": "https://docs.cntd.ru/document/1200011562",
+      "code": "ГОСТ 12.1.004-91",
+      "year": 1991,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Все объекты строительства",
+      "key_requirements": [
+        "Общие критерии пожарной безопасности",
+        "Методы оценки соответствия"
+      ],
+      "notes": "",
+      "last_updated": "1999-01-01"
+    },
+    {
+      "id": 9,
+      "name": "ГОСТ 12.1.033-81 — Термины и определения по пожарной безопасности",
+      "type": "ГОСТ",
+      "description": "Единые термины и понятия в области пожарной безопасности.",
+      "link": "https://docs.cntd.ru/document/1200011566",
+      "code": "ГОСТ 12.1.033-81",
+      "year": 1981,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Нормативные документы и проектировщики",
+      "key_requirements": [
+        "Установление единых терминов",
+        "Применение в технических регламентах"
+      ],
+      "notes": "",
+      "last_updated": "1989-01-01"
+    },
+    {
+      "id": 10,
+      "name": "ГОСТ 12.1.044-89 (ИСО 4589-84) — Классификация пожаровзрывоопасных веществ и материалов",
+      "type": "ГОСТ",
+      "description": "Методы классификации материалов по степени пожаровзрывоопасности.",
+      "link": "https://docs.cntd.ru/document/1200011570",
+      "code": "ГОСТ 12.1.044-89",
+      "year": 1989,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Материалы и вещества в строительстве и производстве",
+      "key_requirements": [
+        "Классы горючести",
+        "Классы воспламеняемости",
+        "Методы испытаний"
+      ],
+      "notes": "",
+      "last_updated": "2000-01-01"
+    },
+    {
+      "id": 11,
+      "name": "ГОСТ 30244-94 — Материалы строительные. Методы испытаний на горючесть",
+      "type": "ГОСТ",
+      "description": "Определяет методы испытания строительных материалов на горючесть.",
+      "link": "https://docs.cntd.ru/document/1200004774",
+      "code": "ГОСТ 30244-94",
+      "year": 1994,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Строительные материалы",
+      "key_requirements": [
+        "Методика испытаний на горючесть",
+        "Классификация по результатам"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 12,
+      "name": "ГОСТ 30402-96 — Метод испытания строительных материалов на воспламеняемость",
+      "type": "ГОСТ",
+      "description": "Устанавливает методику проверки воспламеняемости материалов.",
+      "link": "https://docs.cntd.ru/document/1200004776",
+      "code": "ГОСТ 30402-96",
+      "year": 1996,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Строительные материалы",
+      "key_requirements": [
+        "Методика проверки воспламеняемости",
+        "Определение групп материалов"
+      ],
+      "notes": "",
+      "last_updated": "2006-01-01"
+    },
+    {
+      "id": 13,
+      "name": "ГОСТ Р 51032-97 — Материалы строительные. Метод испытания на распространение пламени",
+      "type": "ГОСТ",
+      "description": "Методы определения способности материалов распространять пламя.",
+      "link": "https://docs.cntd.ru/document/1200004777",
+      "code": "ГОСТ Р 51032-97",
+      "year": 1997,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Строительные материалы",
+      "key_requirements": [
+        "Методика испытаний на распространение пламени",
+        "Классификация материалов"
+      ],
+      "notes": "",
+      "last_updated": "2008-01-01"
+    },
+    {
+      "id": 14,
+      "name": "ГОСТ Р 50571.17-2000 — Электроустановки зданий. Защита от пожара",
+      "type": "ГОСТ",
+      "description": "Правила электробезопасности для предотвращения возгораний.",
+      "link": "https://docs.cntd.ru/document/901794392",
+      "code": "ГОСТ Р 50571.17-2000",
+      "year": 2000,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Электроустановки зданий",
+      "key_requirements": [
+        "Устройства защитного отключения",
+        "Изоляция и заземление",
+        "Огнестойкие кабели"
+      ],
+      "notes": "",
+      "last_updated": "2010-01-01"
+    },
+    {
+      "id": 15,
+      "name": "ГОСТ Р 53300-2009 — Противодымная защита зданий",
+      "type": "ГОСТ",
+      "description": "Методы испытаний систем противодымной защиты зданий.",
+      "link": "https://docs.cntd.ru/document/1200076035",
+      "code": "ГОСТ Р 53300-2009",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Системы противодымной вентиляции",
+      "key_requirements": [
+        "Испытания систем дымоудаления",
+        "Нормы эффективности работы систем"
+      ],
+      "notes": "",
+      "last_updated": "2015-01-01"
+    },
+    {
+      "id": 16,
+      "name": "ГОСТ 12.4.026-2015 — Сигнальная разметка. Цвета и знаки безопасности",
+      "type": "ГОСТ",
+      "description": "Устанавливает стандарты знаков и цветов безопасности при пожарах.",
+      "link": "https://docs.cntd.ru/document/1200128184",
+      "code": "ГОСТ 12.4.026-2015",
+      "year": 2015,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Все предприятия и организации",
+      "key_requirements": [
+        "Стандартизированные цвета",
+        "Обязательные знаки эвакуации",
+        "Знаки пожарной безопасности"
+      ],
+      "notes": "",
+      "last_updated": "2019-01-01"
+    },
+    {
+      "id": 17,
+      "name": "ГОСТ 12.1.018-93 и ГОСТ 12.1.030-81 — Электробезопасность и пожаровзрывобезопасность",
+      "type": "ГОСТ",
+      "description": "Регламентирует защиту от статического электричества и взрывоопасности.",
+      "link": "https://docs.cntd.ru/document/1200011564",
+      "code": "ГОСТ 12.1.018-93, ГОСТ 12.1.030-81",
+      "year": 1993,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Опасные производства и электроустановки",
+      "key_requirements": [
+        "Защита от статического электричества",
+        "Методы предотвращения взрывов"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 18,
+      "name": "НПБ 01-93 — Разработка и утверждение документов по пожарной безопасности",
+      "type": "НПБ",
+      "description": "Определяет порядок подготовки и утверждения норм и правил по пожарной безопасности.",
+      "link": "https://files.stroyinf.ru/Data2/1/4293836/4293836552.pdf",
+      "code": "НПБ 01-93",
+      "year": 1993,
+      "jurisdiction": "RU",
+      "status": "утратил силу",
+      "applies_to": "Нормативные органы",
+      "key_requirements": [
+        "Порядок разработки правил",
+        "Процедура согласования"
+      ],
+      "notes": "Заменён федеральными законами и СП",
+      "last_updated": "2003-01-01"
+    },
+    {
+      "id": 19,
+      "name": "НПБ 104-03 — Системы оповещения и управления эвакуацией людей при пожаре",
+      "type": "НПБ",
+      "description": "Требования к системам оповещения и управления эвакуацией.",
+      "link": "https://files.stroyinf.ru/Data/51/51056.pdf",
+      "code": "НПБ 104-03",
+      "year": 2003,
+      "jurisdiction": "RU",
+      "status": "утратил силу",
+      "applies_to": "Здания и сооружения",
+      "key_requirements": [
+        "Системы оповещения",
+        "Автоматизированное управление эвакуацией"
+      ],
+      "notes": "Заменён СП 3.13130.2009",
+      "last_updated": "2010-01-01"
+    },
+    {
+      "id": 20,
+      "name": "НПБ 110-03 — Перечень объектов, защищаемых АУПТ и пожарной сигнализацией",
+      "type": "НПБ",
+      "description": "Определяет здания и помещения, где обязательно устанавливать пожарную автоматику.",
+      "link": "https://files.stroyinf.ru/Data/51/51062.pdf",
+      "code": "НПБ 110-03",
+      "year": 2003,
+      "jurisdiction": "RU",
+      "status": "утратил силу",
+      "applies_to": "Здания и сооружения",
+      "key_requirements": [
+        "Категории объектов",
+        "Требования установки АУПТ и сигнализации"
+      ],
+      "notes": "Заменён СП 486.1311500.2020",
+      "last_updated": "2015-01-01"
+    },
+    {
+      "id": 21,
+      "name": "НПБ 101-95 — Нормы проектирования объектов пожарной охраны",
+      "type": "НПБ",
+      "description": "Нормативы проектирования пожарных частей и депо.",
+      "link": "https://files.stroyinf.ru/Data2/1/4293784/4293784737.pdf",
+      "code": "НПБ 101-95",
+      "year": 1995,
+      "jurisdiction": "RU",
+      "status": "утратил силу",
+      "applies_to": "Проектирование пожарных частей",
+      "key_requirements": [
+        "Нормативы размещения депо",
+        "Требования к планировке"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 22,
+      "name": "СП 3.13130.2009 — Системы оповещения и управления эвакуацией при пожаре",
+      "type": "СП",
+      "description": "Устанавливает правила проектирования систем оповещения при пожаре.",
+      "link": "https://docs.cntd.ru/document/1200076031",
+      "code": "СП 3.13130.2009",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "действует",
+      "applies_to": "Все здания и сооружения",
+      "key_requirements": [
+        "Категории систем оповещения",
+        "Проектирование оповещения",
+        "Управление эвакуацией"
+      ],
+      "notes": "",
+      "last_updated": "2019-01-01"
+    }
+  ],
+  "en": [
+    {
+      "id": 1,
+      "name": "SNiP 21-01-97* “Fire Safety of Buildings and Structures”",
+      "type": "SNiP",
+      "description": "Establishes basic fire safety requirements for the design and operation of buildings.",
+      "link": "https://docs.cntd.ru/document/901734222",
+      "code": "SNiP 21-01-97*",
+      "year": 1997,
+      "jurisdiction": "RU",
+      "status": "superseded",
+      "applies_to": "All buildings and structures during design and operation",
+      "key_requirements": [
+        "Provision of evacuation routes",
+        "Firebreak distances",
+        "Smoke protection",
+        "Fire resistance of structures"
+      ],
+      "notes": "Superseded by SP 112.13330.2011",
+      "last_updated": "2003-01-01"
+    },
+    {
+      "id": 2,
+      "name": "SP 112.13330.2011 (Updated edition of SNiP 21-01-97*)",
+      "type": "SP",
+      "description": "Updated fire safety rules for buildings and structures.",
+      "link": "https://docs.cntd.ru/document/1200086540",
+      "code": "SP 112.13330.2011",
+      "year": 2011,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Design of all classes of buildings",
+      "key_requirements": [
+        "Evacuation routes",
+        "Fire hazard zoning",
+        "Automatic fire extinguishing systems",
+        "Structural fire resistance"
+      ],
+      "notes": "Updated edition of SNiP 21-01-97*",
+      "last_updated": "2019-01-01"
+    },
+    {
+      "id": 3,
+      "name": "SP 6.13130 — Low-voltage electrical installations. Fire safety requirements",
+      "type": "SP",
+      "description": "Regulates fire protection measures for electrical networks and installations.",
+      "link": "https://docs.cntd.ru/document/1200094636",
+      "code": "SP 6.13130",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Electrical installations of buildings and structures",
+      "key_requirements": [
+        "Use of low-combustibility cables",
+        "Overload protection",
+        "Fireproof wiring insulation"
+      ],
+      "notes": "",
+      "last_updated": "2018-01-01"
+    },
+    {
+      "id": 4,
+      "name": "SP 486.1311500.2020 — List of facilities subject to automatic fire suppression and alarm systems",
+      "type": "SP",
+      "description": "Specifies which buildings and rooms must be equipped with fire alarms and extinguishing systems.",
+      "link": "https://docs.cntd.ru/document/566083936",
+      "code": "SP 486.1311500.2020",
+      "year": 2020,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Buildings and premises by functional category",
+      "key_requirements": [
+        "Mandatory installation of suppression systems",
+        "Mandatory fire alarm installation",
+        "List of facility categories"
+      ],
+      "notes": "",
+      "last_updated": "2020-07-01"
+    },
+    {
+      "id": 5,
+      "name": "Federal Law No. 69-FZ “On Fire Safety” (1994)",
+      "type": "Federal Law",
+      "description": "The basic law regulating the organization of fire safety in Russia.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_5295/",
+      "code": "69-FZ",
+      "year": 1994,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Authorities, organizations, citizens",
+      "key_requirements": [
+        "Defines fire safety fundamentals",
+        "Assigns government responsibilities",
+        "Specifies citizen rights and obligations"
+      ],
+      "notes": "",
+      "last_updated": "2022-01-01"
+    },
+    {
+      "id": 6,
+      "name": "Federal Law No. 123-FZ “Technical Regulations on Fire Safety Requirements” (2008)",
+      "type": "Federal Law",
+      "description": "The main technical regulation establishing mandatory fire safety requirements.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_78699/",
+      "code": "123-FZ",
+      "year": 2008,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "All construction and operation facilities",
+      "key_requirements": [
+        "Structural fire resistance",
+        "Safe evacuation",
+        "Firefighting water supply",
+        "Smoke protection"
+      ],
+      "notes": "Key law for designers",
+      "last_updated": "2021-01-01"
+    },
+    {
+      "id": 7,
+      "name": "Federal Law No. 384-FZ “On the Safety of Buildings and Structures” (2009)",
+      "type": "Federal Law",
+      "description": "Law on the safety of buildings, including fire protection requirements.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_93978/",
+      "code": "384-FZ",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Building design and operation",
+      "key_requirements": [
+        "Structural reliability",
+        "Safe operation",
+        "Fire protection requirements"
+      ],
+      "notes": "",
+      "last_updated": "2020-01-01"
+    },
+    {
+      "id": 8,
+      "name": "GOST 12.1.004-91 — Fire Safety. General requirements",
+      "type": "GOST",
+      "description": "System requirements for fire safety at all stages of construction and operation.",
+      "link": "https://docs.cntd.ru/document/1200011562",
+      "code": "GOST 12.1.004-91",
+      "year": 1991,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "All construction facilities",
+      "key_requirements": [
+        "General fire safety criteria",
+        "Methods of compliance assessment"
+      ],
+      "notes": "",
+      "last_updated": "1999-01-01"
+    },
+    {
+      "id": 9,
+      "name": "GOST 12.1.033-81 — Terms and definitions in fire safety",
+      "type": "GOST",
+      "description": "Unified terminology and concepts in the field of fire safety.",
+      "link": "https://docs.cntd.ru/document/1200011566",
+      "code": "GOST 12.1.033-81",
+      "year": 1981,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Normative documents and designers",
+      "key_requirements": [
+        "Unified terms",
+        "Application in technical regulations"
+      ],
+      "notes": "",
+      "last_updated": "1989-01-01"
+    },
+    {
+      "id": 10,
+      "name": "GOST 12.1.044-89 (ISO 4589-84) — Classification of fire and explosion hazardous substances and materials",
+      "type": "GOST",
+      "description": "Methods for classifying materials by fire and explosion hazard.",
+      "link": "https://docs.cntd.ru/document/1200011570",
+      "code": "GOST 12.1.044-89",
+      "year": 1989,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Construction and industrial materials",
+      "key_requirements": [
+        "Combustibility classes",
+        "Flammability classes",
+        "Testing methods"
+      ],
+      "notes": "",
+      "last_updated": "2000-01-01"
+    },
+    {
+      "id": 11,
+      "name": "GOST 30244-94 — Building materials. Methods of fire resistance testing",
+      "type": "GOST",
+      "description": "Defines methods for testing the combustibility of building materials.",
+      "link": "https://docs.cntd.ru/document/1200004774",
+      "code": "GOST 30244-94",
+      "year": 1994,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Building materials",
+      "key_requirements": [
+        "Testing methodology for combustibility",
+        "Classification based on results"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 12,
+      "name": "GOST 30402-96 — Method of testing building materials for flammability",
+      "type": "GOST",
+      "description": "Establishes the methodology for testing the flammability of materials.",
+      "link": "https://docs.cntd.ru/document/1200004776",
+      "code": "GOST 30402-96",
+      "year": 1996,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Building materials",
+      "key_requirements": [
+        "Flammability testing methodology",
+        "Material group classification"
+      ],
+      "notes": "",
+      "last_updated": "2006-01-01"
+    },
+    {
+      "id": 13,
+      "name": "GOST R 51032-97 — Building materials. Test method for flame spread",
+      "type": "GOST",
+      "description": "Methods for determining the flame spread performance of materials.",
+      "link": "https://docs.cntd.ru/document/1200004777",
+      "code": "GOST R 51032-97",
+      "year": 1997,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Building materials",
+      "key_requirements": [
+        "Flame spread testing methodology",
+        "Material classification"
+      ],
+      "notes": "",
+      "last_updated": "2008-01-01"
+    },
+    {
+      "id": 14,
+      "name": "GOST R 50571.17-2000 — Electrical installations of buildings. Fire protection",
+      "type": "GOST",
+      "description": "Electrical safety and fire protection requirements.",
+      "link": "https://docs.cntd.ru/document/901794392",
+      "code": "GOST R 50571.17-2000",
+      "year": 2000,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Electrical installations of buildings",
+      "key_requirements": [
+        "Residual-current devices",
+        "Insulation and grounding",
+        "Fire-resistant cables"
+      ],
+      "notes": "",
+      "last_updated": "2010-01-01"
+    },
+    {
+      "id": 15,
+      "name": "GOST R 53300-2009 — Smoke protection of buildings",
+      "type": "GOST",
+      "description": "Test methods for building smoke protection systems.",
+      "link": "https://docs.cntd.ru/document/1200076035",
+      "code": "GOST R 53300-2009",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Smoke protection and ventilation systems",
+      "key_requirements": [
+        "Smoke removal system testing",
+        "Performance requirements"
+      ],
+      "notes": "",
+      "last_updated": "2015-01-01"
+    },
+    {
+      "id": 16,
+      "name": "GOST 12.4.026-2015 — Safety colors and signs",
+      "type": "GOST",
+      "description": "Defines colors and safety signs for fire safety.",
+      "link": "https://docs.cntd.ru/document/1200128184",
+      "code": "GOST 12.4.026-2015",
+      "year": 2015,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "All enterprises and organizations",
+      "key_requirements": [
+        "Standardized colors",
+        "Mandatory evacuation signs",
+        "Fire safety signage"
+      ],
+      "notes": "",
+      "last_updated": "2019-01-01"
+    },
+    {
+      "id": 17,
+      "name": "GOST 12.1.018-93 and GOST 12.1.030-81 — Electrical and explosion safety",
+      "type": "GOST",
+      "description": "Regulates protection against static electricity and explosion hazards.",
+      "link": "https://docs.cntd.ru/document/1200011564",
+      "code": "GOST 12.1.018-93, GOST 12.1.030-81",
+      "year": 1993,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "Hazardous industries and electrical installations",
+      "key_requirements": [
+        "Protection against static electricity",
+        "Explosion prevention methods"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 18,
+      "name": "NPB 01-93 — Procedure for the development and approval of fire safety documents",
+      "type": "NPB",
+      "description": "Defines the procedure for drafting and approving fire safety standards and rules.",
+      "link": "https://files.stroyinf.ru/Data2/1/4293836/4293836552.pdf",
+      "code": "NPB 01-93",
+      "year": 1993,
+      "jurisdiction": "RU",
+      "status": "repealed",
+      "applies_to": "Normative authorities",
+      "key_requirements": ["Rules drafting procedure", "Approval procedure"],
+      "notes": "Replaced by federal laws and SPs",
+      "last_updated": "2003-01-01"
+    },
+    {
+      "id": 19,
+      "name": "NPB 104-03 — Fire alarm and evacuation management systems",
+      "type": "NPB",
+      "description": "Requirements for fire alarm and evacuation control systems.",
+      "link": "https://files.stroyinf.ru/Data/51/51056.pdf",
+      "code": "NPB 104-03",
+      "year": 2003,
+      "jurisdiction": "RU",
+      "status": "repealed",
+      "applies_to": "Buildings and structures",
+      "key_requirements": [
+        "Fire alarm systems",
+        "Automated evacuation control"
+      ],
+      "notes": "Replaced by SP 3.13130.2009",
+      "last_updated": "2010-01-01"
+    },
+    {
+      "id": 20,
+      "name": "NPB 110-03 — List of facilities subject to fire alarms and automatic extinguishing systems",
+      "type": "NPB",
+      "description": "Specifies the facilities where fire safety automation is mandatory.",
+      "link": "https://files.stroyinf.ru/Data/51/51062.pdf",
+      "code": "NPB 110-03",
+      "year": 2003,
+      "jurisdiction": "RU",
+      "status": "repealed",
+      "applies_to": "Buildings and structures",
+      "key_requirements": [
+        "Categories of facilities",
+        "Requirements for suppression and alarm systems"
+      ],
+      "notes": "Replaced by SP 486.1311500.2020",
+      "last_updated": "2015-01-01"
+    },
+    {
+      "id": 21,
+      "name": "NPB 101-95 — Design standards for fire protection facilities",
+      "type": "NPB",
+      "description": "Standards for the design of fire stations and depots.",
+      "link": "https://files.stroyinf.ru/Data2/1/4293784/4293784737.pdf",
+      "code": "NPB 101-95",
+      "year": 1995,
+      "jurisdiction": "RU",
+      "status": "repealed",
+      "applies_to": "Design of fire stations",
+      "key_requirements": [
+        "Fire depot placement standards",
+        "Layout requirements"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 22,
+      "name": "SP 3.13130.2009 — Fire alarm and evacuation management systems",
+      "type": "SP",
+      "description": "Establishes the rules for designing fire alarm and evacuation systems.",
+      "link": "https://docs.cntd.ru/document/1200076031",
+      "code": "SP 3.13130.2009",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "active",
+      "applies_to": "All buildings and structures",
+      "key_requirements": [
+        "Categories of alarm systems",
+        "Design of alarm systems",
+        "Evacuation management"
+      ],
+      "notes": "",
+      "last_updated": "2019-01-01"
+    }
+  ],
+  "uz": [
+    {
+      "id": 1,
+      "name": "SNiP 21-01-97* «Binolar va inshootlarning yong‘in xavfsizligi»",
+      "type": "SNiP",
+      "description": "Binolarni loyihalash va foydalanishda yong‘in xavfsizligi talablarini belgilaydi.",
+      "link": "https://docs.cntd.ru/document/901734222",
+      "code": "SNiP 21-01-97*",
+      "year": 1997,
+      "jurisdiction": "RU",
+      "status": "bekor qilingan",
+      "applies_to": "Barcha binolar va inshootlar",
+      "key_requirements": [
+        "Evakuatsiya yo‘llari",
+        "Yong‘inga qarshi masofalar",
+        "Tutun himoyasi",
+        "Konstruktsiyalarning yong‘inga chidamliligi"
+      ],
+      "notes": "SP 112.13330.2011 bilan almashtirilgan",
+      "last_updated": "2003-01-01"
+    },
+    {
+      "id": 2,
+      "name": "SP 112.13330.2011 (SNiP 21-01-97* yangilangan tahriri)",
+      "type": "SP",
+      "description": "Binolar va inshootlar uchun yangilangan yong‘in xavfsizligi qoidalari.",
+      "link": "https://docs.cntd.ru/document/1200086540",
+      "code": "SP 112.13330.2011",
+      "year": 2011,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha turdagi binolar",
+      "key_requirements": [
+        "Evakuatsiya yo‘llari",
+        "Yong‘in xavfi zonalari",
+        "Avtomatik yong‘in o‘chirish tizimlari",
+        "Konstruktsiyalar mustahkamligi"
+      ],
+      "notes": "SNiP 21-01-97* yangilangan tahriri",
+      "last_updated": "2019-01-01"
+    },
+    {
+      "id": 3,
+      "name": "SP 6.13130 — Past kuchlanishli elektr qurilmalari. Yong‘in xavfsizligi talablari",
+      "type": "SP",
+      "description": "Elektr tarmoqlari va qurilmalarida yong‘in xavfsizligini tartibga soladi.",
+      "link": "https://docs.cntd.ru/document/1200094636",
+      "code": "SP 6.13130",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Elektr tarmoqlari va qurilmalar",
+      "key_requirements": [
+        "Yonmaydigan kabel ishlatish",
+        "Ortiqcha yukdan himoya",
+        "Izolyatsiya talablari"
+      ],
+      "notes": "",
+      "last_updated": "2018-01-01"
+    },
+    {
+      "id": 4,
+      "name": "SP 486.1311500.2020 — Yong‘inga qarshi signalizatsiya va avtomatik tizimlar bilan himoyalanishi shart bo‘lgan obyektlar",
+      "type": "SP",
+      "description": "Qaysi bino va xonalar signalizatsiya va avtomatik o‘chirish tizimlari bilan jihozlanishi kerakligini belgilaydi.",
+      "link": "https://docs.cntd.ru/document/566083936",
+      "code": "SP 486.1311500.2020",
+      "year": 2020,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha turdagi obyektlar",
+      "key_requirements": [
+        "Signalizatsiya o‘rnatish majburiyligi",
+        "Avtomatik o‘chirish tizimi",
+        "Obyektlar kategoriyasi"
+      ],
+      "notes": "",
+      "last_updated": "2020-07-01"
+    },
+    {
+      "id": 5,
+      "name": "FZ №69-FZ «Yong‘in xavfsizligi to‘g‘risida» (1994)",
+      "type": "Qonun",
+      "description": "Rossiyada yong‘in xavfsizligini tashkil etishni tartibga soluvchi asosiy qonun.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_5295/",
+      "code": "69-FZ",
+      "year": 1994,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Fuqarolar, tashkilotlar, davlat organlari",
+      "key_requirements": [
+        "Yong‘in xavfsizligi asoslari",
+        "Davlatning majburiyatlari",
+        "Fuqarolarning huquq va burchlari"
+      ],
+      "notes": "",
+      "last_updated": "2022-01-01"
+    },
+    {
+      "id": 6,
+      "name": "FZ №123-FZ «Yong‘in xavfsizligi talablariga oid texnik reglament» (2008)",
+      "type": "Qonun",
+      "description": "Majburiy yong‘in xavfsizligi talablarini belgilovchi asosiy texnik reglament.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_78699/",
+      "code": "123-FZ",
+      "year": 2008,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha obyektlar",
+      "key_requirements": [
+        "Konstruktsiyalarning chidamliligi",
+        "Evakuatsiya xavfsizligi",
+        "Tutunga qarshi himoya",
+        "Suv ta’minoti"
+      ],
+      "notes": "Asosiy texnik reglament",
+      "last_updated": "2021-01-01"
+    },
+    {
+      "id": 7,
+      "name": "FZ №384-FZ «Binolar va inshootlarning xavfsizligi to‘g‘risida» (2009)",
+      "type": "Qonun",
+      "description": "Binolar xavfsizligi to‘g‘risidagi qonun, yong‘indan himoya talablarini o‘z ichiga oladi.",
+      "link": "https://www.consultant.ru/document/cons_doc_LAW_93978/",
+      "code": "384-FZ",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha binolar va inshootlar",
+      "key_requirements": [
+        "Konstruktsiyalarning ishonchliligi",
+        "Xavfsiz foydalanish",
+        "Yong‘inga qarshi talablar"
+      ],
+      "notes": "",
+      "last_updated": "2020-01-01"
+    },
+    {
+      "id": 8,
+      "name": "GOST 12.1.004-91 — Yong‘in xavfsizligi. Umumiy talablar",
+      "type": "GOST",
+      "description": "Qurilish va foydalanishda umumiy yong‘in xavfsizligi talablarini belgilaydi.",
+      "link": "https://docs.cntd.ru/document/1200011562",
+      "code": "GOST 12.1.004-91",
+      "year": 1991,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha qurilish obyektlari",
+      "key_requirements": [
+        "Umumiy xavfsizlik mezonlari",
+        "Moslikni baholash usullari"
+      ],
+      "notes": "",
+      "last_updated": "1999-01-01"
+    },
+    {
+      "id": 9,
+      "name": "GOST 12.1.033-81 — Yong‘in xavfsizligi bo‘yicha atamalar va ta’riflar",
+      "type": "GOST",
+      "description": "Yong‘in xavfsizligi sohasida yagona tushuncha va atamalar.",
+      "link": "https://docs.cntd.ru/document/1200011566",
+      "code": "GOST 12.1.033-81",
+      "year": 1981,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Normativ hujjatlar va loyihalash",
+      "key_requirements": [
+        "Yagona atamalar",
+        "Texnik reglamentlarda qo‘llanilishi"
+      ],
+      "notes": "",
+      "last_updated": "1989-01-01"
+    },
+    {
+      "id": 10,
+      "name": "GOST 12.1.044-89 (ISO 4589-84) — Yong‘in-portlash xavfi bo‘lgan moddalar va materiallarni tasniflash",
+      "type": "GOST",
+      "description": "Materiallarni yong‘in-portlash xavfiga ko‘ra tasniflash usullari.",
+      "link": "https://docs.cntd.ru/document/1200011570",
+      "code": "GOST 12.1.044-89",
+      "year": 1989,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Qurilish va sanoat materiallari",
+      "key_requirements": [
+        "Yonuvchanlik darajalari",
+        "Portlash xavfi tasnifi",
+        "Sinov usullari"
+      ],
+      "notes": "",
+      "last_updated": "2000-01-01"
+    },
+    {
+      "id": 11,
+      "name": "GOST 30244-94 — Qurilish materiallari. Yonuvchanlikni sinash usullari",
+      "type": "GOST",
+      "description": "Qurilish materiallarining yonuvchanligini sinash usullarini belgilaydi.",
+      "link": "https://docs.cntd.ru/document/1200004774",
+      "code": "GOST 30244-94",
+      "year": 1994,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Qurilish materiallari",
+      "key_requirements": [
+        "Yonuvchanlikni sinash metodikasi",
+        "Natijalarga ko‘ra materiallarni tasniflash"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 12,
+      "name": "GOST 30402-96 — Qurilish materiallarining alangalanishini sinash usuli",
+      "type": "GOST",
+      "description": "Materiallarning alangalanish xususiyatini aniqlash usuli.",
+      "link": "https://docs.cntd.ru/document/1200004776",
+      "code": "GOST 30402-96",
+      "year": 1996,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Qurilish materiallari",
+      "key_requirements": [
+        "Alangalanish sinovi metodikasi",
+        "Materiallar guruhlari bo‘yicha tasnif"
+      ],
+      "notes": "",
+      "last_updated": "2006-01-01"
+    },
+    {
+      "id": 13,
+      "name": "GOST R 51032-97 — Qurilish materiallari. Alanga tarqalishini sinash usuli",
+      "type": "GOST",
+      "description": "Materiallarning alangani tarqatish qobiliyatini aniqlash usullari.",
+      "link": "https://docs.cntd.ru/document/1200004777",
+      "code": "GOST R 51032-97",
+      "year": 1997,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Qurilish materiallari",
+      "key_requirements": [
+        "Alanga tarqalishini sinash metodikasi",
+        "Materiallarni tasniflash"
+      ],
+      "notes": "",
+      "last_updated": "2008-01-01"
+    },
+    {
+      "id": 14,
+      "name": "GOST R 50571.17-2000 — Binolarning elektr qurilmalari. Yong‘indan himoya",
+      "type": "GOST",
+      "description": "Elektr xavfsizligi va yong‘indan himoya bo‘yicha talablar.",
+      "link": "https://docs.cntd.ru/document/901794392",
+      "code": "GOST R 50571.17-2000",
+      "year": 2000,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Binolarning elektr qurilmalari",
+      "key_requirements": [
+        "Himoya uzgichlari (RCD)dan foydalanish",
+        "Izolyatsiya va yerga ulash talablari",
+        "Yong‘inga chidamli kabellar"
+      ],
+      "notes": "",
+      "last_updated": "2010-01-01"
+    },
+    {
+      "id": 15,
+      "name": "GOST R 53300-2009 — Binolarda tutunga qarshi himoya",
+      "type": "GOST",
+      "description": "Binolarda tutunga qarshi tizimlarni sinash usullari.",
+      "link": "https://docs.cntd.ru/document/1200076035",
+      "code": "GOST R 53300-2009",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Tutunga qarshi va ventilyatsiya tizimlari",
+      "key_requirements": [
+        "Tutun chiqarish tizimlarini sinash",
+        "Ishlash samaradorligi bo‘yicha talablar"
+      ],
+      "notes": "",
+      "last_updated": "2015-01-01"
+    },
+    {
+      "id": 16,
+      "name": "GOST 12.4.026-2015 — Belgilash va xavfsizlik belgilarining ranglari",
+      "type": "GOST",
+      "description": "Yong‘in xavfsizligi uchun ranglar va xavfsizlik belgilarini belgilaydi.",
+      "link": "https://docs.cntd.ru/document/1200128184",
+      "code": "GOST 12.4.026-2015",
+      "year": 2015,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha korxonalar va tashkilotlar",
+      "key_requirements": [
+        "Standartlashtirilgan ranglar",
+        "Majburiy evakuatsiya belgilar",
+        "Yong‘in xavfsizligi belgilari"
+      ],
+      "notes": "",
+      "last_updated": "2019-01-01"
+    },
+    {
+      "id": 17,
+      "name": "GOST 12.1.018-93 va GOST 12.1.030-81 — Elektr xavfsizligi va portlash xavfsizligi",
+      "type": "GOST",
+      "description": "Statik elektr va portlash xavfsizligini tartibga soladi.",
+      "link": "https://docs.cntd.ru/document/1200011564",
+      "code": "GOST 12.1.018-93; GOST 12.1.030-81",
+      "year": 1993,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Xavfli ishlab chiqarishlar va elektroqurilmalar",
+      "key_requirements": [
+        "Statik elektrdan himoya",
+        "Portlashlarning oldini olish usullari"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 18,
+      "name": "NPB 01-93 — Yong‘in xavfsizligi hujjatlarini ishlab chiqish va tasdiqlash tartibi",
+      "type": "NPB",
+      "description": "Yong‘in xavfsizligi qoidalari va normalarini ishlab chiqish tartibini belgilaydi.",
+      "link": "https://files.stroyinf.ru/Data2/1/4293836/4293836552.pdf",
+      "code": "NPB 01-93",
+      "year": 1993,
+      "jurisdiction": "RU",
+      "status": "bekor qilingan",
+      "applies_to": "Normativ organlar",
+      "key_requirements": [
+        "Qoidalarni ishlab chiqish tartibi",
+        "Kelishish va tasdiqlash jarayoni"
+      ],
+      "notes": "Federal qonunlar va SPlar bilan almashtirilgan",
+      "last_updated": "2003-01-01"
+    },
+    {
+      "id": 19,
+      "name": "NPB 104-03 — Yong‘in paytida odamlarni ogohlantirish va evakuatsiyani boshqarish tizimlari",
+      "type": "NPB",
+      "description": "Ogohlantirish va evakuatsiyani boshqarish tizimlari uchun talablar.",
+      "link": "https://files.stroyinf.ru/Data/51/51056.pdf",
+      "code": "NPB 104-03",
+      "year": 2003,
+      "jurisdiction": "RU",
+      "status": "bekor qilingan",
+      "applies_to": "Binolar va inshootlar",
+      "key_requirements": [
+        "Yong‘in signalizatsiyasi tizimlari",
+        "Evakuatsiyani avtomatik boshqarish"
+      ],
+      "notes": "SP 3.13130.2009 bilan almashtirilgan",
+      "last_updated": "2010-01-01"
+    },
+    {
+      "id": 20,
+      "name": "NPB 110-03 — Yong‘in signalizatsiyasi va avtomatik tizimlari bilan himoyalanishi shart bo‘lgan obyektlar ro‘yxati",
+      "type": "NPB",
+      "description": "Qaysi obyektlarda yong‘in avtomatik tizimlari majburiy ekanini belgilaydi.",
+      "link": "https://files.stroyinf.ru/Data/51/51062.pdf",
+      "code": "NPB 110-03",
+      "year": 2003,
+      "jurisdiction": "RU",
+      "status": "bekor qilingan",
+      "applies_to": "Binolar va inshootlar",
+      "key_requirements": [
+        "Obyektlar kategoriyalarini belgilash",
+        "O‘chirish va signalizatsiya tizimlari talablari"
+      ],
+      "notes": "SP 486.1311500.2020 bilan almashtirilgan",
+      "last_updated": "2015-01-01"
+    },
+    {
+      "id": 21,
+      "name": "NPB 101-95 — Yong‘in qo‘riqlash obyektlarini loyihalash normalari",
+      "type": "NPB",
+      "description": "Yong‘in qo‘riqlash qismlari va depo loyihalash normalari.",
+      "link": "https://files.stroyinf.ru/Data2/1/4293784/4293784737.pdf",
+      "code": "NPB 101-95",
+      "year": 1995,
+      "jurisdiction": "RU",
+      "status": "bekor qilingan",
+      "applies_to": "Yong‘in qutqaruv bo‘linmalarini loyihalash",
+      "key_requirements": [
+        "Depolarni joylashtirish me’yorlari",
+        "Rejalashtirish va maydon talablari"
+      ],
+      "notes": "",
+      "last_updated": "2005-01-01"
+    },
+    {
+      "id": 22,
+      "name": "SP 3.13130.2009 — Yong‘in paytida ogohlantirish va evakuatsiyani boshqarish tizimlari",
+      "type": "SP",
+      "description": "Yong‘in paytida ogohlantirish tizimlarini loyihalash qoidalari.",
+      "link": "https://docs.cntd.ru/document/1200076031",
+      "code": "SP 3.13130.2009",
+      "year": 2009,
+      "jurisdiction": "RU",
+      "status": "amalda",
+      "applies_to": "Barcha binolar va inshootlar",
+      "key_requirements": [
+        "Ogohlantirish tizimlari kategoriyalari",
+        "Ovozli/yorug‘likli ogohlantirishni loyihalash",
+        "Evakuatsiyani boshqarish"
+      ],
+      "notes": "",
+      "last_updated": "2019-01-01"
+    }
+  ]
+}

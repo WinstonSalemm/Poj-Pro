@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# Alternative Next.js cache directory
+node_modules/.cache/next/
+
 # production
 /build
 

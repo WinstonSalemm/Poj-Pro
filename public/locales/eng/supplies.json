@@ -1,0 +1,20 @@
+{
+  "title": "Supplies",
+  "subtitle": "Up-to-date supply information",
+  "searchPlaceholder": "Search supplies...",
+  "noSupplies": "No supplies found",
+  "showAll": "Show all",
+  "showLess": "Show less",
+  "tryDifferentSearch": "Try different search terms",
+  "noSuppliesDescription": "There are no active supplies at the moment",
+  "error": {
+    "loadingError": "Error loading data",
+    "tryAgain": "Please try again later",
+    "reloadPage": "Reload page"
+  },
+  "popularProductsBlock": {
+    "title": "Popular Products",
+    "loading": "Loading popular products...",
+    "noProducts": "No popular products available at the moment."
+  }
+}

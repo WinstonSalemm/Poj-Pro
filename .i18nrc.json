@@ -1,0 +1,26 @@
+{
+  "contextSeparator": "_",
+  "createOldCatalog": false,
+  "defaultNamespace": "translation",
+  "defaultValue": "",
+  "failOnWarnings": false,
+  "indent": 2,
+  "input": ["src/**/*.{js,jsx,ts,tsx}"],
+  "keepRemoved": false,
+  "keySeparator": ".",
+  "lexers": {
+    "js": ["JavascriptLexer"],
+    "jsx": ["JsxLexer"],
+    "ts": ["JavascriptLexer"],
+    "tsx": ["JsxLexer"],
+    "default": ["JavascriptLexer"]
+  },
+  "lineEnding": "auto",
+  "locales": ["ru", "uzb", "eng"],
+  "namespaceSeparator": ":",
+  "output": "src/locales/$LOCALE/$NAMESPACE.json",
+  "pluralSeparator": "_",
+  "sort": true,
+  "useKeysAsDefaultValue": true,
+  "verbose": true
+}

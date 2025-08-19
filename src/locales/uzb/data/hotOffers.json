@@ -1,0 +1,52 @@
+{
+  "hotOffers": [
+    {
+      "id": "hot-1",
+      "title": "Birinchi buyurtmangiz uchun 15% chegirma",
+      "description": "Yangi mijozlar 500 000 so'mdan ortiq birinchi buyurtmalariga 15% chegirma olishlari mumkin. Promo kodni ishlating: WELCOME15",
+      "code": "WELCOME15",
+      "validUntil": "31.12.2025",
+      "image": "/promo/first-order.jpg"
+    },
+    {
+      "id": "hot-2",
+      "title": "Bepul yetkazib berish",
+      "description": "Toshkent shahri bo'ylab 1 500 000 so'mdan ortiq buyurtmalarga bepul yetkazib berish. Boshqa hududlar uchun alohida shartlar mavjud.",
+      "code": "FREESHIP",
+      "validUntil": "31.12.2025",
+      "image": "/promo/free-shipping.jpg"
+    },
+    {
+      "id": "hot-3",
+      "title": "Ulgurji uchun 10% chegirma",
+      "description": "10 ta va undan ortiq buyurtmalarga 10% chegirma. Barcha yong'inga qarshi uskunalar toifalariga nisbatan qo'llaniladi.",
+      "code": "OPT10",
+      "validUntil": "31.12.2025",
+      "image": "/promo/wholesale.jpg"
+    },
+    {
+      "id": "hot-4",
+      "title": "Bepul yong'inga qarshi xavfsizlik tekshiruvi",
+      "description": "3 000 000 so'mdan ortiq summadagi uskunalar buyurtma qilganda binongizning bepul yong'inga qarshi xavfsizlik tekshiruvi.",
+      "code": "AUDITFREE",
+      "validUntil": "31.12.2025",
+      "image": "/promo/audit.jpg"
+    },
+    {
+      "id": "hot-5",
+      "title": "O'rnatish uchun 20% chegirma",
+      "description": "Bizdan uskunalar xarid qilganda yong'inga qarshi tizimlarni o'rnatish uchun 20% chegirma. Avgust oyi davomida amal qiladi.",
+      "code": "MONTAJ20",
+      "validUntil": "31.08.2025",
+      "image": "/promo/installation.jpg"
+    },
+    {
+      "id": "hot-6",
+      "title": "Bepul maslahat",
+      "description": "Ob'ektingiz uchun yong'inga qarshi uskunalarni tanlash bo'yicha bepul maslahat. Saytimizda so'rov qoldiring.",
+      "code": "CONSULT",
+      "validUntil": "31.12.2025",
+      "image": "/promo/consultation.jpg"
+    }
+  ]
+}

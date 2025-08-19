@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "product-1",
+    "title": "Продукт 1",
+    "brand": "Бренд 1",
+    "price": "1000.00",
+    "currency": "RUB",
+    "images": ["/products/1.jpg"],
+    "specs": {
+      "weight": "1 кг",
+      "dimensions": "10x10x10 см"
+    },
+    "category": "category-1",
+    "summary": "Краткое описание продукта 1",
+    "description": "Полное описание продукта 1",
+    "certificates": [
+      {
+        "title": "Сертификат качества 1",
+        "href": "/certificates/cert-1.pdf"
+      }
+    ]
+  }
+]

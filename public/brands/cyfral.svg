@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200">
+  <defs>
+    <style>
+      .word { font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; font-weight: 800; letter-spacing: 2px; }
+    </style>
+  </defs>
+
+  <!-- Icon: intercom panel -->
+  <g transform="translate(32,40)">
+    <rect x="0" y="0" width="88" height="120" rx="16" fill="#C8102E"/>
+    <!-- grill slots -->
+    <rect x="18" y="30" width="52" height="10" rx="5" fill="#ffffff" opacity="0.95"/>
+    <rect x="18" y="50" width="52" height="10" rx="5" fill="#ffffff" opacity="0.95"/>
+    <rect x="18" y="70" width="52" height="10" rx="5" fill="#ffffff" opacity="0.95"/>
+    <!-- button/camera -->
+    <circle cx="62" cy="98" r="8" fill="#ffffff" opacity="0.95"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="150" y="115" class="word" font-size="72" fill="#C8102E">CYFRAL</text>
+</svg>

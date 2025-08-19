@@ -1,0 +1,528 @@
+{
+  "search": {
+    "title": "Qidirish",
+    "placeholder": "Mahsulotlarni qidirish..."
+  },
+  "popularProductsBlock": {
+    "title": "Mashhur mahsulotlar",
+    "details": "Batafsil"
+  },
+  "items": {
+    "showItems": "Mahsulotlarni ko'rsatish",
+    "hideItems": "Mahsulotlarni yashirish"
+  },
+  "common": {
+    "tryAgain": "Qayta urinish",
+    "backToHome": "Bosh sahifaga qaytish",
+    "backToCatalog": "Katalogga qaytish",
+    "officialWebsite": "Rasmiy sayt",
+    "close": "Yopish",
+    "currency": "so'm",
+    "priceOnRequest": "Narx so'rov bo'yicha",
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik"
+  },
+  "header": {
+    "catalog": "Katalog",
+    "promotions": "Aksiyalar",
+    "hotOffers": "Aksiya takliflari",
+    "about": "Biz haqimizda",
+    "contacts": "Aloqa",
+    "documents": "Hujjatlar",
+    "news": "Yetkazib berish",
+    "cart": "Savat",
+    "language": "Til",
+    "russian": "Ruscha",
+    "english": "Inglizcha",
+    "uzbek": "O'zbekcha",
+    "registration": "Ro'yxatdan o'tish"
+  },
+  "searchbar": {
+    "search_placeholder": "Model nomini kiriting...",
+    "search_aria": "Mahsulotlarni qidirish"
+  },
+  "categoryBlock": {
+    "catalog": "Mahsulotlar katalogi",
+    "goto": "{{name}} kategoriyasiga o'tish",
+    "image": "{{name}} kategoriyasi rasmi",
+    "loadError": "Kategoriyalarni yuklab bo‘lmadi",
+    "loading": "Kategoriyalar yuklanmoqda...",
+    "empty": "Kategoriyalar topilmadi",
+    "sectionAriaLabel": "Mahsulot kategoriyalari"
+  },
+  "aboutus": {
+    "title": "Kompaniya haqida",
+    "subtitle": "Bizning afzalliklarimiz",
+    "more": "Batafsil",
+    "welcome": "POJ PRO onlayn do'koniga xush kelibsiz. Bizning kompaniyamiz O'zbekistonda yong'in xavfsizligi uskunalari va yong'inga qarshi himoya vositalarini sotishga ixtisoslashgan.",
+    "mission": "Bizning vazifamiz - ishonchli ishlab chiqaruvchilardan faqat yuqori sifatli, sertifikatlangan uskunalarni taklif qilish orqali uyingiz va biznesingiz xavfsizligini ta'minlashdir.",
+    "meta": {
+      "description": "POJ PRO - O'zbekistondagi ishonchli yong'in xavfsizligi uskunalari yetkazib beruvchisi. Keng assortiment, sifat kafolati, tez yetkazib berish.",
+      "keywords": "yong'in uskunalari, yong'in xavfsizligi, yong'in o'chirgichlar, yong'in shkablari, yong'in kranlari, yong'in signalizatsiyasi, Toshkent, O'zbekiston"
+    },
+    "contacts": {
+      "title": "Aloqa ma'lumotlari",
+      "address": "Manzil",
+      "addressValue": "Toshkent shahri, Namuna ko'chasi, 10-uy",
+      "phone": "Telefon",
+      "phoneValue": "+998 90 123 45 67",
+      "email": "Elektron pochta",
+      "emailValue": "info@pojpro.uz",
+      "hours": "Ish vaqtlari",
+      "hoursValue": "Dushanbadan Jumagacha: 09:00–18:00, Shanba: 10:00–15:00, Yakshanba: 12:00–17:00"
+    },
+    "reasons": {
+      "first": {
+        "title": "Keng assortiment",
+        "text": "Butun dunyo bo'ylab ishonchli ishlab chiqaruvchilardan 1000 dan ortiq sertifikatlangan yong'inga qarshi xavfsizlik mahsulotlari. Bizning keng assortimentimiz sizga kerakli mahsulotni aynan kerakli vaqtda topishingizni kafolatlaydi."
+      },
+      "delivery": {
+        "title": "Tez va ishonchli yetkazib berish",
+        "text": "O'zbekiston bo'ylab tez va ishonchli yetkazib beramiz. Buyurtmangizni xavfsiz tarzda va kuzatish imkoniyati bilan, keyingi kunga yetkazib beramiz."
+      },
+      "stock": {
+        "title": "Har doim zaxirada",
+        "text": "Muhim uskunalar har doim zaxiramizda mavjud. Biz asosiy mahsulotlarning optimal zaxirasini saqlab, biznesingizni uzluksiz himoya qilamiz."
+      },
+      "honest": {
+        "title": "Halol narxlar",
+        "text": "Ishlab chiqaruvchilardan to'g'ridan-to'g'ri yetkazib berish eng yaxshi narx va yuqori sifatni kafolatlaydi. Narx taklifini so'rang va o'zingiz ishonch hosil qiling — biz narxlarimizga ishonamiz."
+      },
+      "support": {
+        "title": "Ekspert yordami",
+        "text": "Bizning xavfsizlik bo'yicha mutaxassislarimiz professional maslahat beradi va sizga mos eng yaxshi yechimni tanlashda yordam beradi."
+      },
+      "stability": {
+        "title": "Isbotlangan ishonchlilik",
+        "text": "Yong'in xavfsizligi sohasida 12 yildan ortiq beg'ubor faoliyat. Minglab mijozlar o'zlarining muhim xavfsizlik ehtiyojlarini bizga ishonib topshiradi."
+      }
+    },
+    "suppliers": {
+      "title": "Quyida bizning rasmiy yetkazib beruvchilarimiz va hamkorlarimiz keltirilgan.",
+      "subtitle": "Biz ular bilan 10 yildan ortiq vaqt davomida barqaror hamkorlik qilib kelmoqdamiz."
+    }
+  },
+  "contacts": {
+    "title": "Aloqa",
+    "description": "Agar sizda savollar bo'lsa yoki uskunalar bo'yicha maslahat kerak bo'lsa, bizga qulay bo'lgan har qanday usulda murojaat qilishingiz mumkin.",
+    "address": {
+      "title": "Manzil",
+      "value": "Toshkent shahri, Namuna ko'chasi, 10-uy"
+    },
+    "phone": {
+      "title": "Telefon"
+    },
+    "hours": {
+      "title": "Ish vaqtlari",
+      "weekdays": "Dushanbadan Jumagacha: 09:00–18:00",
+      "saturday": "Shanba: 10:00–15:00",
+      "sunday": "Yakshanba: 12:00–17:00"
+    },
+    "email": {
+      "title": "Elektron pochta"
+    },
+    "social": {
+      "title": "Ijtimoiy tarmoqlar"
+    }
+  },
+  "product": {
+    "not_found": "Mahsulotlar topilmadi",
+    "details": "Batafsil",
+    "order": "Hozir buyurtma bering",
+    "characteristics": "Xususiyatlari",
+    "contact_us": "Biz bilan bog'lanish",
+    "noImage": "Rasm yo'q",
+    "image": "Mahsulot rasmi"
+  },
+  "promotions": {
+    "errors": {
+      "hotOffersLoad": "Aksiyadagi tovarlarni yuklab bo'lmadi",
+      "promosLoad": "Aksiyalar ro'yxatini yuklab bo'lmadi",
+      "productsLoad": "Mahsulotlar ro'yxatini yuklab bo'lmadi"
+    },
+    "pageTitle": "Aksiyalar",
+    "title": "Aksiyalar va takliflar",
+    "metaDescription": "Maxsus takliflar, aksiyalar va qiziqarli mahsulotlarni so'rang",
+    "loading": "Aksiyalar yuklanmoqda",
+    "error": "Xatolik",
+    "hotOffers": "Aksiyadagi tovarlar",
+    "hotOffersDescription": "Mijozlarimiz uchun maxsus shartlar. Ajoyib takliflardan foydalaning!",
+    "allPromotions": "Barcha aksiyalar",
+    "allPromotionsDescription": "Bizning mahsulot va xizmatlarimizdagi maxsus takliflar.",
+    "promoCode": "Promo-kod",
+    "currency": "UZS",
+    "copyCode": "Kodni nusxalash",
+    "copy": "Nusxalash",
+    "copied": "Nusxalandi!",
+    "details": "Batafsil",
+    "validUntil": "Amal qilish muddati",
+    "close": "Yopish",
+    "feedback": {
+      "title": "So'rov qoldiring",
+      "description": "Kerakli mahsulotni topolmadingizmi? Saytni yaxshilash uchun taklifingiz bormi? So'rov qoldiring va biz siz bilan bog'lanamiz."
+    }
+  },
+  "modal": {
+    "close": "Modal oynani yopish",
+    "contact_info": "Aloqa ma'lumotlari va fikr-mulohaza shakli",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "phone1": "Telefon 1",
+    "phone2": "Telefon 2",
+    "phone3": "Telefon 3",
+    "phone4": "Telefon 4"
+  },
+  "catalog": {
+    "categoriesTitle": "Katalog kategoriyalari",
+    "backToCategories": "Kategoriyalarga qaytish"
+  },
+  "categories": {
+    "ognetushiteli": "O'chirgichlar",
+    "pozharnye_shkafy": "Yong'in shkaflari",
+    "rukava_i_pozharnaya_armatura": "Shlanglar va yong'in armaturasi",
+    "sistemy_pozharotusheniya_sprinkler": "Sprinkler yong'in o'chirish tizimlari",
+    "furnitura_dlya_ognetushiteley": "O'chirgichlar uchun furnitura",
+    "oborudovanie_proizvodstva_npo_bolid_rossiya": "NPO Bolid uskunalari (Rossiya)",
+    "pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva": "Yong'in signalizatsiyasi va ovozli-yorug'lik qurilmalari",
+    "sistemy_opovescheniya_o_pozhare_dsppa_abk": "DSPPA ABK yong'in signalizatsiyasi tizimlari",
+    "kontrolnye_paneli_adresnye_pozharno_ohrannye": "Manzilli yong'in va xavfsizlik panellari",
+    "audiosistema_i_opoveschenie": "Audio tizimi va ogohlantirish",
+    "dinamiki_potolochnye": "Shift dinamiklari",
+    "paneli_gsm_i_besprovodnye_sistemy_ipro": "GSM panellari va simsiz tizimlar IPro",
+    "metakom": "Metakom",
+    "tsifral": "Tsifral",
+    "usiliteli": "Kuchaytirgichlar",
+    "videoregistratory_usiliteli_signala_haby": "DVRlar / Signal kuchaytirgichlar / Xablar",
+    "monitory_i_krepleniya": "Monitorlar va o'rnatmalar",
+    "istochniki_pitaniya": "Quvvat manbalari",
+    "oborudovanie_kontrolya_dostupa": "Kirish nazorati uskunasi",
+    "zamki_i_aksessuary": "Qulf va aksessuarlar",
+    "siz": "Shaxsiy himoya vositalari (SHV)",
+    "siz_zashita_golovy": "Boshni himoya qilish",
+    "siz_zashita_glaz": "Ko'z va yuzni himoya qilish",
+    "siz_zashita_dyhaniya": "Nafas olish organlarini himoya qilish",
+    "siz_zashita_ruk": "Qo'llarni himoya qilish",
+    "siz_odezhda": "Maxsus kiyim",
+    "siz_komplekty": "SHV to'plamlari",
+    "ballony": "Balloonlar"
+  },
+  "admin": {
+    "back": "⬅ O'ZGARTIRISHLARSIZ QAYTISH",
+    "products": "Mahsulotlar",
+    "promotions": "Aksiyalar",
+    "news": "Yangiliklar",
+    "images": "Rasmlar",
+    "documents": "Hujjatlar"
+  },
+  "news": {
+    "no_news": "Hozircha yetkazib berish yangiliklari yo'q."
+  },
+  "documents": {
+    "title": "Hujjatlar",
+    "subtitle": "Yong'inga qarshi uskunalar bo'yicha normalar, ko'rsatmalar va texnik xususiyatlar",
+    "loading": "Hujjatlar yuklanmoqda...",
+    "type": "Turi",
+    "error": {
+      "title": "Yuklash xatosi",
+      "message": "Hujjatlarni yuklab bo'lmadi",
+      "retry": "Qayta urinish"
+    },
+    "coverAlt": "Yong'indan himoya qonuni muqovasi",
+    "searchPlaceholder": "Hujjatlarni qidirish...",
+    "filters": {
+      "all": "Barchasi"
+    },
+    "updated": "Yangilangan",
+    "author": "Muallif",
+    "version": "Versiya",
+    "download": "Yuklab olish",
+    "downloadError": "Yuklab olish uchun fayl mavjud emas",
+    "preview": "Ko'rish",
+    "previewComingSoon": "Ko'rish funksiyasi tez orada ishga tushadi",
+    "noResults": "Hech qanday hujjat topilmadi. Qidiruv mezonlarini o'zgartirib ko'ring.",
+    "add": "Hujjat qo'shish",
+    "id": "ID",
+    "description": "Tavsif",
+    "category": "Kategoriya",
+    "format": "Format",
+    "file_size": "Fayl hajmi",
+    "date": "Sana",
+    "tags": "Teglar",
+    "normsTitle": "O'zbekistonning yong'in normalari",
+    "normColumn": "Normativ",
+    "descColumn": "Tavsif",
+    "regulation": "Normativ",
+    "certificatesLink": "Sertifikatlar",
+    "certificatesTitle": "Sertifikatlar",
+    "certificatesPageTitle": "Sertifikatlar",
+    "certificatesEmpty": "Sertifikatlar topilmadi.",
+    "certificatesDownload": "Yuklab olish",
+    "certificatesBack": "\u2190 Orqaga"
+  },
+  "certificates": {
+    "title": "Sertifikatlar",
+    "noFiles": "Sertifikatlar topilmadi.",
+    "download": "Yuklab olish"
+  },
+  "imageSlider": {
+    "slide": "Slayd {{number}}"
+  },
+  "emailform": {
+    "heading": "Bizga yozing",
+    "name": "Ismingiz",
+    "email": "Elektron pochtangiz",
+    "phone": "Telefon raqamingiz",
+    "message": "Xabaringiz",
+    "send": "Xabarni yuborish",
+    "sending": "Yuborilmoqda...",
+    "sent": "Yuborildi!",
+    "error": "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring."
+  },
+  "aboutUs": {
+    "seo": {
+      "title": "Biz haqimizda",
+      "description": "POJ PRO - O'zbekistanda yong'inga qarshi asbob-uskunalarning yetakchi yetkazib beruvchisi. Ishlab chiqaruvchilardan to'g'ridan-to'g'ri yetkazib berish, qulay narxlar, keng assortiment va tezkor yetkazib berish.",
+      "keywords": "POJ PRO, yong'inga qarshi asbob-uskunalar, yong'indan himoya, O'zbekiston, yong'inga qarshi asbob-uskunalar yetkazib berish",
+      "ogTitle": "Biz haqimizda",
+      "ogDescription": "POJ PRO - O'zbekistanda yong'inga qarshi asbob-uskunalar yetkazib berishda ishonchli hamkoringiz.",
+      "twitterTitle": "Biz haqimizda",
+      "twitterDescription": "Ishlab chiqaruvchilardan to'g'ridan-to'g'ri yetkazib berish, qulay narxlar va yong'inga qarshi asbob-uskunalarning keng assortimenti."
+    },
+    "aboutCompany": {
+      "description1": "2012 yilda tashkil etilgan Poj Pro kompaniyasi sifatli xizmatlari va innovatsion yechimlari tufayli mijozlarning ishonchini tezda qozongan. O'n yildan ortiq tajriba davomida biz Toshkent shahrida 500 dan ortiq ob'ektlarga xizmat ko'rsatdik va O'zbekistonning yong'indan himoya bozorida yetakchilardan biriga aylandik.",
+      "description2": "Bizning jamoamiz tajribali muhandis va montajchilardan iborat bo'lib, ular yuqori darajadagi yechimlarni taqdim etish uchun doimo malakasini oshirib borishadi."
+    },
+    "ourMission": {
+      "title": "Bizning maqsadimiz",
+      "description": "Bizning maqsadimiz - yong'in bilan bog'liq falokatlarning sonini kamaytirish va har bir mijozga ishonchli va samarali himoya vositalarini taqdim etish.",
+      "benefits": [
+        "Dunyoning etakchi brendlarining sertifikatlangan uskunalari",
+        "Ob'ektni batafsil tahlil qilish va optimal yechimlarni tanlash",
+        "Yangi kalit asosida tezkor yetkazib berish",
+        "O'rnatish, texnik xizmat ko'rsatish va xodimlarni o'qitish"
+      ]
+    },
+    "partnership": {
+      "title": "Hamkorlik afzalliklari",
+      "subtitle": "Poj Pro - O'zbekistanda yong'inga qarshi asbob-uskunalar bozorida sizning ishonchli hamkoringiz.",
+      "advantages": [
+        "Ishlab chiqaruvchilardan to'g'ridan-to'g'ri qo'shimcha to'lovlarsiz yetkazib berish",
+        "Birinchi qo'lda ishlash tufayli raqobatbardosh narxlar",
+        "O'z omborlarimizda keng assortiment",
+        "Tezkor buyurtma qilish va yetkazib berish",
+        "Moslashuvchan to'lov shartlari"
+      ],
+      "conclusion": "Eng yaxshi tijorat shartlari va o'z vaqtida yetkazib berish kafolatini olish uchun Poj Pro bilan hamkorlik qiling."
+    },
+    "achievements": {
+      "title": "Bizning yutuqlarimiz",
+      "items": [
+        "Yong'indan himoya bozorida 12 yildan ortiq tajriba",
+        "Toshkent shahrida 500 dan ortiq ob'ektga xizmat ko'rsatildi",
+        "Har qanday vazifa uchun individual yechimlar"
+      ]
+    },
+    "provenReliability": {
+      "text": "12 yildan ortiq yong'in xavfsizligi bozorida beg'ubor faoliyat. Minglab mijozlar bizga o'zlarining muhim xavfsizlik ehtiyojlarini ishonib topshiradi."
+    },
+    "more": "Biz haqimizda batafsil"
+  },
+  "mapSection": {
+    "ariaLabel": "Do'kon joylashuvi xaritasi",
+    "title": "Qanday topish mumkin",
+    "subtitle": "POJ PRO (BOLID do'koni)",
+    "iframeTitle": "POJ PRO (BOLID do'koni) xaritasi"
+  },
+  "showLess": "Kamroq ko'rsatish",
+  "tryDifferentSearch": "Boshqa so'rov yuborib ko'ring",
+  "errors": {
+    "loadingProducts": "Mahsulotlarni yuklashda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
+    "somethingWentWrong": "Xatolik yuz berdi!",
+    "failedToLoadCategory": "Kategoriyani yuklab bo'lmadi. Iltimos, qayta urinib ko'ring.",
+    "failedToLoadProduct": "Mahsulotni yuklab bo'lmadi. Iltimos, qayta urinib ko'ring.",
+    "productNotFound": "Mahsulot topilmadi",
+    "categoryNotFound": "Kategoriya topilmadi"
+  },
+  "map": {
+    "how_to_find": "Qanday topish mumkin",
+    "store": "POJ PRO (BOLID do'koni)",
+    "map_title": "POJ PRO (BOLID do'koni) xaritasi"
+  },
+  "searchPlaceholder": "Nomini kiriting...",
+  "productCard": {
+    "viewDetails": "Batafsil",
+    "addToCart": "Savatga qo'shish",
+    "backToList": "← Mahsulotlar ro'yxatiga qaytish"
+  },
+  "productDetail": {
+    "back": "Orqaga",
+    "description": "Tavsif",
+    "characteristics": "Xususiyatlar"
+  },
+  "productSpecs": {
+    "Тип": "Turi",
+    "Подходит для": "Mos keladi",
+    "Назначение": "Maqsadi",
+    "Срок выполнения": "Bajarilish muddati",
+    "Стандарты": "Standartlar",
+    "Объем": "Hajm",
+    "Масса заряда": "Zaryad massasi",
+    "Рабочее давление": "Ish bosimi",
+    "Длина струи": "Oqim uzunligi",
+    "Продолжительность подачи": "Chiqarish vaqti",
+    "Классы пожара": "Yong'in sinflari",
+    "Производитель": "Ishlab chiqaruvchi",
+    "Применение": "Qo'llanilishi",
+    "Температура эксплуатации": "Ishlash harorati",
+    "Срок службы": "Xizmat muddati",
+    "Перезарядка": "Qayta zaryadlash"
+  },
+  "footer": {
+    "logoAlt": "POJ PRO logotipi — Yong'inga qarshi himoya",
+    "marketingText": "Biz arzon narxlarda yuqori sifatli mahsulotlarni taklif qilamiz, sifat kafolatlanadi va tez yetkazib beramiz!",
+    "tagline": "Poj Pro — hamma narsada ishonchlilik!",
+    "navigation": {
+      "title": "Navigatsiya",
+      "home": "Bosh sahifa",
+      "homeTitle": "Asosiy sahifa",
+      "catalog": "Katalog",
+      "catalogTitle": "Mahsulotlar katalogi",
+      "about": "Biz haqimizda",
+      "aboutTitle": "POJ PRO kompaniyasi haqida",
+      "contacts": "Aloqa",
+      "contactsTitle": "Aloqa ma'lumotlari"
+    },
+    "phones": {
+      "title": "Telefon raqamlar",
+      "call": "Qo'ng'iroq qilish uchun raqam"
+    },
+    "social": {
+      "title": "Ijtimoiy tarmoqlar",
+      "instagram": "Instagram",
+      "instagramTitle": "Instagramga o'tish",
+      "telegram": "Telegram kanal",
+      "telegramTitle": "Telegram kanalini ochish",
+      "adminLink": "ADMIN PANEL"
+    }
+  },
+  "auth": {
+    "signIn": "Kirish",
+    "signOut": "Chiqish",
+    "register": "Ro'yxatdan o'tish",
+    "loginPage": {
+      "title": "Hisobga kirish",
+      "email": "Elektron pochta",
+      "password": "Parol",
+      "noAccount": "Hisobingiz yo'qmi? Ro'yxatdan o'ting",
+      "signingIn": "Kirilmoqda...",
+      "signIn": "Kirish",
+      "errors": {
+        "invalidCredentials": "Noto'g'ri elektron pochta yoki parol",
+        "generic": "Kirishda xatolik yuz berdi"
+      }
+    },
+    "registerPage": {
+      "title": "Hisob yaratish",
+      "name": "Ism (majburiy)",
+      "email": "Elektron pochta",
+      "password": "Parol (kamida 6 ta belgi)",
+      "haveAccount": "Akkauntingiz bormi? ",
+      "signIn": "Kirish",
+      "register": "Ro'yxatdan o'tish",
+      "registering": "Ro'yxatdan o'tilmoqda...",
+      "errors": {
+        "passwordLength": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+        "generic": "Ro'yxatdan o'tishda xatolik yuz berdi"
+      }
+    }
+  },
+  "cart": {
+    "title": "Savat",
+    "loading": "Savat yuklanmoqda...",
+    "emptyTitle": "Savingiz bo'sh",
+    "emptyDescription": "Siz hali mahsulot qo'shmadingiz.",
+    "removeConfirm": "Ushbu mahsulotni savatdan o'chirishni xohlaysizmi?",
+    "remove": "O'chirish",
+    "decreaseQuantity": "Miqdorni kamaytirish",
+    "increaseQuantity": "Miqdorni oshirish",
+    "quantity": "Miqdor",
+    "price": "Narx",
+    "total": "Jami",
+    "subtotal": "Jami",
+    "continueShopping": "Xaridni davom etish",
+    "clearCart": "Savatni tozalash",
+    "orderSummary": "Buyurtma xulosasi",
+    "checkout": "Yana juda yaqinda... shu paytgacha, siz biz bilan to‘g‘ridan-to‘g‘ri telefon yoki Telegram orqali bog‘lanishingiz mumkin.",
+    "shippingNote": "Yetkazib berish va soliqlar buyurtma berishda hisoblanadi",
+    "needHelp": "Yordam kerakmi?",
+    "contactUs": "Mijozlarga xizmat ko'rsatish xizmatiga murojaat qiling",
+    "returnPolicy": "Qaytarish shartlarini ko'rish",
+    "addToCart": "Savatga qo'shish",
+    "adding": "Qo'shilmoqda...",
+    "addedToCart": "Qo'shildi!",
+    "inCart": "Savatchada",
+    "product": "Mahsulot",
+    "noImage": "Rasm yo'q",
+    "loginToCheckout": "Buyurtma uchun kiring"
+  },
+  "partners": {
+    "title": "Quyida bizning hamkorlarimiz keltirilgan.",
+    "subtitle": "Biz ularga yong'inga qarshi uskunalar va texnik xizmat ko'rsatish xizmatlarini taqdim etamiz."
+  },
+  "supplies": {
+    "title": "Yetkazib berishlar",
+    "subtitle": "Kelgusi va yakunlangan yetkazib berishlar haqida yangi ma'lumot",
+    "searchPlaceholder": "Mahsulotlar va etkazib beruvchilar bo'yicha qidirish...",
+    "noSupplies": "Yetkazib berishlar topilmadi",
+    "noSuppliesDescription": "Hozircha faol yetkazib berishlar mavjud emas",
+    "tryDifferentSearch": "Qidiruv mezonlarini o'zgartirib ko'ring",
+    "showMore": "Ko'proq ko'rsatish",
+    "showLess": "Kamroq ko'rsatish",
+    "showAll": "Barchasini ko'rsatish",
+    "itemsCount": "{count} ta mahsulot",
+    "status": {
+      "planned": "Rejalashtirilgan",
+      "in_transit": "Yo'lda",
+      "arrived": "Yetkazib berildi"
+    },
+    "eta": "Kutilayotgan sana",
+    "soon": "yaqin orada",
+    "items": {
+      "name": "Nomi",
+      "quantity": "Miqdori",
+      "supplier": "Etkazib beruvchi",
+      "notes": "Izohlar",
+      "showItems": "Mahsulotlarni ko'rsatish",
+      "hideItems": "Yashirish"
+    },
+    "error": {
+      "loadingError": "Yetkazib berishlar yuklanmoqda",
+      "tryAgain": "Qayta urinish",
+      "reloadPage": "Sahifani qayta yuklash"
+    },
+    "admin": {
+      "addSupply": "Yetkazib berish qo'shish",
+      "editSupply": "Tahrirlash",
+      "deleteSupply": "O'chirish",
+      "confirmDelete": "Haqiqatan ham bu yetkazib berishni o'chirmoqchimisiz?",
+      "cancel": "Bekor qilish",
+      "save": "Saqlash",
+      "saving": "Saqlanmoqda...",
+      "supplyTitle": "Yetkazib berish nomi",
+      "etaDate": "Kelish sanasi",
+      "status": "Holati",
+      "items": "Yetkazib berishdagi mahsulotlar",
+      "bulkAdd": "Ko'p miqdorda qo'shish",
+      "bulkAddHelp": "Ma'lumotlarni quyidagi formatda kiriting: Nomi — Miqdori — Etkazib beruvchi (ixtiyoriy)",
+      "addItems": "Mahsulot qo'shish",
+      "addItem": "Mahsulot qo'shish",
+      "name": "Nomi",
+      "quantity": "Miqdori",
+      "supplier": "Etkazib beruvchi",
+      "notes": "Izohlar",
+      "requiredField": "Majburiy maydon",
+      "minItemsRequired": "Kamida bitta mahsulot bo'lishi kerak",
+      "positiveQuantity": "Miqdor 0 dan katta bo'lishi kerak"
+    }
+  }
+}
