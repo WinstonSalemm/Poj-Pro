@@ -11,7 +11,7 @@
     "predev": "node scripts/ensure-next-writable.js",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p $PORT -H 0.0.0.0",
     "lint": "next lint",
     "postinstall": "prisma generate && next telemetry disable || true",
     "seed": "ts-node prisma/seed.ts",
