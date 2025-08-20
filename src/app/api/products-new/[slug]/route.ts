@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type Locale = 'ru' | 'en' | 'uz';
 const asLocale = (v?: string | null): Locale => (v === 'en' ? 'en' : v === 'uz' ? 'uz' : 'ru');
@@ -16,11 +18,13 @@ function parseImages(raw?: string | null): string[] {
   }
 }
 
-export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const locale = asLocale(searchParams.get('locale'));
-    const { slug } = await params;
+    const { pathname } = new URL(req.url);
+    const segments = pathname.split('/');
+    const slug = segments[segments.indexOf('products-new') + 1] || '';
     const decodedSlug = decodeURIComponent(slug);
 
     const product = await prisma.product.findUnique({

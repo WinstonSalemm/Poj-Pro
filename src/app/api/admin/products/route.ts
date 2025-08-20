@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { serializeJSON } from '@/lib/json';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function parseImages(raw?: string | null): string[] {
   if (!raw) return [];
@@ -52,7 +55,7 @@ export async function GET() {
       images: parseImages(p.images),
     }));
 
-    return NextResponse.json({ success: true, data }, { status: 200 });
+    return NextResponse.json(serializeJSON({ success: true, data }), { status: 200 });
   } catch (error) {
     console.error('[admin/products][GET] error', error);
     return NextResponse.json({ success: false, message: 'Failed to fetch products' }, { status: 500 });
@@ -103,7 +106,7 @@ export async function POST(request: Request) {
       include: { i18n: true, category: true },
     });
 
-    return NextResponse.json({ success: true, data: { id: created.id } }, { status: 201 });
+    return NextResponse.json(serializeJSON({ success: true, data: { id: created.id } }), { status: 201 });
   } catch (error) {
     console.error('[admin/products][POST] error', error);
     return NextResponse.json({ success: false, message: 'Failed to create product' }, { status: 500 });

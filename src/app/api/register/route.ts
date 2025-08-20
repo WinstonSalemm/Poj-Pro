@@ -1,9 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 
 // Ensure this runs in Node.js environment
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // Input validation schema
 interface RegisterRequest {
@@ -12,7 +14,7 @@ interface RegisterRequest {
   password: string;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Parse and validate request body
     let data: RegisterRequest;

@@ -155,7 +155,6 @@ export default function HomePage() {
           </div>
         </div>
       )}
-
       {/* Контент с каскадной анимацией появления */}
       <section className={`transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
         <div className="animate-in-up" style={{ animationDelay: '0.05s' }}>

@@ -5,6 +5,10 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface ProductData {
   id: number;
   image: string;
@@ -119,7 +123,7 @@ export async function POST() {
       success: true,
       imported: results.length,
       results
-    });
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Import error:', error);

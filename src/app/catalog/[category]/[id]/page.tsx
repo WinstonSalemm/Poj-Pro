@@ -17,9 +17,8 @@ export const revalidate = 0;
 
 const prisma = new PrismaClient();
 
-type PageParams = { params: { category: string; id: string } };
-
-export default async function ProductPage({ params }: PageParams) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ProductPage({ params }: any) {
   const { id, category } = params; // ← БЕЗ await
   const locale = await getLocale();
 

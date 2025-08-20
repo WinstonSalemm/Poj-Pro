@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function normLocale(raw?: string | null): 'ru' | 'en' | 'uz' {
   const s = (raw || '').toLowerCase();
@@ -21,7 +22,7 @@ function parseImages(raw?: string | null): string[] {
   }
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const locale = normLocale(url.searchParams.get('locale'));

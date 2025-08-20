@@ -1,6 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const SUPPLIES_FILE = path.join(process.cwd(), 'data', 'supplies.json');
 
@@ -45,8 +49,7 @@ async function writeSupplies(supplies: Supply[]): Promise<void> {
 
 // PUT /api/supplies/[id]
 export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest
 ) {
   try {
     // Verify admin token
@@ -61,7 +64,9 @@ export async function PUT(
     }
     
     const updatedSupply = await request.json();
-    const { id: supplyId } = await params;
+    const { pathname } = new URL(request.url);
+    const segments = pathname.split('/');
+    const supplyId = segments[segments.indexOf('supplies') + 1] || '';
     
     // Validate required fields
     if (!updatedSupply.title || !updatedSupply.etaDate || !updatedSupply.status) {
@@ -111,9 +116,9 @@ export async function PUT(
     supplies[index] = updated;
     await writeSupplies(supplies);
     
-    return NextResponse.json(updated);
+    return NextResponse.json(updated, { status: 200 });
   } catch (error) {
-    console.error('Error updating supply:', error);
+    console.error('[api/supplies/[id]][PUT] error', error);
     return NextResponse.json(
       { error: 'Failed to update supply' },
       { status: 500 }
@@ -123,8 +128,7 @@ export async function PUT(
 
 // DELETE /api/supplies/[id]
 export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest
 ) {
   try {
     // Verify admin token
@@ -138,7 +142,9 @@ export async function DELETE(
       );
     }
     
-    const { id: supplyId } = await params;
+    const { pathname } = new URL(request.url);
+    const segments = pathname.split('/');
+    const supplyId = segments[segments.indexOf('supplies') + 1] || '';
     const supplies = await readSupplies();
     const index = supplies.findIndex((s) => s.id === supplyId);
     
@@ -154,7 +160,7 @@ export async function DELETE(
     
     return new Response(null, { status: 204 });
   } catch (error) {
-    console.error('Error deleting supply:', error);
+    console.error('[api/supplies/[id]][DELETE] error', error);
     return NextResponse.json(
       { error: 'Failed to delete supply' },
       { status: 500 }

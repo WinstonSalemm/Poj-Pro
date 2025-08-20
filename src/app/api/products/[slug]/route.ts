@@ -1,8 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type Locale = 'ru' | 'en' | 'uz';
 const asLocale = (v?: string | null): Locale => {
@@ -22,14 +24,16 @@ function parseImages(raw?: string | null): string[] {
   }
 }
 
-export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const locale = asLocale(searchParams.get('locale'));
     // Accept aliases that might be stored in DB (e.g., 'eng', 'uzb')
     const localeVariants: string[] =
       locale === 'en' ? ['en', 'eng'] : locale === 'uz' ? ['uz', 'uzb'] : ['ru'];
-    const { slug: rawSlug } = await params;
+    const { pathname } = new URL(req.url);
+    const segments = pathname.split('/');
+    const rawSlug = segments[segments.indexOf('products') + 1] || '';
     const slug = decodeURIComponent(rawSlug);
 
     // Try to find by ID or slug. Prisma schema uses String id, so try raw string id as well.

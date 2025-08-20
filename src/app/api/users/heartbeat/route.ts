@@ -1,24 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const revalidate = 0;
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { userId } = await request.json();
     
     if (!userId || typeof userId !== 'string') {
-      return new NextResponse(
-        JSON.stringify({ error: 'Valid user ID is required' }),
-        { 
-          status: 400, 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
-          } 
-        }
-      );
+      return NextResponse.json({ error: 'Valid user ID is required' }, { status: 400 });
     }
 
     // Use $executeRaw to update the timestamp directly
@@ -28,17 +20,7 @@ export async function POST(request: Request) {
       WHERE id = ${userId}
     `;
 
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
-    headers.set('Cache-Control', 'no-store');
-
-    return new NextResponse(
-      JSON.stringify({ ok: true }),
-      { 
-        status: 200, 
-        headers 
-      }
-    );
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error: unknown) {
     console.error('Error updating user lastActive:', error);
     
@@ -50,15 +32,6 @@ export async function POST(request: Request) {
       message = 'User not found';
     }
     
-    return new NextResponse(
-      JSON.stringify({ error: message }),
-      { 
-        status,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store'
-        } 
-      }
-    );
+    return NextResponse.json({ error: message }, { status });
   }
 }

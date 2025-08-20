@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const SUPPLIES_FILE = path.join(process.cwd(), 'data', 'supplies.json');
 
 type SupplyItem = {
@@ -61,9 +65,9 @@ export async function GET(request: Request) {
       );
     }
     
-    return NextResponse.json(supplies);
+    return NextResponse.json(supplies, { status: 200 });
   } catch (error) {
-    console.error('Error reading supplies:', error);
+    console.error('[api/supplies][GET] error', error);
     return NextResponse.json(
       { error: 'Failed to fetch supplies' },
       { status: 500 }
@@ -131,7 +135,7 @@ export async function POST(request: Request) {
     
     return NextResponse.json(supply, { status: 201 });
   } catch (error) {
-    console.error('Error creating supply:', error);
+    console.error('[api/supplies][POST] error', error);
     return NextResponse.json(
       { error: 'Failed to create supply' },
       { status: 500 }

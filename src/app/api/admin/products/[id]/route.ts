@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { serializeJSON } from '@/lib/json';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function serializeImages(images?: unknown): string {
   if (!images) return JSON.stringify([]);
@@ -18,14 +21,16 @@ function isAuthed(request: Request): boolean {
 }
 
 // PUT /api/admin/products/[id]
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest) {
   try {
-    if (!isAuthed(request)) {
+    if (!isAuthed(req)) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
-    const body = await request.json();
+    const { pathname } = new URL(req.url);
+    const segments = pathname.split('/');
+    const id = segments[segments.indexOf('products') + 1] || '';
+    const body = await req.json();
     const { slug, title, price, stock, images, categorySlug, isActive } = body as {
       slug?: string;
       title?: string;
@@ -68,7 +73,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       include: { i18n: true },
     });
 
-    return NextResponse.json({ success: true, data: { id: updated.id } }, { status: 200 });
+    return NextResponse.json(serializeJSON({ success: true, data: { id: updated.id } }), { status: 200 });
   } catch (error) {
     console.error('[admin/products/[id]][PUT] error', error);
     return NextResponse.json({ success: false, message: 'Failed to update product' }, { status: 500 });
@@ -76,13 +81,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 // DELETE /api/admin/products/[id]
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest) {
   try {
-    if (!isAuthed(request)) {
+    if (!isAuthed(req)) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { pathname } = new URL(req.url);
+    const segments = pathname.split('/');
+    const id = segments[segments.indexOf('products') + 1] || '';
 
     // Delete i18n first due to FK
     await prisma.productI18n.deleteMany({ where: { productId: id } });

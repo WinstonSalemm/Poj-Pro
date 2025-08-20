@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
@@ -28,9 +32,9 @@ export async function GET() {
       images: product.images ? JSON.parse(product.images) : []
     }));
 
-    return NextResponse.json({ products: formattedProducts });
+    return NextResponse.json({ products: formattedProducts }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('[api/debug/products][GET] error', error);
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }
