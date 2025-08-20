@@ -16,10 +16,18 @@ export async function getLocale(): Promise<Locale> {
 }
 
 export async function fetchAPI<T>(url: string, options?: RequestInit): Promise<{ data?: T; error?: string }> {
+  // Prevent indefinite hangs by timing out the request
+  const timeoutMs = typeof (process.env.NEXT_PUBLIC_API_TIMEOUT_MS || process.env.API_TIMEOUT_MS) === 'string'
+    ? Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS || process.env.API_TIMEOUT_MS)
+    : 10000; // default 10s
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(new Error('Request timeout')), isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000);
+
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-    
+
     const res = await fetch(fullUrl, {
       ...options,
       headers: {
@@ -28,6 +36,7 @@ export async function fetchAPI<T>(url: string, options?: RequestInit): Promise<{
         ...options?.headers,
       },
       cache: 'no-store',
+      signal: controller.signal,
     });
 
     if (!res.ok) {
@@ -37,13 +46,15 @@ export async function fetchAPI<T>(url: string, options?: RequestInit): Promise<{
     }
 
     const data = await res.json();
-    if (!data.success) {
-      return { error: data.message || 'Unknown error' };
+    if (!data?.success) {
+      return { error: data?.message || 'Unknown error' };
     }
 
     return { data: data.data };
   } catch (error) {
     console.error('Fetch error:', error);
     return { error: error instanceof Error ? error.message : 'Unknown error' };
+  } finally {
+    clearTimeout(timer);
   }
 }

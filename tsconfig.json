@@ -42,7 +42,7 @@
     "next-env.d.ts",
     "src/types/**/*.d.ts",
     "node_modules/.cache/next/types/**/*.ts"
-  ],
+, "scripts/transfer-sqlite-to-mysql.mjs"  ],
   "exclude": [
     "node_modules",
     "node_modules.broken-*",

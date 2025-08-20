@@ -1,170 +1,195 @@
+// src/app/catalog/[category]/[id]/page.tsx
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from 'next/navigation';
-import { fetchAPI, getLocale } from '@/lib/api';
-import T from '@/components/i18n/T';
-import Price from '@/components/product/Price';
-import QuantityAddToCart from '@/components/Cart/QuantityAddToCart';
-import ProductSpecs from '@/components/product/ProductSpecs';
-import { SeoHead } from '@/components/seo/SeoHead';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import { notFound } from "next/navigation";
+import { PrismaClient } from "@prisma/client";
+import { getLocale } from "@/lib/api"; // твоя функция локали
+import T from "@/components/i18n/T";
+import Price from "@/components/product/Price";
+import QuantityAddToCart from "@/components/Cart/QuantityAddToCart";
+import ProductSpecs from "@/components/product/ProductSpecs";
+import { SeoHead } from "@/components/seo/SeoHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
-interface ProductCategory {
-  id: string;
-  name: string;
-  slug: string;
-}
+// Гарантируем динамический рендер без ISR
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-interface Product {
-  id: string;
-  slug: string;
-  title: string;
-  description: string | null;
-  summary: string | null;
-  price: number | null;
-  images: string[];
-  specs: Record<string, string>;
-  category: ProductCategory | null;
-}
+const prisma = new PrismaClient();
 
-// Fetch product data
-async function getProduct(slug: string): Promise<Product | null> {
-  try {
-    const locale = await getLocale();
-    const { data, error } = await fetchAPI<Product>(`/api/products/${encodeURIComponent(slug)}?locale=${locale}`);
-    
-    if (error) {
-      console.error('Error fetching product:', error);
-      return null;
-    }
-    
-    return data || null;
-  } catch (error) {
-    console.error('Error in getProduct:', error);
-    return null;
-  }
-}
+type PageParams = { params: { category: string; id: string } };
 
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ category: string; id: string }>;
-}) {
-  // Get the product data
-  const { id, category } = await params;
-  const product = await getProduct(id);
-  
-  // Handle case where product is not found
-  if (!product) {
+export default async function ProductPage({ params }: PageParams) {
+  const { id, category } = params; // ← БЕЗ await
+  const locale = await getLocale();
+
+  // 1) Тянем товар напрямую из БД по slug (если у тебя id — замени where: { id } )
+  const dbProduct = await prisma.product.findUnique({
+    where: { slug: id }, // либо where: { id }
+    include: {
+      category: { select: { id: true, name: true, slug: true } },
+      i18n: {
+        where: { locale },
+        select: { title: true, summary: true, description: true },
+      },
+    },
+  });
+
+  if (!dbProduct) {
     notFound();
   }
 
-  // Get the first image or use a placeholder
-  const mainImage = product.images?.[0] || '/OtherPics/product2photo.jpg';
-  const specs = Object.entries(product.specs || {});
-  const sitePath = product.category?.slug
-    ? `/catalog/${product.category.slug}/${product.slug}`
-    : `/catalog/${product.slug}`;
-  const desc = (product.summary || product.description || '').toString().slice(0, 160);
-  const priceNumber = typeof product.price === 'number' ? product.price : null;
+  // 2) Парсим images (TEXT может быть JSON-массивом или одиночным URL)
+  let images: string[] = [];
+  if (typeof dbProduct.images === "string" && dbProduct.images.trim()) {
+    try {
+      const parsed = JSON.parse(dbProduct.images);
+      if (Array.isArray(parsed)) images = parsed.filter(Boolean);
+      else images = [dbProduct.images];
+    } catch {
+      images = [dbProduct.images]; // не JSON — считаем одиночным URL
+    }
+  }
+  const mainImage = images[0] || "/OtherPics/product2photo.jpg";
+
+  // 3) specs (JSON → записи)
+  const specsEntries =
+    dbProduct.specs && typeof dbProduct.specs === "object"
+      ? Object.entries(dbProduct.specs as Record<string, string>)
+      : [];
+
+  // 4) Цена: Decimal → number | null
+  const priceNumber =
+    dbProduct.price != null ? Number(dbProduct.price as unknown as string) : null;
+
+  // 5) i18n поля
+  const i18n = dbProduct.i18n[0];
+  const title = i18n?.title || dbProduct.slug;
+  const summary = i18n?.summary || null;
+  const description = i18n?.description || null;
+
+  // 6) Хлебные крошки, SEO и path
+  const sitePath = dbProduct.category?.slug
+    ? `/catalog/${dbProduct.category.slug}/${dbProduct.slug}`
+    : `/catalog/${dbProduct.slug}`;
+
+  const desc = (summary || description || "").toString().slice(0, 160);
 
   const productLd = {
-    '@type': 'Product',
-    name: product.title,
-    image: product.images?.map((src) => src.startsWith('http') ? src : undefined).filter(Boolean),
-    description: product.summary || product.description || undefined,
-    sku: product.slug,
+    "@type": "Product",
+    name: title,
+    image: images.filter((src) => src && src.startsWith("http")),
+    description: summary || description || undefined,
+    sku: dbProduct.slug,
     brand: undefined,
-    offers: priceNumber ? {
-      '@type': 'Offer',
-      priceCurrency: 'UZS',
-      price: priceNumber,
-      availability: 'https://schema.org/InStock',
-      url: sitePath,
-    } : undefined,
+    offers:
+      typeof priceNumber === "number"
+        ? {
+            "@type": "Offer",
+            priceCurrency: "UZS",
+            price: priceNumber,
+            availability: "https://schema.org/InStock",
+            url: sitePath,
+          }
+        : undefined,
   } as const;
 
   return (
     <>
       <SeoHead
-        title={`${product.title} — ${product.summary ? product.summary : 'Цена в UZS'}`}
+        title={`${title} — ${summary ? summary : "Цена в UZS"}`}
         description={desc}
         path={sitePath}
-        locale={await getLocale()}
+        locale={locale}
         image={mainImage}
         structuredData={productLd}
       />
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          {/* Breadcrumbs (UI + JSON-LD) */}
+          {/* Хлебные крошки (UI + JSON-LD) */}
           <Breadcrumbs
             items={[
-              { name: 'Catalog', href: '/catalog' },
-              ...(product.category ? [{ name: product.category.name, href: `/catalog/${product.category.slug}` }] : []),
-              { name: product.title },
+              { name: "Catalog", href: "/catalog" },
+              ...(dbProduct.category
+                ? [
+                    {
+                      name: dbProduct.category.name || "",
+                      href: `/catalog/${dbProduct.category.slug}`,
+                    },
+                  ]
+                : []),
+              { name: title },
             ]}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Product Image */}
+            {/* Изображение + кнопки под картинкой */}
             <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-              <div className="relative w-full aspect-square">
+              <div className="relative w-full aspect-[4/3] lg:aspect-square max-h-[60vh]">
                 <Image
                   src={mainImage}
-                  alt={product.title}
+                  alt={title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-contain"
                   priority
                 />
               </div>
-            </div>
-
-            {/* Product Info */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h1 className="text-2xl md:text-3xl font-bold text-[#660000] mb-4">
-                {product.title}
-              </h1>
-
-              {product.summary && (
-                <p className="text-gray-700 text-lg mb-6">{product.summary}</p>
-              )}
-
-              <div className="mt-6 mb-8">
-                <div className="text-3xl font-bold text-[#660000]"><Price price={product.price} /></div>
-              </div>
-
-              <div className="space-y-6">
-                {product.description && (
-                  <div>
-                    <h2 className="text-lg !text-[#660000] font-semibold mb-2"><T k="productDetail.description" /></h2>
-                    <div className="prose max-w-none text-gray-700">
-                      {product.description}
-                    </div>
-                  </div>
-                )}
-
-                {specs.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold !text-[#660000] mb-3"><T k="productDetail.characteristics" /></h2>
-                    <ProductSpecs specs={specs} />
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <QuantityAddToCart productId={product.id} className="flex-1" />
+              {/* Кнопки под изображением (мобайл первым) */}
+              <div className="mt-4 flex flex-col sm:flex-row gap-4">
+                <QuantityAddToCart productId={dbProduct.id} className="flex-1" />
                 <Link
-                  href={`/catalog/${product.category?.slug || category}`}
+                  href={`/catalog/${dbProduct.category?.slug || category}`}
                   className="flex-1 border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium !text-[#660000] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#660000]"
                 >
                   <T k="common.backToCatalog" />
                 </Link>
               </div>
             </div>
+
+            {/* Инфо */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+              <h1 className="text-2xl md:text-3xl font-bold text-[#660000] mb-4">
+                {title}
+              </h1>
+
+              {summary && (
+                <p className="text-gray-700 text-lg mb-6">{summary}</p>
+              )}
+
+              <div className="mt-6 mb-8">
+                <div className="text-3xl font-bold text-[#660000]">
+                  <Price price={priceNumber} />
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {description && (
+                  <div>
+                    <h2 className="text-lg !text-[#660000] font-semibold mb-2">
+                      <T k="productDetail.description" />
+                    </h2>
+                    <div className="prose max-w-none text-gray-700">
+                      {description}
+                    </div>
+                  </div>
+                )}
+
+                {!!specsEntries.length && (
+                  <div>
+                    <h2 className="text-lg font-semibold !text-[#660000] mb-3">
+                      <T k="productDetail.characteristics" />
+                    </h2>
+                    <ProductSpecs specs={specsEntries} />
+                  </div>
+                )}
+              </div>
+
+              {/* Кнопки перенесены под изображение слева */}
+            </div>
           </div>
         </section>
       </main>
     </>
-  )
+  );
 }
