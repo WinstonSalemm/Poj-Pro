@@ -1,6 +1,6 @@
-import ru from '@/imports/ru.json';
-import en from '@/imports/en.json';
-import uz from '@/imports/uz.json';
+import ru from '@/i18n/dictionaries/ru';
+import en from '@/i18n/dictionaries/en';
+import uz from '@/i18n/dictionaries/uz';
 
 export type Locale = 'ru' | 'en' | 'uz';
 

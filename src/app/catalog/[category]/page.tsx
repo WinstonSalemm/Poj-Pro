@@ -49,10 +49,11 @@ async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | '
   return formatted;
 }
 
-export default async function CatalogCategoryPage({ params }: { params: { category: string } }) {
+export default async function CatalogCategoryPage({ params }: { params: Promise<{ category: string }> }) {
   // Ensure cookies are accessed to bind locale correctly in server context
   await cookies();
-  const rawCategory = decodeURIComponent(params.category || '');
+  const { category } = await params;
+  const rawCategory = decodeURIComponent(category || '');
   const categorySlug = toSlug(rawCategory);
   const locale = await getLocale();
 
