@@ -1,7 +1,4 @@
-User-agent: *
-Disallow: /adminProducts
-
-# Allow all other paths
+﻿User-agent: *
 Allow: /
-
-Sitemap: /sitemap.xml
+Disallow: /adminProducts
+Sitemap: https://site-jl4e4tpj0-poj-pros-projects.vercel.app/sitemap.xml
