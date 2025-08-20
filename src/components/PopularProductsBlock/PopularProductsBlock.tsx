@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { useTranslation } from "next-i18next";
-import Link from "next/link";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import type { Product } from "@/types/product";
 import data from "@/components/PopularProductsBlock/popular.json";
@@ -26,9 +25,7 @@ const normalizeLang = (lang?: string): "ru" | "en" | "uz" => {
   return "ru";
 };
 
-function hasCategorySlug(p: Product | (Product & { categorySlug?: unknown })): p is Product & { categorySlug: string } {
-  return typeof p === "object" && p !== null && "categorySlug" in p && typeof (p as { categorySlug?: unknown }).categorySlug === "string";
-}
+// hasCategorySlug helper was unused and removed
 
 export default function PopularProductsBlock() {
   const { i18n } = useTranslation();
@@ -51,19 +48,7 @@ export default function PopularProductsBlock() {
     });
   }, [lang]);
 
-  const buildHref = (p: Product): string => {
-    // Build URL exactly like ProductCard, but with strict type guards
-    const categoryPart = hasCategorySlug(p)
-      ? p.categorySlug
-      : typeof p.category === "object"
-        ? p.category?.slug
-        : typeof p.category === "string"
-          ? p.category
-          : undefined;
-    return categoryPart
-      ? `/catalog/${encodeURIComponent(String(categoryPart))}/${encodeURIComponent(String(p.slug))}`
-      : `/catalog/${encodeURIComponent(String(p.slug))}`;
-  };
+  // buildHref was unused; removed to satisfy lint without behavior change
 
   return (
     <section className="py-12 bg-gray-50">

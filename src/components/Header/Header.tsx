@@ -134,23 +134,18 @@ export default function Header() {
         {/* RIGHT: compact (mobile) / full (desktop) */}
         <div className="flex min-w-[44px] items-center justify-end gap-2">
           {/* Mobile compact controls */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex flex-wrap items-center justify-end gap-2 lg:hidden">
             {/* Cart */}
             <div className="text-[#660000] shrink-0">
               <CartIcon />
-            </div>
-
-            {/* Auth — компактная бренд-кнопка на мобилке */}
-            <div className="shrink max-[360px]:max-w-[82px] max-w-[110px]">
-              <AuthButton />
             </div>
 
             {/* Language small */}
             <div className="relative shrink-0" ref={switcherRef}>
               <button
                 type="button"
-                className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50
-                           max-[360px]:px-1.5 max-[360px]:text-[11px]"
+                className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 whitespace-nowrap
+                           max-[380px]:px-1.5 max-[380px]:text-[10.5px]"
                 onClick={() => setLangOpen(!langOpen)}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
@@ -187,7 +182,7 @@ export default function Header() {
           </div>
 
           {/* Desktop right menu + controls */}
-          <nav className="hidden items-center gap-4 lg:flex">
+          <nav className="hidden items-center gap-3 lg:flex">
             {menuRight.map((item, idx) => (
               <Link
                 key={item.id}
@@ -210,14 +205,14 @@ export default function Header() {
             <div className="relative" ref={switcherRef}>
               <button
                 type="button"
-                className="flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                className="flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs md:text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
                 onClick={() => setLangOpen(!langOpen)}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
               >
                 {currentLanguage.toUpperCase()}
                 <svg
-                  className={`h-4 w-4 transition-transform ${langOpen ? "rotate-180" : ""}`}
+                  className={`h-3.5 w-3.5 md:h-4 md:w-4 transition-transform ${langOpen ? "rotate-180" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -264,7 +259,26 @@ export default function Header() {
             {t(item.translationKey)}
           </Link>
         ))}
-        <div className="px-4 py-3" />
+        {/* Auth actions inside burger with slightly different style */}
+        <div className="px-4 py-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              try { (async () => { (await import("next-auth/react")).signIn(); })(); } catch {}
+              setMobileOpen(false);
+            }}
+            className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
+          >
+            {t('auth.signIn')}
+          </button>
+          <Link
+            href="/register"
+            onClick={() => setMobileOpen(false)}
+            className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
+          >
+            {t('auth.register')}
+          </Link>
+        </div>
       </nav>
     </header>
   );

@@ -1,4 +1,11 @@
-export const SITE_URL = 'https://pojpro.uz';
+// Prefer public URL for client, fall back to server-side SITE_URL, then localhost.
+// Ensure no trailing slash for consistent concatenation.
+const rawSiteUrl =
+  (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) ||
+  (typeof process !== 'undefined' && process.env.SITE_URL) ||
+  'http://localhost:3000';
+
+export const SITE_URL = rawSiteUrl.replace(/\/$/, '');
 export const SITE_NAME = 'POJ PRO';
 
 export const LOCALES = ['ru', 'en', 'uz'] as const;

@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
-// Revalidate the cache every 60 seconds
-export const revalidate = 60;
+// This route uses NextAuth which relies on headers and cookies.
+// Force dynamic to avoid static rendering during build.
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

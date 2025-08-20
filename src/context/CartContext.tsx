@@ -61,6 +61,23 @@ const CartContext = createContext<{
   getProductById: (id: string | number) => Promise<ProductData | null>;
 } | null>(null);
 
+// Narrow unknown stored item to CartItem with defaults
+const parseStoredItem = (u: unknown): CartItem | null => {
+  if (!u || typeof u !== 'object') return null;
+  const it = u as Partial<Record<string, unknown>>;
+  const id = it.id as string | number | undefined;
+  const qtyRaw = (it as { qty?: unknown; quantity?: unknown }).qty ?? (it as { qty?: unknown; quantity?: unknown }).quantity;
+  const priceRaw = it.price as unknown;
+  const nameRaw = it.name as unknown;
+  const imageRaw = it.image as unknown;
+  if (id === undefined) return null;
+  const qty = typeof qtyRaw === 'number' ? qtyRaw : 1;
+  const price = typeof priceRaw === 'number' ? priceRaw : Number(priceRaw) || 0;
+  const name = typeof nameRaw === 'string' ? nameRaw : '';
+  const image = typeof imageRaw === 'string' ? imageRaw : '';
+  return { id, qty, price, name, image };
+};
+
 // Load cart from localStorage
 const loadCartFromStorage = (): CartState | null => {
   if (typeof window === 'undefined') return null;
@@ -72,26 +89,18 @@ const loadCartFromStorage = (): CartState | null => {
     // Migration: older versions may have saved an array directly
     if (Array.isArray(parsed)) {
       return {
-        items: parsed.map((it: any) => ({
-          id: it.id,
-          qty: typeof it.qty === 'number' ? it.qty : (typeof it.quantity === 'number' ? it.quantity : 1),
-          price: typeof it.price === 'number' ? it.price : Number(it.price) || 0,
-          name: typeof it.name === 'string' ? it.name : '',
-          image: typeof it.image === 'string' ? it.image : ''
-        }))
+        items: parsed
+          .map((it: unknown) => parseStoredItem(it))
+          .filter((x: CartItem | null): x is CartItem => x !== null)
       } as CartState;
     }
     if (parsed && typeof parsed === 'object') {
       // If structure is { items: [...] } use it; otherwise treat as empty
       if (Array.isArray(parsed.items)) {
         return {
-          items: parsed.items.map((it: any) => ({
-            id: it.id,
-            qty: typeof it.qty === 'number' ? it.qty : (typeof it.quantity === 'number' ? it.quantity : 1),
-            price: typeof it.price === 'number' ? it.price : Number(it.price) || 0,
-            name: typeof it.name === 'string' ? it.name : '',
-            image: typeof it.image === 'string' ? it.image : ''
-          }))
+          items: parsed.items
+            .map((it: unknown) => parseStoredItem(it))
+            .filter((x: CartItem | null): x is CartItem => x !== null)
         } as CartState;
       }
     }
@@ -265,7 +274,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const currentLang = i18n.language;
   const hydratedRef = useRef(false);
   const lastMutationWasClear = useRef(false);
-  const lastLangRef = useRef<string | null>(null);
+  const _lastLangRef = useRef<string | null>(null);
+  void _lastLangRef; // explicitly mark as used for lint
 
   // After mount, mark hydration complete and reconcile with storage if needed
   useEffect(() => {

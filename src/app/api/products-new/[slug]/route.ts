@@ -16,14 +16,15 @@ function parseImages(raw?: string | null): string[] {
   }
 }
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { searchParams } = new URL(req.url);
     const locale = asLocale(searchParams.get('locale'));
-    const slug = decodeURIComponent(params.slug);
+    const { slug } = await params;
+    const decodedSlug = decodeURIComponent(slug);
 
     const product = await prisma.product.findUnique({
-      where: { slug },
+      where: { slug: decodedSlug },
       include: {
         category: true,
         i18n: {

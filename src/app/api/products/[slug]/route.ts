@@ -22,24 +22,24 @@ function parseImages(raw?: string | null): string[] {
   }
 }
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { searchParams } = new URL(req.url);
     const locale = asLocale(searchParams.get('locale'));
     // Accept aliases that might be stored in DB (e.g., 'eng', 'uzb')
     const localeVariants: string[] =
       locale === 'en' ? ['en', 'eng'] : locale === 'uz' ? ['uz', 'uzb'] : ['ru'];
-    const slug = decodeURIComponent(params.slug);
+    const { slug: rawSlug } = await params;
+    const slug = decodeURIComponent(rawSlug);
 
-    // Try to find by ID (both UUID and numeric) or slug
+    // Try to find by ID or slug. Prisma schema uses String id, so try raw string id as well.
     const id = slug;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    const isNumeric = !isNaN(parseInt(id, 10));
-    
     const where: Prisma.ProductWhereInput = {
       OR: [
         { slug },
-        ...(isUuid || isNumeric ? [{ id }] : []),
+        { id }, // raw string id
+        ...(isUuid ? [{ id }] : []),
       ],
     };
     

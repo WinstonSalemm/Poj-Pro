@@ -44,7 +44,17 @@ export const generateWebSite = () => ({
   },
 });
 
-export const generateProduct = (product: any, categoryName: string) => ({
+type MinimalProduct = {
+  id: string | number;
+  name: string;
+  image?: string | null;
+  short_description?: string | null;
+  description?: string | null;
+  category: string;
+  price: number | string;
+};
+
+export const generateProduct = (product: MinimalProduct, categoryName: string) => ({
   '@type': 'Product',
   name: product.name,
   image: product.image ? [`${SITE_URL}${product.image}`] : [],

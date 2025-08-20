@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     let data: RegisterRequest;
     try {
       data = await request.json();
-    } catch (e) {
+    } catch {
       return NextResponse.json(
         { ok: false, error: 'Invalid JSON body' },
         { status: 400 }
@@ -89,10 +89,14 @@ export async function POST(request: Request) {
         { status: 201 }
       );
 
-    } catch (createError: any) {
+    } catch (createError: unknown) {
       console.error('User creation error:', createError);
 
-      if (createError.code === 'P2002') {
+      const code = (typeof createError === 'object' && createError && 'code' in createError)
+        ? (createError as { code?: string }).code
+        : undefined;
+
+      if (code === 'P2002') {
         return NextResponse.json(
           { ok: false, error: 'Email already in use' },
           { status: 409 }

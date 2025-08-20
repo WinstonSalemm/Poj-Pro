@@ -53,7 +53,7 @@ export function AddToCartButton({
       const price: number = typeof data.price === 'number' ? data.price : 0;
       const image: string = Array.isArray(data.images) && data.images[0]
         ? data.images[0]
-        : '/OtherPics/placeholder.png';
+        : '/OtherPics/product2photo.jpg';
 
       // Add to cart (initial add is qty 1 or increments by 1)
       addItem(productId, price, title, image);

@@ -183,12 +183,12 @@ export default function SuppliesPage() {
               <div className="space-y-6">
                 {filteredSupplies.map((supply, idx) => (
                   <div
-                    key={supply.id}
+                    key={supply.id ?? `${supply.title}-${idx}`}
                     className="animate-in-up"
                     style={{ animationDelay: `${idx * 0.07}s`, animationFillMode: 'backwards' }}
                   >
                     <SupplyCard
-                      id={supply.id}
+                      id={String(supply.id ?? '')}
                       title={supply.title}
                       etaDate={supply.etaDate}
                       status={supply.status}

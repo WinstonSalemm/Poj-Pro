@@ -168,7 +168,7 @@ export default function DocumentsPage() {
         className={`mb-8 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
           }`}
       >
-        <div className="flex items-start md:items-center justify-between gap-4">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-900">
               {t("documents.title")}
@@ -179,7 +179,7 @@ export default function DocumentsPage() {
           </div>
           <Link
             href="/documents/certificates"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#660000] px-3 py-2 text-sm font-medium !text-[#660000] hover:bg-[#660000] hover:!text-white hover:border-neutral-300 transition"
+            className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-[#660000] px-2.5 py-1.5 text-xs sm:text-sm sm:px-3 sm:py-2 font-medium !text-[#660000] hover:bg-[#660000] hover:!text-white hover:border-neutral-300 transition"
           >
             <svg
               width="18"

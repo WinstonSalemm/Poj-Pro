@@ -20,6 +20,22 @@ const formatPrice = (price: number): string => {
   }).format(price);
 }
 
+// Normalize image URLs: ensure leading slash for local files, strip public/ prefix
+const normalizeImageUrl = (u?: string): string => {
+  if (!u) return '';
+  let s = String(u).trim();
+  if (!s) return '';
+  // keep external/data/blob URLs as-is
+  if (/^(https?:|data:|blob:)/i.test(s)) return s;
+  // strip leading ./ and public/ prefixes
+  s = s.replace(/^\.\/+/, '');
+  s = s.replace(/^public[\\/]/i, '');
+  if (!s.startsWith('/')) s = '/' + s;
+  return s;
+};
+
+const PLACEHOLDER_IMG = '/OtherPics/product2photo.jpg';
+
 export default function CartPage() {
   const { t, i18n } = useTranslation();
   const { status } = useSession();
@@ -36,6 +52,32 @@ export default function CartPage() {
 
   // Localized overrides for names/images by current language
   const [localized, setLocalized] = useState<Record<string | number, { name: string; image: string }>>({});
+
+  // Runtime i18n fallback for RU/UZ if keys are missing in JSON (component scope)
+  const ruMap: Record<string, string> = {
+    'cart.clearConfirmTitle': 'Удалить все товары?',
+    'cart.clearConfirmText': 'Это действие полностью очистит вашу корзину.',
+    'cart.removeConfirmTitle': 'Удалить этот товар из корзины?',
+    'cart.removeConfirmText': 'Действие нельзя будет отменить.',
+    'cart.cancel': 'Отмена',
+    'cart.delete': 'Удалить',
+  };
+  const uzMap: Record<string, string> = {
+    'cart.clearConfirmTitle': 'Barcha mahsulotlarni o‘chirilsinmi?',
+    'cart.clearConfirmText': 'Bu amal savatchangizdagi barcha mahsulotlarni o‘chiradi.',
+    'cart.removeConfirmTitle': 'Ushbu mahsulot savatchadan o‘chirilsinmi?',
+    'cart.removeConfirmText': 'Bu amalni bekor qilib bo‘lmaydi.',
+    'cart.cancel': 'Bekor qilish',
+    'cart.delete': 'O‘chirish',
+  };
+  const trCart = (key: string, def: string): string => {
+    const out = t(key, { defaultValue: def }) as string;
+    if (out && out !== key && out !== def) return out;
+    const raw = (i18n?.language || 'ru').toLowerCase();
+    if (raw.startsWith('ru')) return ruMap[key] || def;
+    if (raw.startsWith('uz') || raw === 'uzb') return uzMap[key] || def;
+    return def;
+  };
 
   useEffect(() => {
     if (!items.length) {
@@ -56,11 +98,23 @@ export default function CartPage() {
               if (!res.ok) throw new Error('bad');
               const json = await res.json();
               const data = json?.data || {};
-              const name = data.title || '';
-              const image = Array.isArray(data.images) && data.images[0] ? data.images[0] : '';
+              const existing = items.find((it) => String(it.id) === String(id));
+              const name = (data.title as string) || existing?.name || String(id);
+              const image = normalizeImageUrl(
+                (Array.isArray(data.images) && data.images[0])
+                  ? data.images[0]
+                  : (existing?.image || PLACEHOLDER_IMG)
+              );
               return [id, { name, image }] as const;
             } catch {
-              return [id, { name: '', image: '' }] as const;
+              const existing = items.find((it) => String(it.id) === String(id));
+              return [
+                id,
+                {
+                  name: existing?.name || String(id),
+                  image: normalizeImageUrl(existing?.image || PLACEHOLDER_IMG),
+                },
+              ] as const;
             }
           })
         );
@@ -76,7 +130,7 @@ export default function CartPage() {
     };
     load();
     return () => controller.abort();
-  }, [items, i18n?.language]);
+  }, [items, i18n?.language, t]);
 
   // ШТОРКА загрузки (как на других страницах)
   const [bootLoading, setBootLoading] = useState(true);
@@ -87,7 +141,6 @@ export default function CartPage() {
 
   // Calculate total
   const total = items.reduce((sum, item) => sum + (Number(item.price) * item.qty), 0);
-  const formattedTotal = formatPrice(total);
 
   const handleQuantityChange = (id: string | number, newQty: number) => {
     updateQuantity(id, newQty);
@@ -104,8 +157,8 @@ export default function CartPage() {
   };
 
   // 2) Подтверждение удаления одного товара
-  const [removeModalId, setRemoveModalId] = useState<number | null>(null);
-  const openRemoveModal = (id: number) => setRemoveModalId(id);
+  const [removeModalId, setRemoveModalId] = useState<string | number | null>(null);
+  const openRemoveModal = (id: string | number) => setRemoveModalId(id);
   const closeRemoveModal = () => setRemoveModalId(null);
   const confirmRemoveOne = () => {
     if (removeModalId !== null) removeItem(removeModalId);
@@ -113,7 +166,7 @@ export default function CartPage() {
   };
 
   // заменили window.confirm на открытие модалки
-  const handleRemove = (id: number) => {
+  const handleRemove = (id: string | number) => {
     openRemoveModal(id);
   };
 
@@ -235,9 +288,9 @@ export default function CartPage() {
                           </button>
 
                           <div className="relative h-20 w-20 rounded-md overflow-hidden bg-gray-100">
-                            {(localized[item.id]?.image || item.image) ? (
+                            {normalizeImageUrl(localized[item.id]?.image || item.image) ? (
                               <Image
-                                src={localized[item.id]?.image || item.image}
+                                src={normalizeImageUrl(localized[item.id]?.image || item.image)}
                                 alt={localized[item.id]?.name || item.name || (t('cart.product') || 'Product')}
                                 fill
                                 sizes="80px"
@@ -273,7 +326,7 @@ export default function CartPage() {
                         </div>
 
                         {/* Total */}
-                        <div className="text-xl font-bold text-right !text-[#660000]">
+                        <div className="text-[15px] font-bold text-right !text-[#660000]">
                           {formatPrice(item.price * item.qty)}
                         </div>
                       </div>
@@ -409,20 +462,23 @@ export default function CartPage() {
         >
           <div className="bg-white rounded-2xl shadow-xl w-[90%] max-w-md p-6 border border-gray-200 animate-in-up"
                style={{ animationDelay: '0s', animationFillMode: 'backwards' }}>
-            <h4 className="text-lg font-semibold !text-[#660000] mb-2">Точно удалить все товары?</h4>
-            <p className="!text-[#660000] mb-6">Это действие очистит вашу корзину полностью.</p>
+            <h4 className="text-lg font-semibold !text-[#660000] mb-2">{trCart('cart.clearConfirmTitle', 'Clear all items?')}</h4>
+            <p className="!text-[#660000] mb-6">{trCart('cart.clearConfirmText', 'This action will remove all items from your cart.')}</p>
+
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button
                 onClick={closeClearModal}
                 className="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 !text-[#660000]"
               >
-                Отмена
+                {trCart('cart.cancel', 'Cancel')}
+
               </button>
               <button
                 onClick={confirmClearCart}
                 className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#660000] text-white hover:bg-[#8B0000]"
               >
-                Удалить
+                {trCart('cart.delete', 'Delete')}
+
               </button>
             </div>
           </div>
@@ -438,20 +494,23 @@ export default function CartPage() {
         >
           <div className="bg-white rounded-2xl shadow-xl w-[90%] max-w-md p-6 border border-gray-200 animate-in-up"
                style={{ animationDelay: '0s', animationFillMode: 'backwards' }}>
-            <h4 className="text-lg font-semibold !text-[#660000] mb-2">Удалить этот товар из корзины?</h4>
-            <p className="!text-[#660000] mb-6">Действие нельзя будет отменить.</p>
+            <h4 className="text-lg font-semibold !text-[#660000] mb-2">{trCart('cart.removeConfirmTitle', 'Remove this item from the cart?')}</h4>
+            <p className="!text-[#660000] mb-6">{trCart('cart.removeConfirmText', 'This action cannot be undone.')}</p>
+
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button
                 onClick={closeRemoveModal}
                 className="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 !text-[#660000]"
               >
-                Отмена
+                {trCart('cart.cancel', 'Cancel')}
+
               </button>
               <button
                 onClick={confirmRemoveOne}
                 className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#660000] text-white hover:bg-[#8B0000]"
               >
-                Удалить
+                {trCart('cart.delete', 'Delete')}
+
               </button>
             </div>
           </div>

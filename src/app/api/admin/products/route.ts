@@ -93,7 +93,6 @@ export async function POST(request: Request) {
       data: {
         slug,
         price: typeof price === 'number' ? price : 0,
-        // @ts-expect-error stock is added in schema
         stock: typeof stock === 'number' ? stock : 0,
         images: serializeImages(images),
         categoryId: category?.id,

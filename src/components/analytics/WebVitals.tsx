@@ -69,8 +69,8 @@ export function WebVitals() {
       value: metric.value,
     });
     
-    // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    // Log to console when not in production (avoids literal narrowing errors in client builds)
+    if (process.env.NODE_ENV !== 'production') {
       console.log('[Web Vitals]', metric);
     }
   });

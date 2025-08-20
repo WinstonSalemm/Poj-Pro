@@ -4,14 +4,31 @@ import path from 'path';
 
 const SUPPLIES_FILE = path.join(process.cwd(), 'data', 'supplies.json');
 
+type SupplyItem = {
+  name: string;
+  quantity: number;
+};
+
+type Supply = {
+  id: string;
+  title: string;
+  etaDate: string;
+  status: string;
+  items: SupplyItem[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 // Helper function to read supplies from file
-async function readSupplies() {
+async function readSupplies(): Promise<Supply[]> {
   try {
     const data = await fs.readFile(SUPPLIES_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? (parsed as Supply[]) : [];
+  } catch (error: unknown) {
     // If file doesn't exist, return empty array
-    if (error.code === 'ENOENT') {
+    const code = typeof error === 'object' && error !== null && 'code' in error ? (error as { code?: unknown }).code : undefined;
+    if (code === 'ENOENT') {
       await fs.writeFile(SUPPLIES_FILE, JSON.stringify([], null, 2), 'utf-8');
       return [];
     }
@@ -20,7 +37,7 @@ async function readSupplies() {
 }
 
 // Helper function to write supplies to file
-async function writeSupplies(supplies) {
+async function writeSupplies(supplies: Supply[]): Promise<void> {
   const tempFile = `${SUPPLIES_FILE}.tmp`;
   await fs.writeFile(tempFile, JSON.stringify(supplies, null, 2), 'utf-8');
   await fs.rename(tempFile, SUPPLIES_FILE);
@@ -29,7 +46,7 @@ async function writeSupplies(supplies) {
 // PUT /api/supplies/[id]
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify admin token
@@ -44,7 +61,7 @@ export async function PUT(
     }
     
     const updatedSupply = await request.json();
-    const supplyId = params.id;
+    const { id: supplyId } = await params;
     
     // Validate required fields
     if (!updatedSupply.title || !updatedSupply.etaDate || !updatedSupply.status) {
@@ -107,7 +124,7 @@ export async function PUT(
 // DELETE /api/supplies/[id]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify admin token
@@ -121,9 +138,9 @@ export async function DELETE(
       );
     }
     
-    const supplyId = params.id;
+    const { id: supplyId } = await params;
     const supplies = await readSupplies();
-    const index = supplies.findIndex(s => s.id === supplyId);
+    const index = supplies.findIndex((s) => s.id === supplyId);
     
     if (index === -1) {
       return NextResponse.json(

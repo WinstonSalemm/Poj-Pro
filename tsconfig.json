@@ -3,7 +3,11 @@
     "target": "ES2020",
     "module": "esnext",
     "outDir": "./dist",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,10 +24,28 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "types": ["node", "react", "react-dom", "next-i18next"]
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "next-i18next"
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/types/**/*.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "src/types/**/*.d.ts",
+    "node_modules/.cache/next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "node_modules.broken-*",
+    "node_modules.bak-*"
+  ]
 }

@@ -1,12 +1,6 @@
 'use client';
 
-// Prevent indexing of this hidden admin route
-export const metadata = {
-  robots: { index: false, follow: false },
-};
-
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import AdminGate from '@/components/admin/AdminGate';
 import SupplyForm from '@/components/admin/SupplyForm';
 import { toast } from 'react-hot-toast';
@@ -35,7 +29,6 @@ export default function AdminProductsPage() {
   const [editingSupply, setEditingSupply] = useState<Supply | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const router = useRouter();
 
   // Fetch supplies from API
   const fetchSupplies = async () => {

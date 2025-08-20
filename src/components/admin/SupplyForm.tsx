@@ -58,7 +58,8 @@ export default function SupplyForm({
     setFormData(prev => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
-      const { [name]: _, ...rest } = errors;
+      const { [name]: _unused1, ...rest } = errors;
+      void _unused1; // explicitly mark as used
       setErrors(rest);
     }
   };
@@ -75,7 +76,8 @@ export default function SupplyForm({
 
     const key = field === 'name' ? `itemName${index}` : field === 'quantity' ? `itemQuantity${index}` : '';
     if (key && errors[key]) {
-      const { [key]: _, ...rest } = errors;
+      const { [key]: _unused2, ...rest } = errors;
+      void _unused2; // explicitly mark as used
       setErrors(rest);
     }
   };

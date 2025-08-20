@@ -37,7 +37,7 @@ export default function LoginPage() {
         router.push(callbackUrl);
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setError(t('auth.loginPage.errors.generic'));
     } finally {
       setIsLoading(false);

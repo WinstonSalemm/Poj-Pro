@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -35,9 +35,7 @@ async function loadProducts(locale: Locale): Promise<ProductJsonData[]> {
   catch { return []; }
 }
 
-async function hashPassword(password: string) {
-  return hash(password, 12);
-}
+// removed unused hashPassword helper
 
 async function seedUsers() {
   const now = new Date();
@@ -110,14 +108,14 @@ async function seedProducts() {
     loadProducts('uz'),
   ]);
 
-  type Pack = { ru?: ProductJsonData; en?: ProductJsonData; uz?: ProductJsonData };
+  type Pack = Record<Locale, ProductJsonData | undefined>;
   const bySlug = new Map<string, Pack>();
 
   const absorb = (loc: Locale, arr: ProductJsonData[]) => {
     for (const it of arr) {
       if (!it?.slug) continue;
-      const ex = bySlug.get(it.slug) ?? {};
-      (ex as any)[loc] = it;
+      const ex: Pack = bySlug.get(it.slug) ?? { ru: undefined, en: undefined, uz: undefined };
+      ex[loc] = it;
       bySlug.set(it.slug, ex);
     }
   };
@@ -132,7 +130,7 @@ async function seedProducts() {
   await prisma.product.deleteMany({});
   await prisma.category.deleteMany({});
 
-  let created = 0, updated = 0;
+  let created = 0;
   const catCache = new Map<string, string>();   // category slug -> id
   const certCache = new Map<string, string>();  // cert href     -> id
 
@@ -167,7 +165,7 @@ async function seedProducts() {
         price: toFloat(base.price),
         currency: base.currency ?? null,
         images: imagesToJSON(base.images), // <- СТРОКА
-        specs: base.specs ?? {},
+        specs: (base.specs ?? {}) as Prisma.InputJsonValue,
         isActive: true,
         ...(categoryId ? { category: { connect: { id: categoryId } } } : {}),
       },
@@ -176,7 +174,7 @@ async function seedProducts() {
         price: toFloat(base.price),
         currency: base.currency ?? null,
         images: imagesToJSON(base.images), // <- СТРОКА
-        specs: base.specs ?? {},
+        specs: (base.specs ?? {}) as Prisma.InputJsonValue,
         isActive: true,
         ...(categoryId ? { category: { connect: { id: categoryId } } } : { category: { disconnect: true } }),
       },
@@ -234,7 +232,7 @@ async function seedProducts() {
     created++;
   }
 
-  console.log(`Seeded products: ${created} created, ${updated} updated`);
+  console.log(`Seeded products: ${created} created`);
   console.log(`Total categories: ${catCache.size}`);
   console.log(`Total certificates: ${certCache.size}`);
 }

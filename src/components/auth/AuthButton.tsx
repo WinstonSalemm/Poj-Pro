@@ -8,6 +8,11 @@ import { useTranslation } from '@/i18n/useTranslation';
 
 export function AuthButton() {
   const { t } = useTranslation();
+  // локальный помощник перевода с фолбэком, если ключа нет
+  const tr = (key: string, fallback: string) => {
+    const val = t(key);
+    return val === key ? fallback : val;
+  };
   const { data: session } = useSession();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -54,6 +59,16 @@ export function AuthButton() {
   // ---- 2) Авто-уменьшение имени (хуки всегда объявлены) ----
   const nameWrapRef = useRef<HTMLSpanElement>(null);
   const nameRef = useRef<HTMLSpanElement>(null);
+
+  // Очень узкие экраны: используем короткие подписи кнопок
+  const [isTiny, setIsTiny] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 420px)');
+    const apply = () => setIsTiny(mq.matches);
+    apply();
+    mq.addEventListener?.('change', apply);
+    return () => mq.removeEventListener?.('change', apply);
+  }, []);
 
   const displayName = useMemo(() => {
     return session?.user?.name || session?.user?.email?.split('@')[0] || 'Профиль';
@@ -105,7 +120,7 @@ export function AuthButton() {
           aria-label="Выйти"
           className={`${brandBtn} ${base} ${larger} ${ultraNarrow} cursor-pointer shrink-0`}
         >
-          {t('auth.signOut')}
+          {isTiny ? tr('auth.signOutShort', 'Вых.') : tr('auth.signOut', 'Выйти')}
         </button>
       </div>
     );
@@ -121,14 +136,14 @@ export function AuthButton() {
           aria-label="Регистрация"
           className={`${lightBtn} ${base} ${ultraNarrow} cursor-pointer`}
         >
-          {t('auth.register')}
+          {isTiny ? tr('auth.registerShort', 'Рег.') : tr('auth.register', 'Регистрация')}
         </Link>
         <button
           onClick={handleSignIn}
           aria-label="Войти"
           className={`${lightBtn} ${base} ${ultraNarrow} cursor-pointer`}
         >
-          {t('auth.signIn')}
+          {isTiny ? tr('auth.signInShort', 'Войти') : tr('auth.signIn', 'Войти')}
         </button>
       </div>
     );
@@ -142,7 +157,7 @@ export function AuthButton() {
         aria-label="Войти"
         className={`${lightBtn} ${base} ${larger} ${ultraNarrow} shrink-0 cursor-pointer`}
       >
-        {t('auth.signIn')}
+        {isTiny ? tr('auth.signInShort', 'Войти') : tr('auth.signIn', 'Войти')}
       </button>
 
       <Link
@@ -150,7 +165,7 @@ export function AuthButton() {
         aria-label="Регистрация"
         className={`${brandBtn} ${base} ${larger} ${ultraNarrow} shrink-0 cursor-pointer`}
       >
-        {t('auth.register')}
+        {isTiny ? tr('auth.registerShort', 'Рег.') : tr('auth.register', 'Регистрация')}
       </Link>
     </div>
   );

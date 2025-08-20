@@ -90,7 +90,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
-        (session.user as any).isAdmin = token.isAdmin;
+        session.user.isAdmin = Boolean(token.isAdmin);
       }
       return session;
     },

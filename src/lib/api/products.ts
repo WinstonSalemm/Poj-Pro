@@ -40,21 +40,39 @@ export interface Product {
   [key: string]: unknown; // Allow for additional properties
 }
 
+import { SITE_URL } from '@/lib/site';
+
+// Local helper to resolve base URL if not provided by SITE_URL export
+// Trim trailing slashes for safe concatenation
+function getBaseUrl(): string {
+  const fromEnv =
+    (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL)) ||
+    (typeof process !== 'undefined' && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '') ||
+    '';
+  return (fromEnv || '').replace(/\/+$/, '');
+}
+
 // Helper function to load products from API with proper typing
 async function loadProducts(locale: string): Promise<ProductData[]> {
+  // Early fallback: if base URL is empty, avoid network during SSG/CI
+  const base = (SITE_URL || getBaseUrl()).replace(/\/+$/, '');
+  if (!base) return [];
+
   try {
-    // Fetch products from API
-    const response = await fetch(`/api/products?locale=${locale}`);
+    // Fetch products from API (must use absolute URL during SSG)
+    const options: RequestInit & { next: { revalidate: number } } = {
+      next: { revalidate: 60 },
+    };
+    const response = await fetch(
+      `${base}/api/products?locale=${encodeURIComponent(locale)}`,
+      options
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch products: ${response.statusText}`);
+      return [];
     }
     const data = await response.json();
-    if (!data.success) {
-      throw new Error('Failed to fetch products: Invalid response format');
-    }
-    
-    // Map API response to ProductData type
-    return data.data.map((product: {
+    // Keep mapping compatible with data?.data?.products ?? data ?? []
+    const products = (data?.data?.products ?? data ?? []) as Array<{
       id: string;
       title?: string;
       description?: string;
@@ -63,23 +81,29 @@ async function loadProducts(locale: string): Promise<ProductData[]> {
       category?: { name?: string };
       images?: string[];
       sku?: string;
-    }) => ({
-      id: product.id,
-      name: product.title || '',
-      description: product.description || '',
-      short_description: product.summary || '',
-      price: typeof product.price === 'number' ? product.price : 0,
-      category: product.category?.name || '',
-      image: product.images?.[0] || '',
-      images: product.images || [],
-      characteristics: {},
-      sku: product.sku || '',
-      in_stock: true,
-      rating: 0,
-      reviews_count: 0
-    }));
+    }>;
+
+    return Array.isArray(products)
+      ? products.map((product) => ({
+          id: product.id,
+          name: product.title || '',
+          description: product.description || '',
+          short_description: product.summary || '',
+          price: typeof product.price === 'number' ? product.price : 0,
+          category: product.category?.name || '',
+          image: product.images?.[0] || '',
+          images: product.images || [],
+          characteristics: {},
+          sku: product.sku || '',
+          in_stock: true,
+          rating: 0,
+          reviews_count: 0
+        }))
+      : [];
   } catch (error) {
-    console.error(`Error loading products for locale ${locale}:`, error);
+    if (typeof process === 'undefined' || process.env.NODE_ENV !== 'production') {
+      console.error(`Error loading products for locale ${locale}:`, error);
+    }
     return [];
   }
 }
@@ -124,7 +148,7 @@ function normalizeProduct(product: ProductData): Product {
   // Ensure characteristics has no undefined values
   const characteristics = Object.fromEntries(
     Object.entries(product.characteristics || {})
-      .filter(([_, value]) => value !== undefined && value !== null)
+      .filter(([, value]) => value !== undefined && value !== null)
       .map(([key, value]) => [key, String(value)])
   );
   
@@ -152,7 +176,9 @@ function processProducts(products: unknown): Product[] {
   try {
     return products.map(normalizeProduct);
   } catch (error) {
-    console.error('Error normalizing products:', error);
+    if (typeof process === 'undefined' || process.env.NODE_ENV !== 'production') {
+      console.error('Error normalizing products:', error);
+    }
     return [];
   }
 }
@@ -179,7 +205,9 @@ export async function getAllProducts(): Promise<Product[]> {
 
     return uniqueProducts;
   } catch (error) {
-    console.error('Error loading products:', error);
+    if (typeof process === 'undefined' || process.env.NODE_ENV !== 'production') {
+      console.error('Error loading products:', error);
+    }
     return [];
   }
 }

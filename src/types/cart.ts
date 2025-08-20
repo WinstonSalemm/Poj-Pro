@@ -8,7 +8,7 @@ export interface ProductData {
   name: string;
   price: string;
   image?: string;
-  [key: string]: any; // For other product properties we might want to use
+  [key: string]: unknown; // For other product properties we might want to use
 }
 
 export interface CartContextType {

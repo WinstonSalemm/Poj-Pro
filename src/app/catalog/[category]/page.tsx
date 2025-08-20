@@ -6,25 +6,9 @@ import { useTranslation } from "react-i18next";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import { ErrorBoundary } from "react-error-boundary";
 import { sortProductsAsc } from "@/lib/sortProducts";
-
-type ProductCharacteristics = Record<
-  string,
-  string | string[] | number | boolean | undefined
->;
-
-export interface Product {
-  id: string | number;
-  slug: string;
-  title?: string;          // для ProductCard
-  name?: string;           // совместимость со старым JSON
-  category?: string;
-  categorySlug?: string;
-  image?: string;
-  price: string | number;
-  description?: string;
-  short_description?: string;
-  characteristics?: ProductCharacteristics;
-}
+import type { Product } from "@/types/product";
+import { SeoHead } from "@/components/seo/SeoHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const fallbackName = (key: string): string =>
   key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -166,20 +150,27 @@ export default function CatalogCategoryPage() {
         }
 
         const data = await response.json();
-        const items = data.products || [];
+        const items = (data.products || []) as Array<{
+          id: string | number;
+          slug: string;
+          title?: string;
+          category?: { name?: string; slug?: string };
+          image?: string;
+          price?: number | string;
+          description?: string;
+        }>;
 
-        const formatted: Product[] = items.map((item: any) => ({
+        const formatted: Product[] = items.map((item) => ({
           id: item.id,
           slug: item.slug,
           title: item.title,
           name: item.title,
-          category: item.category?.name || "",
-          categorySlug: item.category?.slug || categorySlug,
+          category: item.category?.name || item.category?.slug || "",
           image: item.image || '',
-          price: item.price || 0,
+          price: typeof item.price === 'number' ? item.price : Number(item.price) || 0,
           description: item.description,
           short_description: item.description,
-          characteristics: {}
+          // characteristics not part of shared Product; omit to match type
         }));
 
         setProducts(formatted);
@@ -215,7 +206,13 @@ export default function CatalogCategoryPage() {
   // Сортировка
   const sortedProducts = useMemo(() => {
     // Определяем, находимся ли мы в категории огнетушителей
-    const effectiveCat = (filteredProducts[0]?.categorySlug || categorySlug || '').toString().toLowerCase();
+    const firstCat = filteredProducts[0]?.category;
+    const firstCatSlug = typeof firstCat === 'object' && firstCat
+      ? (firstCat as { slug?: string }).slug
+      : typeof firstCat === 'string'
+        ? firstCat
+        : undefined;
+    const effectiveCat = (firstCatSlug || categorySlug || '').toString().toLowerCase();
 
     // Парсер вместимости огнетушителя из названия/кода модели
     const parseExtWeight = (title?: string): number => {
@@ -301,7 +298,7 @@ export default function CatalogCategoryPage() {
           return 0;
       }
     });
-  }, [filteredProducts, sort]);
+  }, [filteredProducts, sort, categorySlug]);
 
   const handleResetError = useCallback(() => {
     setError(null);
@@ -317,8 +314,31 @@ export default function CatalogCategoryPage() {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={handleResetError}>
-      <main className="bg-[#F8F9FA] min-h-screen">
+      <>
+        <SeoHead
+          title={`${categoryTitle} — купить в Ташкенте | POJ PRO.`}
+          description={
+            (
+              lang === 'en'
+                ? `${categoryTitle} — buy in Tashkent | POJ PRO. Certified equipment and accessories. Delivery across Uzbekistan.`
+                : lang === 'uz'
+                  ? `${categoryTitle} — Toshkentda xarid qiling | POJ PRO. Sertifikatlangan uskunalar va aksessuarlar. Oʻzbekiston boʻylab yetkazib berish.`
+                  : `${categoryTitle} — купить в Ташкенте | POJ PRO. Сертифицированное оборудование и комплектующие. Доставка по Узбекистану.`
+            ).slice(0, 160)
+          }
+          path={`/catalog/${encodeURIComponent(rawCategory)}`}
+          locale={lang}
+          image={undefined}
+        />
+        <main className="bg-[#F8F9FA] min-h-screen">
         <section className="max-w-[1280px] mx-auto px-4 py-10 mt-[100px]">
+          <Breadcrumbs
+            items={[
+              { name: t('common.home', 'Home'), href: '/' },
+              { name: t('header.catalog', 'Catalog'), href: '/catalog' },
+              { name: categoryTitle },
+            ]}
+          />
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h1 className="text-3xl md:text-4xl font-bold !text-[#660000]">
               {categoryTitle}
@@ -385,7 +405,8 @@ export default function CatalogCategoryPage() {
             </div>
           )}
         </section>
-      </main>
+        </main>
+      </>
     </ErrorBoundary>
   );
 }

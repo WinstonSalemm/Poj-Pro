@@ -2,13 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { init, sendForm } from "@emailjs/browser";
 
-// РЕКОМЕНДАЦИЯ: вынести ключи в .env.* и читать из import.meta.env
-const EMAILJS_PUBLIC_KEY =
-  (import.meta as any)?.env?.VITE_EMAILJS_PUBLIC_KEY || "V2o_Np2EpP147edQc";
-const EMAILJS_SERVICE =
-  (import.meta as any)?.env?.VITE_EMAILJS_SERVICE_ID || "service_5wviz1q";
-const EMAILJS_TEMPLATE =
-  (import.meta as any)?.env?.VITE_EMAILJS_TEMPLATE_ID || "template_pn0fuci";
+// Чтение ключей из NEXT_PUBLIC_* переменных окружения (Next.js)
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "V2o_Np2EpP147edQc";
+const EMAILJS_SERVICE = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_5wviz1q";
+const EMAILJS_TEMPLATE = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_pn0fuci";
 
 type Status = "idle" | "sending" | "ok" | "error";
 

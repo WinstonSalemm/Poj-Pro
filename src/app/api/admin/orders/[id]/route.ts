@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if user is admin
@@ -17,7 +17,7 @@ export async function GET(
       );
     }
 
-    const orderId = params.id;
+    const { id: orderId } = await params;
 
     // Get order with user and items
     const order = await prisma.order.findUnique({

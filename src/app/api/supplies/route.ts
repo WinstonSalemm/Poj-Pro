@@ -4,14 +4,31 @@ import path from 'path';
 
 const SUPPLIES_FILE = path.join(process.cwd(), 'data', 'supplies.json');
 
+type SupplyItem = {
+  name: string;
+  quantity: number;
+  supplier?: string;
+};
+
+type Supply = {
+  id: string;
+  title: string;
+  etaDate: string;
+  status: string;
+  items: SupplyItem[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 // Helper function to read supplies from file
-async function readSupplies() {
+async function readSupplies(): Promise<Supply[]> {
   try {
     const data = await fs.readFile(SUPPLIES_FILE, 'utf-8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? (parsed as Supply[]) : [];
   } catch (error) {
     // If file doesn't exist, return empty array
-    if (error.code === 'ENOENT') {
+    if (error && typeof error === 'object' && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
       await fs.writeFile(SUPPLIES_FILE, JSON.stringify([], null, 2), 'utf-8');
       return [];
     }
@@ -20,7 +37,7 @@ async function readSupplies() {
 }
 
 // Helper function to write supplies to file
-async function writeSupplies(supplies) {
+async function writeSupplies(supplies: Supply[]): Promise<void> {
   const tempFile = `${SUPPLIES_FILE}.tmp`;
   await fs.writeFile(tempFile, JSON.stringify(supplies, null, 2), 'utf-8');
   await fs.rename(tempFile, SUPPLIES_FILE);
@@ -32,14 +49,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search')?.toLowerCase() || '';
     
-    let supplies = await readSupplies();
+    let supplies: Supply[] = await readSupplies();
     
     // Filter supplies if search query is provided
     if (search) {
-      supplies = supplies.filter(supply => 
-        supply.items.some(item => 
-          item.name.toLowerCase().includes(search) || 
-          (item.supplier && item.supplier.toLowerCase().includes(search))
+      supplies = supplies.filter((supply: Supply) =>
+        supply.items.some((item: SupplyItem) =>
+          item.name.toLowerCase().includes(search) ||
+          (!!item.supplier && item.supplier.toLowerCase().includes(search))
         )
       );
     }
@@ -68,7 +85,7 @@ export async function POST(request: Request) {
       );
     }
     
-    const newSupply = await request.json();
+    const newSupply = (await request.json()) as Partial<Supply> & { items?: Partial<SupplyItem>[] };
     
     // Validate required fields
     if (!newSupply.title || !newSupply.etaDate || !newSupply.status) {
@@ -87,7 +104,7 @@ export async function POST(request: Request) {
     }
     
     // Validate items
-    for (const item of newSupply.items) {
+    for (const item of newSupply.items as SupplyItem[]) {
       if (!item.name || item.quantity === undefined || item.quantity <= 0) {
         return NextResponse.json(
           { error: 'Each item must have a name and a positive quantity' },

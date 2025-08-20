@@ -67,12 +67,12 @@ export default function CategoryBlock() {
           {t("categoryBlock.catalog", "Каталог")}
         </h2>
 
-        {/* Сетка карточек — адаптив + auto-fit minmax */}
-        <div className="grid [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))] gap-6 sm:gap-5 p-6 sm:p-5 w-full max-w-[1800px] mx-auto justify-items-center place-items-center">
+        {/* Сетка карточек — фиксированная ширина колонок, всегда по центру */}
+        <div className="grid [grid-template-columns:repeat(auto-fit,minmax(280px,280px))] gap-6 sm:gap-5 p-6 sm:p-5 w-full max-w-[1800px] mx-auto justify-items-center place-items-center justify-center">
           {CATEGORIES.map((cat) => {
             const content = (
               <div
-                className="group w-full max-w-[280px] min-h-[280px] max-h-[300px] bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col items-center justify-between px-3 py-4 transition-all duration-200 hover:-translate-y-1 hover:scale-[1.025] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-[#e0e0e0] text-center"
+                className="group w-[280px] min-h-[280px] max-h-[300px] bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col items-center justify-between px-3 py-4 transition-all duration-200 hover:-translate-y-1 hover:scale-[1.025] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-[#e0e0e0] text-center"
                 aria-label={labels[cat] || cat}
               >
                 {/* Картинка */}
@@ -108,7 +108,7 @@ export default function CategoryBlock() {
             // СИЗ — открывает модалку
             if (cat === "siz") {
               return (
-                <button key={cat} type="button" onClick={() => setShowSizSubs(true)} className="w-full">
+                <button key={cat} type="button" onClick={() => setShowSizSubs(true)} className="block">
                   {content}
                 </button>
               );
@@ -116,7 +116,7 @@ export default function CategoryBlock() {
 
             // Остальные — ссылка на каталог с query
             return (
-              <Link key={cat} href={`/catalog?category=${encodeURIComponent(cat)}`} className="w-full">
+              <Link key={cat} href={`/catalog?category=${encodeURIComponent(cat)}`} className="block">
                 {content}
               </Link>
             );

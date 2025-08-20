@@ -2,11 +2,10 @@
 
 import Head from 'next/head';
 import Script from 'next/script';
-import { usePageView } from '@/lib/analytics';
 
 type StructuredData = {
   '@type'?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 interface SeoHeadProps {
@@ -39,24 +38,46 @@ export function SeoHead({
   structuredData,
 }: SeoHeadProps) {
   const siteName = 'POJ PRO';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://poj-pro.uz';
-  
-  // Track page views
-  usePageView();
+  // Determine base URL from env with safe fallback to relative URLs
+  const rawEnv =
+    (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL)) ||
+    (typeof process !== 'undefined' && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '') ||
+    '';
+  const siteUrl = rawEnv.replace(/\/$/, '');
+
+  // Tracking hook removed (no-op) to avoid build errors if analytics isn't configured
+
+  // Helpers
+  const ensureLeadingSlash = (p: string) => p.startsWith('/') ? p : `/${p}`;
+  const clean = (p: string) => ensureLeadingSlash(p).replace(/\/+/g, '/');
+  const isServicePath = /^\s*\/adminProducts(\/|$)/.test(path);
 
   // Generate title and description
   const title = customTitle.endsWith(siteName) ? customTitle : `${customTitle} | ${siteName}`;
   const description = customDescription;
   const ogImage = image || '';
-  const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
-  const canonicalUrl = `${siteUrl}${path}`;
+  const fullOgImage = ogImage.startsWith('http')
+    ? ogImage
+    : (siteUrl ? `${siteUrl}${ogImage}` : ogImage);
+  // Locale-aware canonical
+  const pathname = clean(path);
+  const localeLower = (locale || 'uz').toLowerCase();
+  const isRu = localeLower.startsWith('ru');
+  const isEn = localeLower.startsWith('en');
+  const canonicalPath = isRu ? `/ru${pathname}` : isEn ? `/en${pathname}` : pathname; // uz default at root
+  const canonicalUrl = isServicePath ? undefined : (siteUrl ? `${siteUrl}${canonicalPath}` : canonicalPath);
 
-  // Get alternate language URLs
-  const languageAlternates = {
-    'ru': `${siteUrl}/ru${path}`,
-    'en': `${siteUrl}/en${path}`,
-    'uz': `${siteUrl}/uz${path}`,
-  };
+  // Hreflang alternates for subpath locales (skip on service paths)
+  const altUzPath = pathname;
+  const altRuPath = `/ru${pathname}`;
+  const altEnPath = `/en${pathname}`;
+  const languageAlternates: Record<string, string> | null = isServicePath
+    ? null
+    : {
+        uz: siteUrl ? `${siteUrl}${altUzPath}` : altUzPath,
+        ru: siteUrl ? `${siteUrl}${altRuPath}` : altRuPath,
+        en: siteUrl ? `${siteUrl}${altEnPath}` : altEnPath,
+      };
 
   return (
     <>
@@ -65,18 +86,24 @@ export function SeoHead({
         <meta name="description" content={description} />
         {noIndex && <meta name="robots" content="noindex, nofollow" />}
         
-        {/* Canonical URL */}
-        <link rel="canonical" href={canonicalUrl} />
+        {/* Canonical URL (skipped on service paths) */}
+        {!isServicePath && canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
         
-        {/* Language Alternates */}
-        <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
-        {Object.entries(languageAlternates).map(([lang, href]) => (
-          <link key={lang} rel="alternate" hrefLang={lang} href={href} />
-        ))}
+        {/* Language Alternates (uz root; ru/en prefixed). x-default -> uz */}
+        {!isServicePath && languageAlternates && (
+          <>
+            <link rel="alternate" hrefLang="x-default" href={languageAlternates.uz} />
+            {Object.entries(languageAlternates).map(([lang, href]) => (
+              <link key={lang} rel="alternate" hrefLang={lang} href={href} />
+            ))}
+          </>
+        )}
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content={type} />
-        <meta property="og:url" content={canonicalUrl} />
+        {!isServicePath && canonicalUrl && (
+          <meta property="og:url" content={canonicalUrl} />
+        )}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={fullOgImage} />
@@ -117,24 +144,28 @@ export function SeoHead({
       </Head>
       
       {/* Google Analytics */}
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
-      />
-      <Script
-        id="google-analytics"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}', {
-              page_path: window.location.pathname,
-            });
-          `,
-        }}
-      />
+      {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+        <>
+          <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
+          />
+          <Script
+            id="google-analytics"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `,
+            }}
+          />
+        </>
+      )}
       
       {/* Yandex.Metrika */}
       {process.env.NEXT_PUBLIC_YM_ID && (

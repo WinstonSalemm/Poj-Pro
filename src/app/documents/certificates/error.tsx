@@ -1,8 +1,12 @@
 "use client";
 import { useTranslation } from "@/i18n/useTranslation";
 
-export default function ErrorCertificates({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function ErrorCertificates({ error: _error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const { t } = useTranslation("translation");
+  if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+    // Log only in development to avoid noisy prod builds
+    console.error(_error);
+  }
   return (
     <div className="max-w-5xl mt-[100px] mx-auto px-4 py-8">
       <div className="rounded-md border border-red-200 bg-red-50 p-4">

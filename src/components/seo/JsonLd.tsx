@@ -1,10 +1,9 @@
 'use client';
 
 import Script from 'next/script';
-import { ReactNode } from 'react';
 
 type JsonLdProps = {
-  data: any;
+  data: Record<string, unknown>;
   type?: string;
   keyOverride?: string;
 };

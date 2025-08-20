@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 // Replace with your Yandex Metrika ID
 const YM_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || '';
+const YM_ID_NUM = Number(YM_ID);
 
 // Only initialize in production
 const isProduction = process.env.NODE_ENV === 'production';
@@ -15,13 +16,13 @@ export default function YandexMetrika() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!isProduction || !window.ym) return;
+    if (!isProduction || !window.ym || !YM_ID_NUM) return;
 
     // Track page view when URL changes
-    window.ym(YM_ID, 'hit', window.location.href);
+    window.ym(YM_ID_NUM, 'hit', window.location.href);
   }, [pathname, searchParams]);
 
-  if (!isProduction || !YM_ID) {
+  if (!isProduction || !YM_ID_NUM) {
     return null;
   }
 
@@ -34,7 +35,7 @@ export default function YandexMetrika() {
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
         (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-        ym(${YM_ID}, "init", {
+        ym(${Number(YM_ID) || 0}, "init", {
           clickmap:true,
           trackLinks:true,
           accurateTrackBounce:true,

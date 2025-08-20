@@ -624,9 +624,10 @@ function UsersTab() {
       }
       const data: UserRow[] = await res.json();
       setRows(data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      setError(e?.message || 'Failed to load users');
+      const message = e instanceof Error ? e.message : 'Failed to load users';
+      setError(message);
     } finally {
       setLoading(false);
     }

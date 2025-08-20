@@ -55,8 +55,11 @@ export async function csrfProtection(request: NextRequest) {
       if (typeof formToken === 'string') {
         csrfToken = formToken;
       }
-    } catch (e) {
-      // Ignore form data parsing errors
+    } catch (_e) {
+      // Ignore form data parsing errors, but log in dev to aid debugging
+      if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        console.warn('CSRF: failed to parse form data for token', _e);
+      }
     }
   }
 

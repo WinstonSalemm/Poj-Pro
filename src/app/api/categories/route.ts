@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
     const categories = await prisma.category.findMany({
-      where: { isActive: true },
       orderBy: { name: 'asc' }
     });
 
@@ -17,7 +14,5 @@ export async function GET() {
       { message: 'Internal server error' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

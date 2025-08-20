@@ -18,13 +18,13 @@ function isAuthed(request: Request): boolean {
 }
 
 // PUT /api/admin/products/[id]
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (!isAuthed(request)) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { slug, title, price, stock, images, categorySlug, isActive } = body as {
       slug?: string;
@@ -49,7 +49,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       data: {
         ...(typeof slug === 'string' ? { slug } : {}),
         ...(typeof price === 'number' ? { price } : {}),
-        // @ts-expect-error stock is in schema
         ...(typeof stock === 'number' ? { stock } : {}),
         ...(Array.isArray(images) ? { images: serializeImages(images) } : {}),
         ...(typeof isActive === 'boolean' ? { isActive } : {}),
@@ -77,13 +76,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // DELETE /api/admin/products/[id]
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (!isAuthed(request)) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Delete i18n first due to FK
     await prisma.productI18n.deleteMany({ where: { productId: id } });

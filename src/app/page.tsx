@@ -7,6 +7,7 @@ import SmallAboutUs from '@/components/SmallAboutUs/SmallAboutUs';
 import dynamic from 'next/dynamic';
 import CategoryBlock from '@/components/CategoryBlock/CategoryBlock';
 import MapSection from '@/components/MapSection/MapSection';
+import { SeoHead } from '@/components/seo/SeoHead';
 
 // Dynamically import PopularProductsBlock with no SSR
 const PopularProductsBlock = dynamic(
@@ -28,6 +29,16 @@ interface Product {
   in_stock: boolean;
   rating: number;
   reviews_count: number;
+}
+
+interface ApiProduct {
+  id: string | number;
+  title?: string;
+  description?: string;
+  summary?: string;
+  price?: number | string;
+  category?: { name?: string };
+  image?: string;
 }
 
 // Normalize app/lang codes to API-accepted ones
@@ -52,9 +63,9 @@ const fetchProducts = async (locale: string): Promise<Product[]> => {
     }
 
     // Transform the API response to match the Product type
-    return data.data.products.map((product: any) => ({
+    return (data.data.products as ApiProduct[]).map((product) => ({
       id: product.id,
-      name: product.title,
+      name: product.title || '',
       description: product.description || '',
       short_description: product.summary || '',
       price: typeof product.price === 'number' ? product.price : 0,
@@ -112,7 +123,29 @@ export default function HomePage() {
   const showLoading = bootLoading || loading;
 
   return (
-    <main className="relative min-h-screen bg-white">
+    <>
+      <SeoHead
+        title={"POJ PRO — пожарное оборудование в Узбекистане."}
+        description={
+          (i18n.language?.startsWith('en') ?
+            'POJ PRO supplies certified fire safety equipment across Uzbekistan. Reliable extinguishers, alarms, hydrants and more.' :
+            i18n.language?.startsWith('uz') ?
+            'POJ PRO Oʻzbekistonda sertifikatlangan yongʻin xavfsizligi uskunalarini yetkazib beradi. Ishonchli oʻchirgichlar, signalizatsiya va boshqalar.' :
+            'POJ PRO — сертифицированное пожарное оборудование в Узбекистане: огнетушители, оповещение, гидранты и др. Поставка и монтаж.')
+            .slice(0, 160)
+        }
+        path={'/'}
+        locale={i18n?.language || 'ru'}
+        image={'/OtherPics/logo.png'}
+        structuredData={{
+          '@type': 'Organization',
+          name: 'POJ PRO',
+          url: (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '')) || undefined,
+          logo: '/OtherPics/logo.png',
+          contactPoint: [{ '@type': 'ContactPoint', contactType: 'customer service', telephone: '+998', areaServed: 'UZ' }],
+        }}
+      />
+      <main className="relative min-h-screen bg-white">
       {/* Loading overlay */}
       {showLoading && (
         <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
@@ -203,7 +236,8 @@ export default function HomePage() {
           100% { background-position: 0 0 }
         }
       `}</style>
-    </main>
+      </main>
+    </>
   );
 }
 
