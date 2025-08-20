@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { I18nProvider } from '@/i18n/I18nProvider';
+import { getDictionary, normalizeLocale } from '@/i18n/server';
 import { CartProvider } from '@/context/CartContext';
 import { SessionProviderClient } from '@/components/auth/SessionProviderClient';
 import CookieConsentModal from '@/components/CookieConsentModal/CookieConsentModal';
@@ -36,7 +37,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const initialLocale = cookieStore.get('lang')?.value || 'ru';
+  const rawLocale = cookieStore.get('lang')?.value || 'ru';
+  const initialLocale = normalizeLocale(rawLocale);
+  const messages = await getDictionary(initialLocale);
 
   const session = await getServerSession(authOptions);
 
@@ -47,7 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
-        <I18nProvider initialLocale={initialLocale}>
+        <I18nProvider initialLocale={initialLocale} messages={messages}>
           <SessionProviderClient session={session}>
             <CartProvider>
               <ClientWrapper>{children}</ClientWrapper>

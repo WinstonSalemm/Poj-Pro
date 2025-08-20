@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
-
-const prisma = new PrismaClient();
-
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 interface ProductData {
   id: number;
@@ -24,18 +18,16 @@ export async function POST() {
   console.log('Starting import...');
   try {
     // Read product data from JSON files
-    const basePath = path.join(process.cwd(), 'src/locales');
-    
     const ruProducts: ProductData[] = JSON.parse(
-      fs.readFileSync(path.join(basePath, 'ru/data/products.json'), 'utf-8')
+      fs.readFileSync(path.join(process.cwd(), 'src/locales', 'ru/data/products.json'), 'utf-8')
     );
 
     const enProducts: ProductData[] = JSON.parse(
-      fs.readFileSync(path.join(basePath, 'eng/data/products.json'), 'utf-8')
+      fs.readFileSync(path.join(process.cwd(), 'src/locales', 'eng/data/products.json'), 'utf-8')
     );
 
     const uzProducts: ProductData[] = JSON.parse(
-      fs.readFileSync(path.join(basePath, 'uzb/data/products.json'), 'utf-8')
+      fs.readFileSync(path.join(process.cwd(), 'src/locales', 'uzb/data/products.json'), 'utf-8')
     );
 
     const results = [];
@@ -141,7 +133,5 @@ export async function POST() {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

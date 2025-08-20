@@ -15,6 +15,15 @@ export async function getLocale(): Promise<Locale> {
   return 'ru';
 }
 
+// Simple helper to guarantee single JSON read and consistent errors
+export async function safeJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, init);
+  if (!res.ok) {
+    throw new Error(`Fetch failed ${res.status} ${res.statusText} ${url}`);
+  }
+  return res.json() as Promise<T>;
+}
+
 export async function fetchAPI<T>(url: string, options?: RequestInit): Promise<{ data?: T; error?: string }> {
   // Prevent indefinite hangs by timing out the request
   const timeoutMs = typeof (process.env.NEXT_PUBLIC_API_TIMEOUT_MS || process.env.API_TIMEOUT_MS) === 'string'

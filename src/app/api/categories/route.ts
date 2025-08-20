@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { serializeJSON } from '@/lib/json';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
+export const dynamic = 'force-static';
 
 export async function GET() {
   try {
@@ -20,12 +19,12 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(serializeJSON(categories), { status: 200 });
+    return NextResponse.json(
+      serializeJSON(categories),
+      { status: 200, headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=600' } }
+    );
   } catch (error) {
     console.error('[api/categories][GET] error', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

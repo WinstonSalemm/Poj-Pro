@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// Enable ISR for this route; prefer static behavior
 export const revalidate = 60;
 export const dynamic = 'force-static';
 
@@ -27,19 +26,23 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const locale = normLocale(url.searchParams.get('locale'));
 
-    const products = await prisma.product.findMany({
-      where: { isActive: true },
-      include: {
-        i18n: true,
-        category: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    const [products, categories] = await Promise.all([
+      prisma.product.findMany({
+        where: { isActive: true },
+        include: { i18n: true, category: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.category.findMany({
+        orderBy: [
+          { name: 'asc' },
+          { slug: 'asc' },
+        ],
+        select: { id: true, slug: true, name: true },
+      }),
+    ]);
 
-    const data = products.map((p) => {
-      const t = p.i18n.find((x) => x.locale === locale)
-        || p.i18n.find((x) => x.locale === 'ru')
-        || p.i18n[0];
+    const productsData = products.map((p) => {
+      const t = p.i18n.find((x) => x.locale === locale) || p.i18n.find((x) => x.locale === 'ru') || p.i18n[0];
       const images = parseImages(p.images);
       return {
         id: p.id,
@@ -54,19 +57,12 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    // Stable caching for edge/CDN with ISR-like behavior
     return NextResponse.json(
-      { products: data },
-      {
-        status: 200,
-        headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=600' },
-      }
+      { products: productsData, categories },
+      { status: 200, headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=600' } }
     );
   } catch (error) {
-    console.error('[api/products][GET] error', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    console.error('[api/bootstrap][GET] error', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

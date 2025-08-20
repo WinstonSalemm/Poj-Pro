@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 function normLocale(raw?: string | null): 'ru' | 'en' | 'uz' {
   const s = (raw || '').toLowerCase();
   if (s === 'en' || s === 'eng') return 'en';
@@ -32,7 +28,7 @@ export async function GET(req: NextRequest) {
     const slug = decodeURIComponent(segments[segments.indexOf('categories') + 1] || '');
 
     if (!slug) {
-      return NextResponse.json({ message: 'Category slug is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Category slug is required' }, { status: 400 });
     }
 
     const category = await prisma.category.findUnique({
@@ -47,7 +43,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!category) {
-      return NextResponse.json({ message: 'Category not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     }
 
     const products = category.products.map((p) => {
@@ -73,9 +69,12 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({ products }, { status: 200 });
+    return NextResponse.json(
+      { products },
+      { status: 200, headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=600' } }
+    );
   } catch (error) {
     console.error('[api/categories/[slug]][GET] error', error);
-    return NextResponse.json({ message: 'Failed to fetch category products' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

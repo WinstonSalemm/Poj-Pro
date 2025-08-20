@@ -1,7 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useTranslation } from 'next-i18next';
+import { Suspense } from 'react';
+import { getLocale } from '@/lib/api';
 import ImageSlider from '@/components/ImageSlider/ImageSlider';
 import SmallAboutUs from '@/components/SmallAboutUs/SmallAboutUs';
 import dynamic from 'next/dynamic';
@@ -15,32 +13,6 @@ const PopularProductsBlock = dynamic(
   { ssr: false }
 );
 
-interface Product {
-  id: string | number;
-  name: string;
-  description: string;
-  short_description: string;
-  price: number;
-  category: string;
-  image: string;
-  images: string[];
-  characteristics: Record<string, string>;
-  sku: string;
-  in_stock: boolean;
-  rating: number;
-  reviews_count: number;
-}
-
-interface ApiProduct {
-  id: string | number;
-  title?: string;
-  description?: string;
-  summary?: string;
-  price?: number | string;
-  category?: { name?: string };
-  image?: string;
-}
-
 // Normalize app/lang codes to API-accepted ones
 const normLocale = (lang: string) => {
   const s = (lang || '').toLowerCase();
@@ -49,93 +21,39 @@ const normLocale = (lang: string) => {
   return 'ru';
 };
 
-// Function to fetch products from API
-const fetchProducts = async (locale: string): Promise<Product[]> => {
+// Server-side warm-up for ISR cache (no double read)
+async function warmProducts(locale: string) {
   try {
-    const response = await fetch(`/api/products?locale=${normLocale(locale)}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
-    }
-    const data = await response.json();
-    
-    if (!data.success || !Array.isArray(data.data?.products)) {
-      throw new Error(data.message || 'Invalid products data');
-    }
-
-    // Transform the API response to match the Product type
-    return (data.data.products as ApiProduct[]).map((product) => ({
-      id: product.id,
-      name: product.title || '',
-      description: product.description || '',
-      short_description: product.summary || '',
-      price: typeof product.price === 'number' ? product.price : 0,
-      category: product.category?.name || '',
-      image: product.image || '',
-      images: product.image ? [product.image] : [],
-      characteristics: {},
-      sku: '',
-      in_stock: true,
-      rating: 0,
-      reviews_count: 0
-    }));
-  } catch (error) {
-    console.error(`Error loading products for locale ${locale}:`, error);
-    return [];
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/products?locale=${normLocale(locale)}`,
+      { cache: 'force-cache', next: { revalidate: 60 } });
+    // Single JSON read to avoid body stream issues
+    if (res.ok) await res.json().catch(() => undefined);
+  } catch (e) {
+    console.error('warmProducts failed', e);
   }
-};
+}
 
-export default function HomePage() {
-  const { i18n } = useTranslation();
-  const [bootLoading, setBootLoading] = useState(true);
-  const [loading, setLoading] = useState(true);
+export const revalidate = 60;
 
-  // Get current language from i18n
-  const currentLang = i18n?.language || 'ru';
-  const apiLocale = normLocale(currentLang);
-
-  useEffect(() => {
-    // Load products when component mounts or language changes
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        // We're keeping this call to ensure translations are loaded
-        await fetchProducts(apiLocale);
-      } catch (err) {
-        console.error('Failed to load products:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Set a minimum loading time for better UX on initial load
-    if (bootLoading) {
-      const timer = setTimeout(() => {
-        loadProducts();
-        setBootLoading(false);
-      }, 700);
-      return () => clearTimeout(timer);
-    } else {
-      loadProducts();
-    }
-  }, [apiLocale, bootLoading]);
-
-  // Only show loading indicator if we're still booting or loading products
-  const showLoading = bootLoading || loading;
+export default async function HomePage() {
+  const locale = await getLocale();
+  // Warm ISR cache for products list (non-blocking for UI)
+  await warmProducts(locale);
 
   return (
     <>
       <SeoHead
         title={"POJ PRO — пожарное оборудование в Узбекистане."}
         description={
-          (i18n.language?.startsWith('en') ?
+          (locale?.startsWith('en') ?
             'POJ PRO supplies certified fire safety equipment across Uzbekistan. Reliable extinguishers, alarms, hydrants and more.' :
-            i18n.language?.startsWith('uz') ?
+            locale?.startsWith('uz') ?
             'POJ PRO Oʻzbekistonda sertifikatlangan yongʻin xavfsizligi uskunalarini yetkazib beradi. Ishonchli oʻchirgichlar, signalizatsiya va boshqalar.' :
             'POJ PRO — сертифицированное пожарное оборудование в Узбекистане: огнетушители, оповещение, гидранты и др. Поставка и монтаж.')
             .slice(0, 160)
         }
         path={'/'}
-        locale={i18n?.language || 'ru'}
+        locale={locale || 'ru'}
         image={'/OtherPics/logo.png'}
         structuredData={{
           '@type': 'Organization',
@@ -146,56 +64,36 @@ export default function HomePage() {
         }}
       />
       <main className="relative min-h-screen bg-white">
-      {/* Loading overlay */}
-      {showLoading && (
-        <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
-          <div className="text-2xl font-semibold tracking-wide mb-6">Загрузка...</div>
-          <div className="w-[240px] h-[6px] rounded-full bg-black/20 overflow-hidden">
-            <div className="h-full w-1/3 animate-slideBar rounded-full bg-black" />
-          </div>
-        </div>
-      )}
       {/* Контент с каскадной анимацией появления */}
-      <section className={`transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <section className={`transition-opacity duration-500 opacity-100`}>
         <div className="animate-in-up" style={{ animationDelay: '0.05s' }}>
-          {/* Скелетон на слайдер (виден только пока bootLoading=true) */}
-          {bootLoading ? (
-            <div className="h-[320px] md:h-[420px] w-full shimmer rounded-none" />
-          ) : (
+          <Suspense fallback={<div className="h-[320px] md:h-[420px] w-full shimmer rounded-none" />}> 
             <ImageSlider />
-          )}
+          </Suspense>
         </div>
 
         <div className="animate-in-up" style={{ animationDelay: '0.12s' }}>
-          {bootLoading ? (
-            <SectionSkeleton title widthClass="w-40" lines={3} />
-          ) : (
+          <Suspense fallback={<SectionSkeleton title widthClass="w-40" lines={3} />}> 
             <SmallAboutUs />
-          )}
+          </Suspense>
         </div>
 
         <div className="animate-in-up" style={{ animationDelay: '0.18s' }}>
-          {bootLoading ? (
-            <CardsSkeleton count={6} />
-          ) : (
+          <Suspense fallback={<CardsSkeleton count={6} />}> 
             <PopularProductsBlock />
-          )}
+          </Suspense>
         </div>
 
         <div className="animate-in-up" style={{ animationDelay: '0.24s' }}>
-          {bootLoading ? (
-            <SectionSkeleton title widthClass="w-48" lines={2} />
-          ) : (
+          <Suspense fallback={<SectionSkeleton title widthClass="w-48" lines={2} />}> 
             <CategoryBlock />
-          )}
+          </Suspense>
         </div>
 
         <div className="!bg-[#F8F9FA] animate-in-up" style={{ animationDelay: '0.30s' }}>
-          {bootLoading ? (
-            <div className="h-[320px] w-full shimmer rounded-xl  mx-auto max-w-[1260px]" />
-          ) : (
+          <Suspense fallback={<div className="h-[320px] w-full shimmer rounded-xl  mx-auto max-w-[1260px]" />}> 
             <MapSection />
-          )}
+          </Suspense>
         </div>
       </section>
 

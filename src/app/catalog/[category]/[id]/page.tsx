@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getLocale } from "@/lib/api"; // твоя функция локали
 import T from "@/components/i18n/T";
 import Price from "@/components/product/Price";
@@ -11,11 +11,8 @@ import ProductSpecs from "@/components/product/ProductSpecs";
 import { SeoHead } from "@/components/seo/SeoHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// Гарантируем динамический рендер без ISR
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-const prisma = new PrismaClient();
+// Включаем ISR на 60 сек
+export const revalidate = 60;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function ProductPage({ params }: any) {
