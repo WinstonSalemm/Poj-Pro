@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/useTranslation";
+import { useSession, signOut } from 'next-auth/react';
 import { CartIcon } from "../Cart/CartIcon";
 import { AuthButton } from "../auth/AuthButton";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ interface MenuItem {
 export default function Header() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -268,23 +270,38 @@ export default function Header() {
         ))}
         {/* Auth actions inside burger with slightly different style */}
         <div className="px-4 py-3 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              try { (async () => { (await import("next-auth/react")).signIn(); })(); } catch {}
-              setMobileOpen(false);
-            }}
-            className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
-          >
-            {t('auth.signIn')}
-          </button>
-          <Link
-            href="/register"
-            onClick={() => setMobileOpen(false)}
-            className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
-          >
-            {t('auth.register')}
-          </Link>
+          {session ? (
+            <button
+              type="button"
+              onClick={async () => {
+                await signOut({ callbackUrl: '/' });
+                setMobileOpen(false);
+              }}
+              className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
+            >
+              {t('auth.signOut')}
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  try { (async () => { (await import("next-auth/react")).signIn(); })(); } catch {}
+                  setMobileOpen(false);
+                }}
+                className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
+              >
+                {t('auth.signIn')}
+              </button>
+              <Link
+                href="/register"
+                onClick={() => setMobileOpen(false)}
+                className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
+              >
+                {t('auth.register')}
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </header>

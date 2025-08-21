@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -14,8 +14,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  // Always redirect home on success
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,13 +27,12 @@ export default function LoginPage() {
         redirect: false,
         email: email.toLowerCase().trim(),
         password,
-        callbackUrl,
       });
 
       if (result?.error) {
         setError(t('auth.loginPage.errors.invalidCredentials'));
       } else {
-        router.push(callbackUrl);
+        router.push('/');
         router.refresh();
       }
     } catch {

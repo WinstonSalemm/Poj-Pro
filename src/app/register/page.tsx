@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  // We no longer use callbackUrl for redirects after success; always go home
+  const callbackUrl = '/';
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,13 +48,12 @@ export default function RegisterPage() {
         redirect: false,
         email: email.toLowerCase().trim(),
         password,
-        callbackUrl,
       });
 
       if (result?.error) {
-        router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+        router.push(`/login`);
       } else {
-        router.push(callbackUrl);
+        router.push('/');
         router.refresh();
       }
     } catch (error) {
