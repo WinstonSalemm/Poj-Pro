@@ -23,7 +23,9 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement | null>(null);
-  const switcherRef = useRef<HTMLDivElement | null>(null);
+  // Separate refs for mobile and desktop language switchers to avoid false outside-clicks on mobile
+  const switcherMobileRef = useRef<HTMLDivElement | null>(null);
+  const switcherDesktopRef = useRef<HTMLDivElement | null>(null);
   const currentLanguage = (i18n.language as Lang) || "ru";
 
   const menuLeft: MenuItem[] = [
@@ -44,8 +46,11 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (switcherRef.current && !switcherRef.current.contains(e.target as Node)) setLangOpen(false);
-      if (headerRef.current && !headerRef.current.contains(e.target as Node)) setMobileOpen(false);
+      const target = e.target as Node;
+      const inMobile = !!(switcherMobileRef.current && switcherMobileRef.current.contains(target));
+      const inDesktop = !!(switcherDesktopRef.current && switcherDesktopRef.current.contains(target));
+      if (!inMobile && !inDesktop) setLangOpen(false);
+      if (headerRef.current && !headerRef.current.contains(target)) setMobileOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -143,7 +148,7 @@ export default function Header() {
             </div>
 
             {/* Language small */}
-            <div className="relative shrink-0" ref={switcherRef}>
+            <div className="relative shrink-0" ref={switcherMobileRef}>
               <button
                 type="button"
                 className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 whitespace-nowrap
@@ -164,7 +169,7 @@ export default function Header() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                <div className="absolute right-0 z-20 mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="py-1">
                     {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
                       <button
@@ -204,7 +209,7 @@ export default function Header() {
             <AuthButton />
 
             {/* Language (desktop) */}
-            <div className="relative" ref={switcherRef}>
+            <div className="relative" ref={switcherDesktopRef}>
               <button
                 type="button"
                 className="flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs md:text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
