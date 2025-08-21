@@ -1,7 +1,7 @@
 export const defaultNS = 'translation';
 export const cookieName = 'i18next';
 
-export const supportedLngs = ['ru', 'eng', 'uzb'] as const;
+export const supportedLngs = ['ru', 'eng', 'uzb', 'en', 'uz'] as const;
 export type SupportedLanguage = typeof supportedLngs[number];
 
 export function getOptions(lng: SupportedLanguage = 'ru', ns: string | string[] = defaultNS) {

@@ -56,7 +56,9 @@ export default function Header() {
     i18n.changeLanguage(lng);
     // Persist cookie for SSR locale detection (read by getLocale())
     const normalized = lng === "eng" ? "eng" : lng === "uzb" ? "uzb" : "ru";
-    document.cookie = `i18next=${normalized}; path=/; max-age=31536000`;
+    document.cookie = `i18next=${normalized}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `lang=${normalized}; path=/; max-age=31536000; SameSite=Lax`;
+    try { localStorage.setItem('i18nextLng', normalized); } catch {}
     // Refresh to re-render server components with new cookie
     router.refresh();
     setLangOpen(false);

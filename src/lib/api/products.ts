@@ -41,6 +41,7 @@ export interface Product {
 }
 
 import { SITE_URL } from '@/lib/site';
+import { safeJson } from '@/lib/api';
 
 // Local helper to resolve base URL if not provided by SITE_URL export
 // Trim trailing slashes for safe concatenation
@@ -70,9 +71,11 @@ async function loadProducts(locale: string): Promise<ProductData[]> {
     if (!response.ok) {
       return [];
     }
-    const data = await response.json();
+    const data = (await safeJson(response)) as Record<string, unknown>;
     // Keep mapping compatible with data?.data?.products ?? data ?? []
-    const products = (data?.data?.products ?? data ?? []) as Array<{
+    const container = (data && typeof data === 'object' ? data : {}) as Record<string, unknown>;
+    const inner = (container.data && typeof container.data === 'object' ? (container.data as Record<string, unknown>) : undefined);
+    const products = ((inner?.products as unknown) ?? (data as unknown) ?? []) as Array<{
       id: string;
       title?: string;
       description?: string;

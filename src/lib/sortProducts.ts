@@ -1,5 +1,5 @@
 // src/lib/sortProducts.ts
-type Item = { id?: string | number; name?: string; title?: string };
+type Item = { id?: string | number; name?: string; title?: string; slug?: string };
 
 const OP_ORDER = [2, 3, 4, 5, 6, 8, 10, 25, 30, 35, 40, 50, 70, 100];
 
@@ -7,37 +7,43 @@ const norm = (s: string) =>
   s.toLowerCase().replace(/ё/g, "е").replace(/\s+/g, " ").trim();
 
 function parseGroupAndSize(p: Item) {
-  const text = norm(`${p.name ?? ""} ${p.title ?? ""} ${p.id ?? ""}`);
+  // Locale-invariant text: prefer slug, then id. Avoid using translated title/name
+  const textSlug = norm(`${p.slug ?? ""}`);
+  const textId = norm(`${p.id ?? ""}`);
+  const textFallback = norm(`${p.title ?? ""} ${p.name ?? ""}`);
+  const text = textSlug || textId || textFallback;
 
-  // сначала ловим перезарядку
-  if (text.includes("перезаряд")) {
-    return { group: "recharge" as const, size: NaN, key: text };
+  // сначала ловим перезарядку (по slug не всегда видно) — проверим и fallback-текст
+  const rechargeText = (textSlug || textFallback);
+  if (rechargeText.includes("перезаряд")) {
+    return { group: "recharge" as const, size: NaN, key: textSlug || textId || rechargeText };
   }
 
-  // ОП
-  const mOP = text.match(/\b(оп|op)\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i);
+  // ОП (powder extinguishers)
+  const mOP = (textSlug || text).match(/\b(оп|op)\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i);
   if (mOP) {
     const size = parseFloat(mOP[2].replace(",", "."));
-    return { group: "op" as const, size, key: text };
+    return { group: "op" as const, size, key: textSlug || textId || text };
   }
 
-  // ОУ
-  const mOU = text.match(/\b(оу|ou)\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i);
+  // ОУ / OU (CO2)
+  const mOU = (textSlug || text).match(/\b(оу|ou)\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i);
   if (mOU) {
     const size = parseFloat(mOU[2].replace(",", "."));
-    return { group: "ou" as const, size, key: text };
+    return { group: "ou" as const, size, key: textSlug || textId || text };
   }
 
-  // МПП
+  // МПП / MPP (modules)
+  const forMPP = textSlug || text;
   const mMPP =
-    text.match(/\bмпп\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i) ||
-    text.match(/\bmpp\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i);
+    forMPP.match(/\bмпп\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i) ||
+    forMPP.match(/\bmpp\s*[-–—]?\s*(\d+(?:[.,]\d+)?)/i);
   if (mMPP) {
     const size = parseFloat(mMPP[mMPP.length - 1].replace(",", "."));
-    return { group: "mpp" as const, size, key: text };
+    return { group: "mpp" as const, size, key: textSlug || textId || forMPP };
   }
 
-  return { group: "other" as const, size: NaN, key: text };
+  return { group: "other" as const, size: NaN, key: textSlug || textId || text };
 }
 
 const PRIORITY: Record<string, number> = {
@@ -72,7 +78,8 @@ export function sortProductsAsc<T extends Item>(arr: T[]): T[] {
       if (Number.isFinite(A.size) && Number.isFinite(B.size) && A.size !== B.size) {
         return A.size - B.size;
       }
-      return A.key.localeCompare(B.key, undefined, { numeric: true });
+      // Tie-breaker must be locale-invariant: compare by slug/id-derived keys only
+      return (a.slug ?? `${a.id ?? ""}`).localeCompare((b.slug ?? `${b.id ?? ""}`), undefined, { numeric: true });
     }
 
     // внутри ОУ и МПП → по числу
@@ -80,10 +87,10 @@ export function sortProductsAsc<T extends Item>(arr: T[]): T[] {
       if (Number.isFinite(A.size) && Number.isFinite(B.size) && A.size !== B.size) {
         return A.size - B.size;
       }
-      return A.key.localeCompare(B.key, undefined, { numeric: true });
+      return (a.slug ?? `${a.id ?? ""}`).localeCompare((b.slug ?? `${b.id ?? ""}`), undefined, { numeric: true });
     }
 
-    // остальное
-    return A.key.localeCompare(B.key, undefined, { numeric: true });
+    // остальное — сравнение по slug/id
+    return (a.slug ?? `${a.id ?? ""}`).localeCompare((b.slug ?? `${b.id ?? ""}`), undefined, { numeric: true });
   });
 }

@@ -71,10 +71,25 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { products },
-      { status: 200, headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=600' } }
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 's-maxage=60, stale-while-revalidate=600',
+        },
+      }
     );
   } catch (error) {
     console.error('[api/categories/[slug]][GET] error', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 's-maxage=60, stale-while-revalidate=600',
+        },
+      }
+    );
   }
 }

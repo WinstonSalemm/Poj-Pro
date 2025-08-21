@@ -6,6 +6,9 @@ export type Locale = 'ru' | 'en' | 'uz';
 
 export function normalizeLocale(input?: string | null): Locale {
   const s = (input || '').toLowerCase();
+  // handle legacy/custom codes from client (eng/uzb)
+  if (s === 'eng') return 'en';
+  if (s === 'uzb') return 'uz';
   if (s.startsWith('en')) return 'en';
   if (s.startsWith('uz')) return 'uz';
   return 'ru';

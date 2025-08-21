@@ -1,4 +1,5 @@
 export type Locale = 'ru' | 'en' | 'uz';
+import { fetchAPI } from '@/lib/api';
 
 const qs = (p: Record<string, string | number | undefined>) =>
   Object.entries(p)
@@ -6,11 +7,7 @@ const qs = (p: Record<string, string | number | undefined>) =>
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
     .join('&');
 
-// Absolute baseUrl for server components, relative for client components
-const getBase = () => {
-  if (typeof window !== 'undefined') return '';
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
-};
+// Build relative URLs; fetchAPI handles cache and revalidate
 
 export async function fetchProducts(opts: {
   locale: Locale;
@@ -24,23 +21,22 @@ export async function fetchProducts(opts: {
     page: opts.page ?? 1,
     per: opts.per ?? 50,
   });
-  const res = await fetch(`${getBase()}/api/products?${query}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`products_fetch_failed:${res.status}`);
-  return res.json();
+  return fetchAPI<{ products: unknown[] }>(`/api/products?${query}`, {
+    cache: 'force-cache',
+    next: { revalidate: 60 },
+  });
 }
 
 export async function fetchProduct({ locale, idOrSlug }: { locale: Locale; idOrSlug: string | number }) {
   const query = qs({ locale });
-  const res = await fetch(`${getBase()}/api/products/${encodeURIComponent(idOrSlug)}?${query}`, {
-    method: 'GET',
-    headers: { 'Accept': 'application/json' },
-    cache: 'no-store',
-  });
-  
-  if (!res.ok) {
-    return { success: false, message: `HTTP ${res.status}` };
+  try {
+    const data = await fetchAPI<unknown>(`/api/products/${encodeURIComponent(idOrSlug)}?${query}`, {
+      cache: 'force-cache',
+      next: { revalidate: 60 },
+    });
+    return { success: true, data };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Unknown error';
+    return { success: false, message: msg };
   }
-  
-  const data = await res.json();
-  return { success: true, data };
 }

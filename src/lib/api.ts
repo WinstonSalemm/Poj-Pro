@@ -1,69 +1,53 @@
 import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 
 export type Locale = 'ru' | 'en' | 'uz';
 
 export async function getLocale(): Promise<Locale> {
   const cookieStore = await cookies();
-  // i18next-browser-languagedetector typically uses 'i18next' cookie name
   const raw = (cookieStore.get('i18next')?.value || cookieStore.get('i18n')?.value || 'ru').toLowerCase();
-
-  // Normalize common variants
   const lang = raw === 'eng' ? 'en' : raw === 'uzb' ? 'uz' : raw;
-
   if (lang.startsWith('en')) return 'en';
   if (lang.startsWith('uz')) return 'uz';
   return 'ru';
 }
 
-// Simple helper to guarantee single JSON read and consistent errors
-export async function safeJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  if (!res.ok) {
-    throw new Error(`Fetch failed ${res.status} ${res.statusText} ${url}`);
+// Determine absolute base URL for server-side fetches
+export async function getBaseUrl(): Promise<string> {
+  try {
+    const h = await headers();
+    const proto = h.get('x-forwarded-proto') ?? 'http';
+    const host = h.get('x-forwarded-host') ?? h.get('host');
+    if (host) return `${proto}://${host}`;
+  } catch {
+    // headers() may be unavailable during certain build/ISR phases
+  }
+
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.RAILWAY_PUBLIC_DOMAIN) return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
+  return 'http://localhost:3000';
+}
+
+// Ensure single read and JSON-only parsing
+export async function safeJson<T = unknown>(res: Response): Promise<T> {
+  const ct = res.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Invalid response format: expected JSON, got "${ct}". First bytes: ${text.slice(0, 120)}`);
   }
   return res.json() as Promise<T>;
 }
 
-export async function fetchAPI<T>(url: string, options?: RequestInit): Promise<{ data?: T; error?: string }> {
-  // Prevent indefinite hangs by timing out the request
-  const timeoutMs = typeof (process.env.NEXT_PUBLIC_API_TIMEOUT_MS || process.env.API_TIMEOUT_MS) === 'string'
-    ? Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS || process.env.API_TIMEOUT_MS)
-    : 10000; // default 10s
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(new Error('Request timeout')), isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 10000);
-
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-
-    const res = await fetch(fullUrl, {
-      ...options,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-      cache: 'no-store',
-      signal: controller.signal,
-    });
-
-    if (!res.ok) {
-      const error = await res.text().catch(() => 'Unknown error');
-      console.error(`API Error (${res.status}):`, error);
-      return { error: `Error ${res.status}: ${error}` };
-    }
-
-    const data = await res.json();
-    if (!data?.success) {
-      return { error: data?.message || 'Unknown error' };
-    }
-
-    return { data: data.data };
-  } catch (error) {
-    console.error('Fetch error:', error);
-    return { error: error instanceof Error ? error.message : 'Unknown error' };
-  } finally {
-    clearTimeout(timer);
+export async function fetchAPI<T = unknown>(path: string, init?: RequestInit): Promise<T> {
+  const url = /^https?:\/\//i.test(path) ? path : `${await getBaseUrl()}${path}`;
+  const res = await fetch(url, {
+    cache: 'force-cache',
+    next: { revalidate: 60 },
+    ...init,
+  });
+  if (!res.ok) {
+    throw new Error(`API ${url} failed: ${res.status} ${res.statusText}`);
   }
+  return safeJson<T>(res);
 }

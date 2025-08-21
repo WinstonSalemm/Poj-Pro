@@ -37,7 +37,12 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const rawLocale = cookieStore.get('lang')?.value || 'ru';
+  // Prefer i18next cookie set by the client, with fallbacks for legacy names
+  const rawLocale =
+    cookieStore.get('i18next')?.value ||
+    cookieStore.get('lang')?.value ||
+    cookieStore.get('i18n')?.value ||
+    'ru';
   const initialLocale = normalizeLocale(rawLocale);
   const messages = await getDictionary(initialLocale);
 

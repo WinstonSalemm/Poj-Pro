@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
-import { getLocale, safeJson } from '@/lib/api';
+import { getLocale, fetchAPI } from '@/lib/api';
 import type { Product } from '@/types/product';
 import CategoryProductsClient from '@/components/catalog/CategoryProductsClient';
+import { sortProductsAsc } from '@/lib/sortProducts';
 
 export const revalidate = 60;
 
@@ -25,7 +26,7 @@ function toSlug(s: string) {
 
 async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | 'uz') {
   const url = `/api/categories/${encodeURIComponent(categorySlug)}?locale=${locale}`;
-  const data = await safeJson<{ products: Array<{
+  const data = await fetchAPI<{ products: Array<{
     id: string | number;
     slug: string;
     title?: string;
@@ -46,7 +47,8 @@ async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | '
     description: item.description,
     short_description: item.description,
   }));
-  return formatted;
+  // Apply domain-specific ordering: OP → OU → MPP → recharge → others
+  return sortProductsAsc(formatted);
 }
 
 export default async function CatalogCategoryPage({ params }: { params: Promise<{ category: string }> }) {

@@ -18,9 +18,12 @@ export function LanguageSwitcher() {
     const normalized = lng === 'eng' ? 'eng' : lng === 'uzb' ? 'uzb' : 'ru';
     // Update i18next client state
     i18n.changeLanguage(normalized);
-    // Persist cookie for server-side getLocale()
+    // Persist cookies for server-side locale detection (keep legacy 'lang' for compatibility)
     // 1 year expiry
-    document.cookie = `i18next=${normalized}; path=/; max-age=31536000`;
+    document.cookie = `i18next=${normalized}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `lang=${normalized}; path=/; max-age=31536000; SameSite=Lax`;
+    // Persist to localStorage for client detector
+    try { localStorage.setItem('i18nextLng', normalized); } catch {}
     // Re-render server components with new cookie
     router.refresh();
   };

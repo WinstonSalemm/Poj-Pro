@@ -33,7 +33,31 @@ export const resources = {
     },
     aboutus: (engTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
   },
+  // Alias standard code 'en' to the same resources as 'eng'
+  en: {
+    translation: {
+      ...engTranslation,
+      cookieConsent: {
+        message: 'We use cookies to store language and cart contents. By continuing to use the site, you agree to their use.',
+        accept: 'Accept',
+        close: 'Close'
+      }
+    },
+    aboutus: (engTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
+  },
   uzb: {
+    translation: {
+      ...uzbTranslation,
+      cookieConsent: {
+        message: 'Biz til va savat tarkibini saqlash uchun cookie-fayllardan foydalanamiz. Saytdan foydalanishda siz ularning ishlatilishiga rozilik bildirasiz.',
+        accept: 'Qabul qilish',
+        close: 'Yopish'
+      }
+    },
+    aboutus: (uzbTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
+  },
+  // Alias standard code 'uz' to the same resources as 'uzb'
+  uz: {
     translation: {
       ...uzbTranslation,
       cookieConsent: {
@@ -49,7 +73,8 @@ export const resources = {
 // Language detection configuration
 const detectionOptions = {
   order: ['cookie', 'localStorage', 'navigator'],
-  lookupCookie: 'lang',
+  // Use the same cookie name the app sets everywhere
+  lookupCookie: 'i18next',
   lookupLocalStorage: 'i18nextLng',
   caches: ['localStorage', 'cookie'],
   cookieMinutes: 60 * 24 * 365, // 1 year
@@ -79,6 +104,8 @@ export const updateLanguageStorage = (lng: string) => {
     // Update cookie (1 year expiry)
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    // Keep both cookies for compatibility: primary 'i18next', legacy 'lang'
+    document.cookie = `i18next=${lng}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
     document.cookie = `lang=${lng}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
   } catch (e) {
     console.warn('Failed to update language storage', e);

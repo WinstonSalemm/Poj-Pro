@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getLocale } from '@/lib/api';
+import { getLocale, fetchAPI } from '@/lib/api';
 import ImageSlider from '@/components/ImageSlider/ImageSlider';
 import SmallAboutUs from '@/components/SmallAboutUs/SmallAboutUs';
 import CategoryBlock from '@/components/CategoryBlock/CategoryBlock';
@@ -18,10 +18,11 @@ const normLocale = (lang: string) => {
 // Server-side warm-up for ISR cache (no double read)
 async function warmProducts(locale: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/products?locale=${normLocale(locale)}`,
-      { cache: 'force-cache', next: { revalidate: 60 } });
-    // Single JSON read to avoid body stream issues
-    if (res.ok) await res.json().catch(() => undefined);
+    // hit API using server-safe helper; ignore result, just warm cache
+    await fetchAPI(`/api/products?locale=${normLocale(locale)}`, {
+      cache: 'force-cache',
+      next: { revalidate: 60 },
+    }).catch(() => undefined);
   } catch (e) {
     console.error('warmProducts failed', e);
   }
