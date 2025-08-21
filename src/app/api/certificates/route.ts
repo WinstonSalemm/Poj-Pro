@@ -5,18 +5,30 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    const jsonUrl = new URL('/certificates.json', req.url);
-    const res = await fetch(jsonUrl.toString(), { cache: 'no-store' });
-    return new Response(res.body, {
-      status: res.status,
+    const origin = new URL(req.url).origin;
+    const url = `${origin}/certificates.json`;
+    const res = await fetch(url, { cache: 'no-store' });
+
+    if (!res.ok) {
+      // Gracefully degrade to empty list to avoid 500 on the page
+      return new Response(JSON.stringify({ items: [] }), {
+        status: 200,
+        headers: { 'content-type': 'application/json; charset=utf-8' },
+      });
+    }
+
+    const text = await res.text();
+    return new Response(text, {
+      status: 200,
       headers: {
         'content-type': res.headers.get('content-type') ?? 'application/json; charset=utf-8',
       },
     });
   } catch (error) {
     console.error('[api/certificates][GET] error', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch certificates' }), {
-      status: 500,
+    // Graceful fallback as well
+    return new Response(JSON.stringify({ items: [] }), {
+      status: 200,
       headers: { 'content-type': 'application/json; charset=utf-8' },
     });
   }
