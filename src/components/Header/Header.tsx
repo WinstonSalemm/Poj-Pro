@@ -274,8 +274,9 @@ export default function Header() {
             <button
               type="button"
               onClick={async () => {
-                await signOut({ callbackUrl: '/' });
+                await signOut({ redirect: false });
                 setMobileOpen(false);
+                router.push('/');
               }}
               className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
             >

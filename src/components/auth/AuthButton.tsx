@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useTranslation } from '@/i18n/useTranslation';
 
 export function AuthButton() {
@@ -16,11 +16,15 @@ export function AuthButton() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const callbackUrl = searchParams.get('callbackUrl') || pathname || '/';
 
   const handleSignIn = () => signIn(undefined, { callbackUrl });
-  const handleSignOut = async () => { await signOut({ callbackUrl: '/' }); };
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+  };
 
   // ---- стили кнопок / размеры ----
   const brandBtn =
