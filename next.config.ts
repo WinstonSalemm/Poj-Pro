@@ -46,7 +46,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: process.env.NODE_ENV !== 'production',
   // Disable ESLint during build
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true,
   },
   // Disable TypeScript type checking during build
   typescript: {

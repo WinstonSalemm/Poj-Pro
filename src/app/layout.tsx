@@ -82,6 +82,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           });
         `}</Script>
         <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="https://mc.yandex.ru/watch/103855517" style={{ position: 'absolute', left: '-9999px' }} alt="" />
         </noscript>
         <I18nProvider initialLocale={initialLocale} messages={messages}>
