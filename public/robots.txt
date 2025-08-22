@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
-Disallow: /adminProducts
-Sitemap: https://site-jl4e4tpj0-poj-pros-projects.vercel.app/sitemap.xml
+Host: poj-pro.uz
+Sitemap: https://poj-pro.uz/sitemap.xml

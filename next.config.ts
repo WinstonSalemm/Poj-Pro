@@ -14,12 +14,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self';",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com;",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://mc.yandex.ru https://yastatic.net;",
               "style-src 'self' 'unsafe-inline';",
-              "img-src 'self' data: blob: https:;",
-              "font-src 'self';",
-              "connect-src 'self' https://www.google-analytics.com;",
-              "frame-src 'self';",
+              "img-src 'self' data: blob: https: https://mc.yandex.ru;",
+              "font-src 'self' data:;",
+              "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://mc.yandex.ru;",
+              "frame-src 'self' https://mc.yandex.ru;",
             ].join(' ')
           },
           {

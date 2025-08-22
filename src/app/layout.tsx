@@ -12,6 +12,8 @@ import { SessionProviderClient } from '@/components/auth/SessionProviderClient';
 import CookieConsentModal from '@/components/CookieConsentModal/CookieConsentModal';
 import ClientWrapper from '@/app/ClientWrapper';
 import CartAddToast from '@/components/Cart/CartAddToast';
+import Script from 'next/script';
+import Analytics from '@/components/Analytics';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -55,6 +57,33 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
+        {/* Google Analytics 4 */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-90DRJPRBL5" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);} 
+          gtag('js', new Date());
+          gtag('config', 'G-90DRJPRBL5', { send_page_view: true });
+        `}</Script>
+
+        {/* Yandex.Metrika */}
+        <Script id="ym-init" strategy="afterInteractive">{`
+          (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();for (var j=0; j<document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+          (window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+
+          ym(103855517, 'init', {
+            defer: true,
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+          });
+        `}</Script>
+        <noscript>
+          <img src="https://mc.yandex.ru/watch/103855517" style={{ position: 'absolute', left: '-9999px' }} alt="" />
+        </noscript>
         <I18nProvider initialLocale={initialLocale} messages={messages}>
           <SessionProviderClient session={session}>
             <CartProvider>
@@ -64,6 +93,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CookieConsentModal />
           </SessionProviderClient>
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );
