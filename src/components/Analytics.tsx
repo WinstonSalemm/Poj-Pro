@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-const GA_ID = 'G-90DRJPRBL5';
-const YM_ID = 103855517;
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const YM_ID = process.env.NEXT_PUBLIC_YM_ID ? Number(process.env.NEXT_PUBLIC_YM_ID) : undefined;
 
 // Provide a global type for Yandex.Metrika only (safe to augment)
 declare global {
@@ -28,11 +28,11 @@ export default function Analytics() {
     // GA4 pageview
     if (typeof window !== 'undefined') {
       const w = window as unknown as { gtag?: GtagFn; ym?: YmFn };
-      if (typeof w.gtag === 'function') {
+      if (GA_ID && typeof w.gtag === 'function') {
         w.gtag('config', GA_ID, { page_path: url });
       }
       // Yandex.Metrika hit
-      if (typeof w.ym === 'function') {
+      if (YM_ID && typeof w.ym === 'function') {
         w.ym(YM_ID, 'hit', url);
       }
     }
