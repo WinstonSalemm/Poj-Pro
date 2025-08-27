@@ -2,6 +2,15 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 export type CertificateItem = { id: string; title: string; href: string };
+type CertJSONItem = { title: string; href: string };
+
+function isCertArray(input: unknown): input is CertJSONItem[] {
+  return Array.isArray(input) && input.every(it =>
+    it && typeof it === 'object' &&
+    typeof (it as Record<string, unknown>).title === 'string' &&
+    typeof (it as Record<string, unknown>).href === 'string'
+  );
+}
 
 function titleFromFileName(name: string) {
   const base = name.replace(/\.[a-z0-9]+$/i, '');
@@ -15,23 +24,20 @@ function titleFromFileName(name: string) {
 }
 
 export async function loadCertificates(): Promise<CertificateItem[]> {
-  // 1) Try to import JSON list from src/imports/certificates.json
+  // 1) Try to read JSON list from imports/certificates.json if it exists
+  const jsonPath = path.join(process.cwd(), 'imports', 'certificates.json');
   try {
-    // Dynamic import allows optional presence
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const mod = await import('@/imports/certificates.json');
-    const raw: unknown = (mod as { default?: unknown }).default ?? (mod as unknown);
-    const list = raw as Array<{ title: string; href: string }>;
-    if (Array.isArray(list) && list.length) {
-      return list.map((it, idx) => ({
+    const buf = await fs.readFile(jsonPath, 'utf8');
+    const parsedUnknown: unknown = JSON.parse(buf);
+    if (isCertArray(parsedUnknown) && parsedUnknown.length > 0) {
+      return parsedUnknown.map((it, idx) => ({
         id: `json-${idx}`,
-        title: String(it.title || `Certificate ${idx + 1}`),
-        href: String(it.href).startsWith('/') ? String(it.href) : `/${String(it.href)}`,
+        title: it.title || `Certificate ${idx + 1}`,
+        href: it.href.startsWith('/') ? it.href : `/${it.href}`,
       }));
     }
   } catch {
-    // File may not exist — that's OK
+    // File may not exist or be invalid — that's OK, continue to fallback
   }
 
   // 2) Fallback: scan public/certificates directory for PDFs

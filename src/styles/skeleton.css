@@ -1,0 +1,3 @@
+.skeleton { background: linear-gradient(90deg, #f2f3f5, #eceef1, #f2f3f5); background-size: 200% 100%; animation: sk 1.2s infinite; }
+@keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skel-rect { border-radius: var(--radius-card); }

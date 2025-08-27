@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+// Quarantine: /api/products is not available anymore
+test.skip(true, 'Legacy /api/products tests are quarantined');
 
 const LOCALE = process.env.TEST_LOCALE ?? 'ru';
 const PER = Number(process.env.TEST_PER ?? 5);

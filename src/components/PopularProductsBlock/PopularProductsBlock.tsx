@@ -66,7 +66,7 @@ export default function PopularProductsBlock() {
             <div
               key={p.id}
             >
-              <ProductCard product={p} showDetailsLink={false} popularVariant />
+              <ProductCard product={p} showDetailsLink={false} />
             </div>
           ))}
         </div>

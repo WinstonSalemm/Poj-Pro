@@ -1,0 +1,53 @@
+.main {
+  position: relative;
+  min-height: 100vh;
+  background: #fff;
+}
+
+.section {
+  width: 100%;
+}
+
+.containerPad {
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 40px 16px;
+}
+
+/* Section title skeleton */
+.titleSkel {
+  height: 28px;
+  border-radius: 8px;
+}
+
+.lines { gap: 12px; display: grid; }
+.line {
+  height: 16px;
+  border-radius: 6px;
+  background: var(--skeleton-bg, #f2f3f5);
+}
+
+/* Cards skeleton grid */
+.gridCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+.cardSkel {
+  border-radius: 16px;
+  border: 1px solid #eee;
+  padding: 12px;
+}
+.cardImg { height: 150px; border-radius: 12px; }
+.cardLineWide { height: 16px; width: 75%; margin: 12px 0 8px; border-radius: 6px; }
+.cardLine { height: 16px; width: 50%; border-radius: 6px; }
+
+/* Map section */
+.mapWrap { background: #F8F9FA; }
+.mapFallback {
+  height: 320px;
+  width: 100%;
+  border-radius: 12px;
+  margin: 0 auto;
+  max-width: 1260px;
+}

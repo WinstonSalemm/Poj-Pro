@@ -17,3 +17,6 @@ out/
 .DS_Store
 coverage/
 dist/
+# playwright & test artifacts
+playwright-report/
+test-results/

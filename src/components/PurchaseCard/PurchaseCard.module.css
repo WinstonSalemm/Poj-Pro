@@ -1,0 +1,9 @@
+.card { position: sticky; top: 84px; display:flex; flex-direction:column; gap:12px; padding:16px; }
+.row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.price { font-size:22px; line-height:28px; font-weight:800; color:var(--accent); }
+.qty { display:flex; align-items:center; gap:8px; }
+.qty input { width:72px; height:40px; border:1px solid var(--border); border-radius:10px; padding:0 8px; }
+.bullets { margin:8px 0 0; padding-left:18px; color:var(--muted); }
+@media (max-width: 768px) {
+  .card { position: static; }
+}

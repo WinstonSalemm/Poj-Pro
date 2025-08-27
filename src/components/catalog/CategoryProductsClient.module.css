@@ -1,0 +1,12 @@
+.page { background: #F8F9FA; min-height: 100vh; }
+.section { padding: 64px 16px; margin-top: 100px; }
+.headerRow { display: flex; flex-direction: column; gap: 16px; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+@media (min-width: 768px){ .headerRow { flex-direction: row; align-items: center; } }
+.title { font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; color: var(--accent, #660000); letter-spacing: -0.01em; }
+.searchWrap { width: 100%; max-width: 420px; }
+.searchInner { position: relative; }
+.searchInput { width: 100%; padding: 10px 36px 10px 14px; color: var(--accent, #660000); border: 1px solid var(--accent, #660000); border-radius: 12px; background: #fff; }
+.searchClear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--accent, #660000); }
+.empty { text-align: center; padding: 48px 0; }
+.emptyText { color: #6b7280; font-size: 1.05rem; }
+.emptyClear { margin-top: 8px; color: var(--accent, #660000); text-decoration: underline; }

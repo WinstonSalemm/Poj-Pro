@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { IMG_SIZES } from '@/lib/imageSizes';
 import { memo, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useTranslation } from "react-i18next";
 import type { Product as CanonicalProduct } from "@/types/product";
+import Card from "@/components/ui/Card/Card";
+import Button from "@/components/ui/Button/Button";
+import cls from './ProductCard.module.css';
 
 // ключи переводов
 const TRANSLATION_KEYS = {
@@ -28,10 +32,9 @@ interface ProductCardProps {
   product: Product;
   onClick?: (product: Product) => void;
   showDetailsLink?: boolean;
-  popularVariant?: boolean;
 }
 
-const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLink = true, popularVariant = false }: ProductCardProps) {
+const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLink = true }: ProductCardProps) {
   const { t, i18n } = useTranslation();
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
@@ -89,116 +92,61 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   const dec = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => Math.max(1, q - 1)); };
   const inc = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => q + 1); };
 
+  const priceStr = formatUZS(product.price);
+
   return (
-    <div
-      onClick={() => onClick?.(product)}
-      className="group relative bg-white rounded-2xl p-4 border border-gray-200 hover:border-[#660000] hover:bg-gray-50 hover:shadow-md transition-all duration-300"
-    >
-      {/* изображение */}
-      <div className="w-full h-40 flex items-center justify-center overflow-hidden rounded-xl bg-gray-100">
-        <Image
-          src={product.image || '/OtherPics/placeholder.png'}
-          alt={titleText}
-          width={220}
-          height={160}
-          sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 220px"
-          className="max-h-full object-contain transition-transform duration-300 transform-gpu group-hover:scale-105"
-          priority={false}
-        />
-      </div>
+    <Card className={cls.card} data-testid="product-card">
+      <div onClick={() => onClick?.(product)} className={cls.root}>
+        {/* image */}
+        <Link href={detailsHref} aria-label={titleText} className={cls.imgWrap}>
+          <div className="aspect-square">
+            <Image
+              src={product.image || '/OtherPics/placeholder.png'}
+              alt={titleText}
+              fill
+              sizes={IMG_SIZES.card}
+              priority={false}
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+        </Link>
 
-      {/* заголовок */}
-      <h3 className="mt-3 font-semibold text-[#660000] line-clamp-2 min-h-[3.2rem]">
-        {titleText}
-      </h3>
-
-      {/* цена */}
-      <div className="mt-1 min-h-[1.4rem] text-sm text-gray-700">
-        {priceNum > 0 ? `${priceNum.toLocaleString("ru-UZ")} UZS` : ""}
-      </div>
-
-      {/* действия */}
-      <div className="mt-3 flex flex-col gap-2">
-        {showDetailsLink && (
-          <Link
-            href={detailsHref}
-            className="block w-full text-center rounded-xl border border-[#660000] !text-[#660000] py-2 hover:bg-[#660000]/5"
-            aria-label={titleText}
-          >
-            {t(TRANSLATION_KEYS.viewDetails, "Подробнее")}
-          </Link>
-        )}
-
-        <button
-          onClick={addToCart}
-          className={
-            [
-              "w-full rounded-xl py-2 font-medium border focus-visible:outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[#660000]/40 transition-colors duration-200",
-              popularVariant
-                ? "bg-white text-[#660000] border-[#660000] hover:bg-[#660000] hover:text-white rounded-full h-11 min-h-[44px] shadow-sm"
-                : "text-[#660000] hover:bg-[#660000]/5 border-[#660000]",
-            ].join(" ")
-          }
-        >
-          {t(TRANSLATION_KEYS.addToCart, "В корзину")}
-        </button>
-
-        <div
-          className="flex items-stretch justify-center gap-2 pt-1"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={dec}
-            className={
-              [
-                "w-10 h-10 cursor-pointer rounded-lg border flex items-center justify-center select-none active:scale-95 transition-colors duration-200",
-                popularVariant
-                  ? "bg-white text-[#660000] border-[#660000] hover:bg-[#660000] hover:text-white rounded-full w-9 h-9 shadow-sm"
-                  : "border-[#660000] text-[#660000] hover:bg-[#660000]/5",
-              ].join(" ")
-            }
-            aria-label="Уменьшить количество"
-          >
-            −
-          </button>
-
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={qty}
-            onChange={onQtyChange}
-            onKeyDown={onQtyKeyDown}
-            className={
-              [
-                "w-16 h-10 text-center rounded-lg border [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-colors duration-200",
-                popularVariant
-                  ? "bg-white text-[#660000] border-[#660000] hover:bg-[#660000] hover:text-white rounded-full h-9 w-14 shadow-sm"
-                  : "border-[#660000] text-[#660000]",
-              ].join(" ")
-            }
-            aria-label="Количество"
-          />
-
-          <button
-            onClick={inc}
-            className={
-              [
-                "w-10 h-10 cursor-pointer rounded-lg border flex items-center justify-center select-none active:scale-95 transition-colors duration-200",
-                popularVariant
-                  ? "bg-white text-[#660000] border-[#660000] hover:bg-[#660000] hover:text-white rounded-full w-9 h-9 shadow-sm"
-                  : "border-[#660000] text-[#660000] hover:bg-[#660000]/5",
-              ].join(" ")
-            }
-            aria-label="Увеличить количество"
-          >
-            +
-          </button>
+        <div className={cls.body}>
+          <h3 className={cls.title}>{titleText}</h3>
+          <div className={cls.price}>{priceStr}</div>
+          <div className={cls.actions}>
+            {showDetailsLink && (
+              <Link href={detailsHref} aria-label={titleText} className={cls.detailsLink}>
+                <Button variant="secondary">{t(TRANSLATION_KEYS.viewDetails, "Подробнее")}</Button>
+              </Link>
+            )}
+            <div className={cls.qtyRow} onClick={(e) => e.stopPropagation()}>
+              <button onClick={dec} className={cls.qtyBtn} aria-label="Уменьшить количество">−</button>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={qty}
+                onChange={onQtyChange}
+                onKeyDown={onQtyKeyDown}
+                className={cls.qtyInput}
+                aria-label="Количество"
+              />
+              <button onClick={inc} className={cls.qtyBtn} aria-label="Увеличить количество">+</button>
+            </div>
+            <Button onClick={addToCart} variant="primary">{t(TRANSLATION_KEYS.addToCart, "В корзину")}</Button>
+          </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 });
 
 ProductCard.displayName = "ProductCard";
 export default ProductCard;
+
+function formatUZS(val?: string | number) {
+  if (val == null) return "";
+  const n = typeof val === "number" ? val : Number(String(val).replace(/[^\d]/g, ""));
+  return n ? new Intl.NumberFormat("ru-RU").format(n).replace(/\s/g, "\u00A0") + " UZS" : "";
+}

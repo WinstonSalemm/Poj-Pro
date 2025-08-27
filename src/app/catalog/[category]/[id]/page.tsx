@@ -1,191 +1,171 @@
-// src/app/catalog/[category]/[id]/page.tsx
 import Image from "next/image";
-import Link from "next/link";
+import { IMG_SIZES } from '@/lib/imageSizes';
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getLocale } from "@/lib/api"; // твоя функция локали
-import T from "@/components/i18n/T";
-import Price from "@/components/product/Price";
-import QuantityAddToCart from "@/components/Cart/QuantityAddToCart";
-import ProductSpecs from "@/components/product/ProductSpecs";
-import { SeoHead } from "@/components/seo/SeoHead";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { getLocale } from "@/lib/api";
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
+import PurchaseCard from "@/components/PurchaseCard/PurchaseCard";
+import Tabs from "@/components/Tabs/Tabs";
+import Card from "@/components/ui/Card/Card";
+import styles from "./ProductPage.module.css";
 
-// Включаем ISR на 60 сек
+export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async function ProductPage({ params }: any) {
-  const { id, category } = params; // ← БЕЗ await
-  const locale = await getLocale();
+export async function generateMetadata({ params }: { params: Promise<{category:string; id:string}> }) {
+  const pr = await params;
+  const p = await getProduct(pr);
+  const title = p?.name || p?.title || "Товар";
+  const desc = p?.short_description || "Качественное противопожарное оборудование";
+  const url = `https://www.poj-pro.uz/catalog/${pr.category}/${pr.id}`;
+  return {
+    title: `${title} — POJ PRO`,
+    description: desc,
+    alternates: { canonical: url },
+    openGraph: { title, description: desc, url, type: "product" },
+  };
+}
 
-  // 1) Тянем товар напрямую из БД по slug (если у тебя id — замени where: { id } )
+export default async function ProductPage({ params }:{ params: Promise<{category:string; id:string}> }) {
+  const pr = await params;
+  const product = await getProduct(pr);
+  if (!product) notFound();
+
+  const crumbs = [
+    { href: "/", label: "Главная" },
+    { href: "/catalog", label: "Каталог" },
+    { href: `/catalog/${pr.category}`, label: product.categoryName ?? "Категория" },
+    { href: `#`, label: product.name ?? product.title ?? "Товар" },
+  ];
+
+  return (
+    <main className="container">
+      <Breadcrumbs items={crumbs} />
+      <BreadcrumbsJsonLd items={[
+        { name: "Главная", item: "https://www.poj-pro.uz/" },
+        { name: "Каталог", item: "https://www.poj-pro.uz/catalog" },
+        { name: product.categoryName ?? "Категория", item: `https://www.poj-pro.uz/catalog/${pr.category}` },
+        { name: product.name ?? product.title ?? "Товар", item: `https://www.poj-pro.uz/catalog/${pr.category}/${pr.id}` },
+      ]} />
+      <div className={styles.grid}>
+        <Card className={styles.gallery}>
+          <div className="aspect-square">
+            <Image
+              src={product.image || "/OtherPics/product2photo.jpg"}
+              alt={product.name || product.title || "Product"}
+              fill
+              sizes={IMG_SIZES.pdp}
+              priority
+            />
+          </div>
+        </Card>
+
+        <div className={styles.side}>
+          <PurchaseCard price={product.price} onAdd={() => { /* TODO add to cart */ }} />
+        </div>
+      </div>
+
+      <Tabs
+        tabs={[
+          { id: "desc", label: "Описание", content: <div dangerouslySetInnerHTML={{ __html: product.description ?? "—" }} /> },
+          { id: "specs", label: "Характеристики", content: <SpecsTable specs={product.characteristics} /> },
+          { id: "docs", label: "Документы", content: <DocsList docs={product.documents} /> },
+        ]}
+      />
+
+      <ProductJsonLd p={product} />
+    </main>
+  );
+}
+
+function SpecsTable({ specs }:{ specs?: Record<string,string>|Array<{key:string;value:string}> }) {
+  if (!specs) return <div>—</div>;
+  const entries = Array.isArray(specs) ? specs.map(s=>[s.key, s.value]) : Object.entries(specs);
+  return (
+    <table className={styles.table}>
+      <tbody>
+        {entries.map(([k,v])=> (
+          <tr key={k}><th>{k}</th><td>{v}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+function DocsList({ docs }:{ docs?: Array<{title:string; href:string}> }) {
+  if (!docs?.length) return <div>Документы не прикреплены</div>;
+  return (
+    <ul className={styles.docs}>
+      {docs.map(d=> <li key={d.href}><a href={d.href} target="_blank" rel="noopener noreferrer">{d.title}</a></li>)}
+    </ul>
+  );
+}
+
+async function getProduct(params:{category:string; id:string}) {
+  const locale = await getLocale();
   const dbProduct = await prisma.product.findUnique({
-    where: { slug: id }, // либо where: { id }
+    where: { slug: params.id },
     include: {
-      category: { select: { id: true, name: true, slug: true } },
-      i18n: {
-        where: { locale },
-        select: { title: true, summary: true, description: true },
-      },
+      category: { select: { name: true, slug: true } },
+      i18n: { where: { locale }, select: { title: true, summary: true, description: true } },
     },
   });
+  if (!dbProduct) return null;
 
-  if (!dbProduct) {
-    notFound();
-  }
-
-  // 2) Парсим images (TEXT может быть JSON-массивом или одиночным URL)
-  let images: string[] = [];
+  let image = "/OtherPics/product2photo.jpg";
   if (typeof dbProduct.images === "string" && dbProduct.images.trim()) {
     try {
       const parsed = JSON.parse(dbProduct.images);
-      if (Array.isArray(parsed)) images = parsed.filter(Boolean);
-      else images = [dbProduct.images];
-    } catch {
-      images = [dbProduct.images]; // не JSON — считаем одиночным URL
-    }
+      if (Array.isArray(parsed) && parsed[0]) image = parsed[0];
+      else image = dbProduct.images;
+    } catch { image = dbProduct.images; }
   }
-  const mainImage = images[0] || "/OtherPics/product2photo.jpg";
+  const price = dbProduct.price != null ? Number(dbProduct.price as unknown as string) : undefined;
+  return {
+    id: dbProduct.id,
+    title: dbProduct.i18n[0]?.title || dbProduct.slug,
+    name: dbProduct.i18n[0]?.title || dbProduct.slug,
+    short_description: dbProduct.i18n[0]?.summary || undefined,
+    description: dbProduct.i18n[0]?.description || undefined,
+    image,
+    price,
+    documents: undefined as Array<{title:string; href:string}> | undefined,
+    characteristics: dbProduct.specs as Record<string,string> | undefined,
+    categoryName: dbProduct.category?.name,
+  };
+}
 
-  // 3) specs (JSON → записи)
-  const specsEntries =
-    dbProduct.specs && typeof dbProduct.specs === "object"
-      ? Object.entries(dbProduct.specs as Record<string, string>)
-      : [];
+function BreadcrumbsJsonLd({ items }:{items: {name:string; item:string}[]}) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((it, idx) => ({ "@type":"ListItem", position: idx+1, name: it.name, item: it.item }))
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data)}} />;
+}
 
-  // 4) Цена: Decimal → number | null
-  const priceNumber =
-    dbProduct.price != null ? Number(dbProduct.price as unknown as string) : null;
+type PDPJson = {
+  name?: string;
+  title?: string;
+  image?: string;
+  short_description?: string;
+  description?: string;
+  price?: string | number;
+};
 
-  // 5) i18n поля
-  const i18n = dbProduct.i18n[0];
-  const title = i18n?.title || dbProduct.slug;
-  const summary = i18n?.summary || null;
-  const description = i18n?.description || null;
-
-  // 6) Хлебные крошки, SEO и path
-  const sitePath = dbProduct.category?.slug
-    ? `/catalog/${dbProduct.category.slug}/${dbProduct.slug}`
-    : `/catalog/${dbProduct.slug}`;
-
-  const desc = (summary || description || "").toString().slice(0, 160);
-
-  const productLd = {
+function ProductJsonLd({ p }:{ p:PDPJson }) {
+  const data = {
+    "@context": "https://schema.org/",
     "@type": "Product",
-    name: title,
-    image: images.filter((src) => src && src.startsWith("http")),
-    description: summary || description || undefined,
-    sku: dbProduct.slug,
-    brand: undefined,
-    offers:
-      typeof priceNumber === "number"
-        ? {
-            "@type": "Offer",
-            priceCurrency: "UZS",
-            price: priceNumber,
-            availability: "https://schema.org/InStock",
-            url: sitePath,
-          }
-        : undefined,
-  } as const;
-
-  return (
-    <>
-      <SeoHead
-        title={`${title} — ${summary ? summary : "Цена в UZS"}`}
-        description={desc}
-        path={sitePath}
-        locale={locale}
-        image={mainImage}
-        structuredData={productLd}
-      />
-      <main className="bg-[#F8F9FA] min-h-screen">
-        <section className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          {/* Хлебные крошки (UI + JSON-LD) */}
-          <Breadcrumbs
-            items={[
-              { name: "Catalog", href: "/catalog" },
-              ...(dbProduct.category
-                ? [
-                    {
-                      name: dbProduct.category.name || "",
-                      href: `/catalog/${dbProduct.category.slug}`,
-                    },
-                  ]
-                : []),
-              { name: title },
-            ]}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Изображение + кнопки под картинкой */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-              <div className="relative w-full aspect-[4/3] lg:aspect-square max-h-[60vh]">
-                <Image
-                  src={mainImage}
-                  alt={title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-              {/* Кнопки под изображением (мобайл первым) */}
-              <div className="mt-4 flex flex-col sm:flex-row gap-4">
-                <QuantityAddToCart productId={dbProduct.id} className="flex-1" />
-                <Link
-                  href={`/catalog/${dbProduct.category?.slug || category}`}
-                  className="flex-1 border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium !text-[#660000] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#660000]"
-                >
-                  <T k="common.backToCatalog" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Инфо */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h1 className="text-2xl md:text-3xl font-bold text-[#660000] mb-4">
-                {title}
-              </h1>
-
-              {summary && (
-                <p className="text-gray-700 text-lg mb-6">{summary}</p>
-              )}
-
-              <div className="mt-6 mb-8">
-                <div className="text-3xl font-bold text-[#660000]">
-                  <Price price={priceNumber} />
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                {description && (
-                  <div>
-                    <h2 className="text-lg !text-[#660000] font-semibold mb-2">
-                      <T k="productDetail.description" />
-                    </h2>
-                    <div className="prose max-w-none text-gray-700">
-                      {description}
-                    </div>
-                  </div>
-                )}
-
-                {!!specsEntries.length && (
-                  <div>
-                    <h2 className="text-lg font-semibold !text-[#660000] mb-3">
-                      <T k="productDetail.characteristics" />
-                    </h2>
-                    <ProductSpecs specs={specsEntries} />
-                  </div>
-                )}
-              </div>
-
-              {/* Кнопки перенесены под изображение слева */}
-            </div>
-          </div>
-        </section>
-      </main>
-    </>
-  );
+    name: p?.name || p?.title,
+    image: p?.image ? [p.image] : undefined,
+    description: p?.short_description || p?.description,
+    offers: p?.price ? {
+      "@type":"Offer",
+      priceCurrency:"UZS",
+      price:String(p.price).replace(/[^\d]/g,'') || undefined,
+      availability:"https://schema.org/InStock",
+      url: undefined
+    } : undefined
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(data)}} />;
 }

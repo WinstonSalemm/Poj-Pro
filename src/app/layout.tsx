@@ -14,6 +14,9 @@ import ClientWrapper from '@/app/ClientWrapper';
 import CartAddToast from '@/components/Cart/CartAddToast';
 import Script from 'next/script';
 import Analytics from '@/components/Analytics';
+import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd';
+import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer/Footer';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -84,6 +87,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
         {/* GTM (noscript) */}
         {GTM_ID ? (
           <noscript>
@@ -124,6 +129,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               });
             `}</Script>
             <noscript>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`https://mc.yandex.ru/watch/${YM_ID}`} style={{ position: 'absolute', left: '-9999px' }} alt="" />
             </noscript>
           </>
@@ -131,7 +137,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <I18nProvider initialLocale={initialLocale} messages={messages}>
           <SessionProviderClient session={session}>
             <CartProvider>
+              <Header />
               <ClientWrapper>{children}</ClientWrapper>
+              <Footer />
               <CartAddToast />
             </CartProvider>
             <CookieConsentModal />
