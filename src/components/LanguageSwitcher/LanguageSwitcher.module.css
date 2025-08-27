@@ -1,6 +1,0 @@
-.wrap{ display:flex; gap:8px; }
-.btn{
-  min-width:44px; height:36px; padding:0 10px; border-radius:10px;
-  border:1px solid var(--border); background:#fff; font-weight:600; cursor:pointer;
-}
-.btn:hover{ background: var(--accent-50); color: var(--accent); }

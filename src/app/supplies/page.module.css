@@ -1,7 +1,0 @@
-.wrap{ padding:24px 0; }
-.grid{ display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(320px,1fr)); }
-.card{ background:#fff; border:1px solid var(--border); border-radius: var(--radius-card); padding:16px; display:flex; flex-direction:column; gap:10px; }
-.head{ display:flex; justify-content:space-between; align-items:center; }
-.supplier{ font-weight:700; }
-.eta{ color:var(--muted); font-size:14px; }
-.lines{ margin:8px 0 0; padding-left:18px; }

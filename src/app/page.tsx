@@ -1,12 +1,11 @@
 import { Suspense } from 'react';
 import { getLocale, fetchAPI } from '@/lib/api';
-import Hero from '@/components/Hero/Hero';
+import ImageSlider from '@/components/ImageSlider/ImageSlider';
 import SmallAboutUs from '@/components/SmallAboutUs/SmallAboutUs';
 import CategoryBlock from '@/components/CategoryBlock/CategoryBlock';
 import MapSection from '@/components/MapSection/MapSection';
 import { SeoHead } from '@/components/seo/SeoHead';
 import PopularProductsBlock from '@/components/PopularProductsBlock/PopularProductsBlock';
-import styles from './page.module.css';
 
 // Normalize app/lang codes to API-accepted ones
 const normLocale = (lang: string) => {
@@ -59,32 +58,35 @@ export default async function HomePage() {
           contactPoint: [{ '@type': 'ContactPoint', contactType: 'customer service', telephone: '+998', areaServed: 'UZ' }],
         }}
       />
-      <main className={styles.main}>
-        {/* Hero */}
-        <Hero />
-        {/* Контент с каскадной анимацией появления */}
-        <section className={styles.section}>
+      <main className="relative min-h-screen bg-white">
+      {/* Контент с каскадной анимацией появления */}
+      <section className={`transition-opacity duration-500 opacity-100`}>
+        <div className="animate-in-up" style={{ animationDelay: '0.05s' }}>
+          <Suspense fallback={<div className="h-[320px] md:h-[420px] w-full shimmer rounded-none" />}> 
+            <ImageSlider />
+          </Suspense>
+        </div>
 
-        <div className="animate-in-up" style={{ animationDelay: '0.08s' }}>
-          <Suspense fallback={<SectionSkeleton title widthPx={160} lines={3} />}> 
+        <div className="animate-in-up" style={{ animationDelay: '0.12s' }}>
+          <Suspense fallback={<SectionSkeleton title widthClass="w-40" lines={3} />}> 
             <SmallAboutUs />
           </Suspense>
         </div>
 
-        <div className="animate-in-up" style={{ animationDelay: '0.14s' }}>
+        <div className="animate-in-up" style={{ animationDelay: '0.18s' }}>
           <Suspense fallback={<CardsSkeleton count={6} />}> 
             <PopularProductsBlock />
           </Suspense>
         </div>
 
-        <div className="animate-in-up" style={{ animationDelay: '0.20s' }}>
-          <Suspense fallback={<SectionSkeleton title widthPx={192} lines={2} />}> 
+        <div className="animate-in-up" style={{ animationDelay: '0.24s' }}>
+          <Suspense fallback={<SectionSkeleton title widthClass="w-48" lines={2} />}> 
             <CategoryBlock />
           </Suspense>
         </div>
 
-        <div className={styles.mapWrap + ' animate-in-up'} style={{ animationDelay: '0.30s' }}>
-          <Suspense fallback={<div className={styles.mapFallback + ' shimmer'} />}> 
+        <div className="!bg-[#F8F9FA] animate-in-up" style={{ animationDelay: '0.30s' }}>
+          <Suspense fallback={<div className="h-[320px] w-full shimmer rounded-xl  mx-auto max-w-[1260px]" />}> 
             <MapSection />
           </Suspense>
         </div>
@@ -98,13 +100,13 @@ export default async function HomePage() {
 
 /* --- Локальные скелетоны --- */
 
-function SectionSkeleton({ title = true, widthPx = 128, lines = 2 }: { title?: boolean; widthPx?: number; lines?: number }) {
+function SectionSkeleton({ title = true, widthClass = "w-32", lines = 2 }: { title?: boolean; widthClass?: string; lines?: number }) {
   return (
-    <div className={styles.containerPad}>
-      {title && <div className={styles.titleSkel} style={{ width: widthPx }} />}
-      <div className={styles.lines}>
+    <div className="max-w-[1260px] mx-auto px-4 py-10">
+      {title && <div className={`h-7 ${widthClass} shimmer rounded-md mb-6`} />}
+      <div className="space-y-3">
         {Array.from({ length: lines }).map((_, i) => (
-          <div key={i} className={styles.line} />
+          <div key={i} className="h-4 shimmer rounded-md" />
         ))}
       </div>
     </div>
@@ -113,14 +115,14 @@ function SectionSkeleton({ title = true, widthPx = 128, lines = 2 }: { title?: b
 
 function CardsSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className={styles.containerPad}>
-      <div className={styles.titleSkel} style={{ width: 176 }} />
-      <div className={styles.gridCards}>
+    <div className="max-w-[1260px] mx-auto px-4 py-10">
+      <div className="h-7 w-44 shimmer rounded-md mb-6" />
+      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-6">
         {Array.from({ length: count }).map((_, i) => (
-          <div key={i} className={styles.cardSkel}>
-            <div className={styles.cardImg} />
-            <div className={styles.cardLineWide} />
-            <div className={styles.cardLine} />
+          <div key={i} className="rounded-2xl border border-[#eee] p-3">
+            <div className="h-[150px] shimmer rounded-xl mb-3" />
+            <div className="h-4 w-3/4 shimmer rounded-md mb-2" />
+            <div className="h-4 w-1/2 shimmer rounded-md" />
           </div>
         ))}
       </div>

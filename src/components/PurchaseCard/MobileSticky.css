@@ -1,5 +1,0 @@
-.mobileSticky {
-  position: sticky; bottom: 0; z-index: 30;
-  background:#fff; border-top:1px solid var(--border);
-  padding: 12px 16px; box-shadow: 0 -8px 18px rgba(0,0,0,.06);
-}

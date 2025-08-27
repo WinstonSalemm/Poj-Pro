@@ -1,39 +1,57 @@
-@import url('../styles/tokens.css');
-@import url('../styles/skeleton.css');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Base */
-html {
-  font-feature-settings: "liga" 1;
+/* ===== Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ ===== */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: monospace;
 }
 
+/* ===== Tailwind С‚РµРјР° С‡РµСЂРµР· @theme ===== */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+/* ===== РўС‘РјРЅР°СЏ С‚РµРјР° (Р°РІС‚Рѕ РїРѕ СЃРёСЃС‚РµРјРЅС‹Рј РЅР°СЃС‚СЂРѕР№РєР°Рј) ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #ededed;
+  }
+}
+
+/* ===== Р‘Р°Р·РѕРІС‹Рµ СЃС‚РёР»Рё ===== */
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
   margin: 0;
   padding: 0;
   line-height: 1.5;
 }
 
-/* Resets */
-* { box-sizing: border-box; }
-a { color: inherit; text-decoration: none; }
-img { max-width: 100%; height: auto; display: block; }
+/* РЎР±СЂРѕСЃ РёР·РѕР±СЂР°Р¶РµРЅРёР№ */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 
-/* Typography */
-h1 { font-size: 36px; line-height: 44px; font-weight: 700; margin: 0 0 16px; }
-h2 { font-size: 28px; line-height: 36px; font-weight: 700; margin: 0 0 12px; }
-h3 { font-size: 22px; line-height: 30px; font-weight: 600; margin: 0 0 8px; }
-p  { font-size: 16px; line-height: 26px; font-weight: 400; margin: 0 0 16px; }
+/* РЎР±СЂРѕСЃ СЃСЃС‹Р»РѕРє */
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
-/* Utilities */
-.container { max-width: var(--container); margin: 0 auto; padding: 0 16px; }
-.aspect-square { aspect-ratio: 1 / 1; position: relative; overflow: hidden; border-radius: var(--radius-card); }
-
-/* Focus visible */
-:where(a,button,[role="button"],input,select,textarea):focus-visible{
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+* {
+  box-sizing: border-box;
 }
 
 /* === Animations and utilities moved from page.tsx === */
