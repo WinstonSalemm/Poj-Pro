@@ -10,7 +10,7 @@
         "uz": "O‘t o‘chirgich OP-4"
       },
       "image": "/ProductImages/Op-4.png",
-      "price": "240000"
+      "price": "100000"
     },
     {
       "id": "bbp-20",
@@ -22,7 +22,7 @@
         "uz": "BBP-20 Quvvat manbai"
       },
       "image": "/ProductImages/bbp-20.png",
-      "price": "320000"
+      "price": "121000"
     },
     {
       "id": "rukav-51",
@@ -34,7 +34,7 @@
         "uz": "Yong‘in shlangi 51 mm 8 bar (Xitoy)"
       },
       "image": "/ProductImages/rukav51-8China.png",
-      "price": "75000"
+      "price": "170000"
     }
   ]
   
