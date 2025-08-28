@@ -14,6 +14,11 @@ function generateNonce() {
 }
 
 export function middleware(req: NextRequest) {
+  // In development, do not set CSP at all to keep HMR/React Refresh working
+  if (process.env.NODE_ENV !== 'production') {
+    const res = NextResponse.next();
+    return setCsrfCookie(req, res);
+  }
   const { pathname } = req.nextUrl;
 
   // 1) Никогда не трогаем API/Next/статику/иконки/NextAuth/webhooks
