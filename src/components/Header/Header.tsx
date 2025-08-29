@@ -77,9 +77,21 @@ export default function Header() {
       className={`fixed top-0 z-[999] w-full border-b border-[#660000] bg-[#f8f8f8] transition-[box-shadow] duration-200 ${
         isScrolled ? "hdr-shadow-on" : "hdr-shadow"
       }`}
+      // iOS: защитим от «ухода» под вырез и наложений
+      style={{
+        paddingTop: "max(0px, env(safe-area-inset-top))", // iOS safe-area
+        WebkitTransform: "translateZ(0)", // сглаживаем артефакты композитинга
+      }}
     >
       {/* ROW */}
-      <div className="mx-auto flex min-h-[68px] max-w-[1380px] items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
+      <div
+        className="mx-auto flex min-h-[68px] max-w-[1380px] items-center justify-between gap-2 px-3 sm:px-6 lg:px-8"
+        // iOS: safe-area по бокам, чтобы бургер не уползал под вырез
+        style={{
+          paddingLeft: "max(12px, env(safe-area-inset-left))",
+          paddingRight: "max(12px, env(safe-area-inset-right))",
+        }}
+      >
         {/* LEFT: Burger (mobile) / Left nav (desktop) */}
         <div className="flex min-w-[44px] items-center justify-start">
           {/* Burger: видим ДО lg */}
@@ -89,20 +101,28 @@ export default function Header() {
               setLangOpen(false);
             }}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            className="z-[22] flex !text-[#66000] h-6 w-8 flex-col justify-between lg:hidden"
+            aria-controls="mobile-nav"
+            aria-expanded={mobileOpen}
+            // iOS: увеличенная hit-area, явный цвет и высокий z-index
+            className="relative z-[1002] lg:hidden inline-flex items-center justify-center w-11 h-11 -ml-1
+                       rounded-md outline-none touch-manipulation
+                       focus-visible:ring-2 focus-visible:ring-[#660000]/40"
+            style={{ WebkitTapHighlightColor: "transparent" }}
           >
+            {/* три полоски */}
             <span
-              className={`h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
+              className={`block w-7 h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
                 mobileOpen ? "translate-y-[10px] rotate-45" : ""
               }`}
             />
             <span
-              className={`h-[2px] rounded bg-[#660000] transition-opacity duration-300 ${
+              className={`block w-7 h-[2px] rounded bg-[#660000] transition-opacity duration-300 ${
                 mobileOpen ? "opacity-0" : "opacity-100"
               }`}
+              style={{ marginTop: 6, marginBottom: 6 }}
             />
             <span
-              className={`h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
+              className={`block w-7 h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
                 mobileOpen ? "-translate-y-[10px] -rotate-45" : ""
               }`}
             />
@@ -171,7 +191,7 @@ export default function Header() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 z-20 mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                <div className="absolute right-0 z-[1001] mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="py-1">
                     {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
                       <button
@@ -207,7 +227,6 @@ export default function Header() {
               <CartIcon />
             </div>
 
-            {/* На десктопе можно тоже использовать бренд-кнопку обычного размера */}
             <AuthButton />
 
             {/* Language (desktop) */}
@@ -231,7 +250,7 @@ export default function Header() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-20 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                <div className="absolute right-0 z-[1001] mt-2 w-20 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="py-1">
                     {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
                       <button
@@ -254,9 +273,16 @@ export default function Header() {
 
       {/* Mobile menu (до lg) */}
       <nav
+        id="mobile-nav"
         className={`absolute left-0 right-0 top-[68px] border-b border-[#f2f2f2] bg-white shadow-[0_3px_24px_rgba(102,0,0,0.08)] lg:hidden ${
           mobileOpen ? "flex flex-col" : "hidden"
         }`}
+        // iOS: не перекрывать кнопку/шапку и учитывать safe-area
+        style={{
+          paddingLeft: "max(12px, env(safe-area-inset-left))",
+          paddingRight: "max(12px, env(safe-area-inset-right))",
+          zIndex: 1000,
+        }}
       >
         {[...menuLeft, ...menuRight].map((item: MenuItem) => (
           <Link
