@@ -89,7 +89,7 @@ export default function Header() {
               setLangOpen(false);
             }}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            className="z-[22] flex h-6 w-8 flex-col justify-between lg:hidden"
+            className="z-[22] flex !text-[#66000] h-6 w-8 flex-col justify-between lg:hidden"
           >
             <span
               className={`h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
