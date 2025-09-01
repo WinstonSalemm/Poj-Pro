@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const CATEGORIES = [
   "ognetushiteli",
@@ -63,10 +64,15 @@ export default function CatalogCategoriesPage() {
       )}
 
       <section
-        className={`max-w-[1280px] mx-auto px-4 py-10 mt-[100px] transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
-          }`}
+        className={`container-section section-y mt-[100px] transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"}`}
       >
-        <h1 className="margin-top-[100px] text-3xl md:text-4xl font-bold text-[#660000] text-center mb-8">
+        <Breadcrumbs
+          items={[
+            { name: t('common.home', 'Home'), href: '/' },
+            { name: t('header.catalog', 'Catalog') },
+          ]}
+        />
+        <h1 className="margin-top-[100px] text-3xl md:text-4xl font-bold text-brand text-center mb-8">
           {t("catalog.categoriesTitle", "Категории каталога")}
         </h1>
 
@@ -89,7 +95,7 @@ export default function CatalogCategoriesPage() {
                 }}
                 aria-label={labels[cat] || cat}
               >
-                <div className="bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] px-3 py-4 flex flex-col items-center justify-between min-h-[260px] text-center transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-[#e0e0e0]">
+                <div className="bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] px-3 py-4 flex flex-col items-center justify-between min-h-[260px] text-center transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-neutral-200">
                   <div className="w-full h-[150px] bg-white rounded-xl border border-[#f0f0f0] shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex items-center justify-center p-3 mb-3 overflow-hidden">
                     <div className="relative w-full h-full">
                       <Image

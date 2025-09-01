@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useTranslation } from '@/i18n/useTranslation';
+import { trackAddToCart } from '@/components/analytics/events';
 
 interface AddToCartButtonProps {
   productId: string | number;
@@ -69,6 +70,17 @@ export function AddToCartButton({
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('cart:add', { detail: { delta } }));
         }
+      } catch {}
+
+      // Analytics: add_to_cart
+      try {
+        trackAddToCart({
+          item_id: productId,
+          item_name: title,
+          price,
+          quantity: typeof quantity === 'number' ? quantity : 1,
+          currency: 'UZS',
+        });
       } catch {}
       setIsSuccess(true);
       

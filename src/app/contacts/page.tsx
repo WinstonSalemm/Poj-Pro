@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Script from "next/script";
-import MapSection from "@/components/MapSection/MapSection";
+import dynamic from "next/dynamic";
+import { SeoHead } from "@/components/seo/SeoHead";
+
+const MapSection = dynamic(() => import("@/components/MapSection/MapSection"), {
+  ssr: false,
+  loading: () => <div className="h-[320px] w-full shimmer rounded-xl" />,
+});
 
 export default function ContactsPage() {
   const { t } = useTranslation();
@@ -14,16 +19,15 @@ export default function ContactsPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // JSON-LD
+  // JSON-LD via SeoHead
   const orgJsonLd = {
-    "@context": "https://schema.org",
     "@type": "Organization",
     name: "POJ PRO",
-    url: "https://pojpro.uz",
+    url: "/",
     email: "mailto:pojpro2012@gmail.com",
     telephone: ["+998993936616", "+998993091001", "+998712536616", "+998909791218"],
-    logo: "https://pojpro.uz/logo.png",
-    sameAs: [],
+    logo: "/OtherPics/logo.png",
+    sameAs: [] as string[],
     address: {
       "@type": "PostalAddress",
       streetAddress: t("contacts.address.value"),
@@ -37,24 +41,27 @@ export default function ContactsPage() {
         availableLanguage: ["ru", "en", "uz"],
       },
     ],
-  };
+  } as const;
 
   const breadcrumbsJsonLd = {
-    "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: t("nav.home", "Home"), item: "https://pojpro.uz/" },
-      { "@type": "ListItem", position: 2, name: t("contacts.title"), item: "https://pojpro.uz/contacts" },
+      { "@type": "ListItem", position: 1, name: t("nav.home", "Home"), item: "/" },
+      { "@type": "ListItem", position: 2, name: t("contacts.title"), item: "/contacts" },
     ],
-  };
+  } as const;
 
   return (
-    <main className="w-full max-w-[1200px] mx-auto mt-[90px] px-4 py-10 bg-gray-50 relative text-[#660000]">
-      {/* JSON-LD */}
-      <Script id="org-jsonld" type="application/ld+json" strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
-      <Script id="breadcrumbs-jsonld" type="application/ld+json" strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }} />
+    <>
+      <SeoHead
+        title={`${t("contacts.title")} — POJ PRO`}
+        description={t("contacts.description")}
+        path="/contacts"
+        locale={typeof window !== 'undefined' && navigator.language ? navigator.language : 'ru'}
+        image="/OtherPics/logo.png"
+        structuredData={[orgJsonLd, breadcrumbsJsonLd]}
+      />
+      <main className="w-full max-w-[1200px] mx-auto mt-[90px] px-4 py-10 bg-gray-50 relative text-[#660000]">
 
       {/* Шторка (белая) */}
       {bootLoading && (
@@ -164,6 +171,7 @@ export default function ContactsPage() {
           100% { background-position: 0 0 }
         }
       `}</style>
-    </main>
+      </main>
+    </>
   );
 }

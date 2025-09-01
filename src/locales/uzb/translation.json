@@ -63,7 +63,7 @@
     "contacts": {
       "title": "Aloqa ma'lumotlari",
       "address": "Manzil",
-      "addressValue": "Toshkent shahri, Namuna ko'chasi, 10-uy",
+      "addressValue": "Toshkent shahri, Chilonzor tumani, 1-kvartal, 33-uy",
       "phone": "Telefon",
       "phoneValue": "+998 90 123 45 67",
       "email": "Elektron pochta",
@@ -107,7 +107,7 @@
     "description": "Agar sizda savollar bo'lsa yoki uskunalar bo'yicha maslahat kerak bo'lsa, bizga qulay bo'lgan har qanday usulda murojaat qilishingiz mumkin.",
     "address": {
       "title": "Manzil",
-      "value": "Toshkent shahri, Namuna ko'chasi, 10-uy"
+      "value": "Toshkent shahri, Chilonzor tumani, 1-kvartal, 33-uy, BOLID do‘koni yashil devor bilan"
     },
     "phone": {
       "title": "Telefon"
@@ -175,6 +175,25 @@
   "catalog": {
     "categoriesTitle": "Katalog kategoriyalari",
     "backToCategories": "Kategoriyalarga qaytish"
+  },
+  "filters": {
+    "open": "Filtr",
+    "total": "Barchasi",
+    "sort": {
+      "title": "Tartiblash",
+      "relevance": "Relevansiya",
+      "priceAsc": "Narx: o'sish",
+      "priceDesc": "Narx: kamayish",
+      "nameAsc": "Nomi: A-Z",
+      "nameDesc": "Nomi: Z-A"
+    },
+    "price": {
+      "title": "Narx",
+      "lt500k": "< 500 000",
+      "between500k2m": "500 000 – 2 000 000",
+      "gt2m": "> 2 000 000",
+      "all": "Barchasi"
+    }
   },
   "categories": {
     "ognetushiteli": "O'chirgichlar",

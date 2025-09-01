@@ -20,7 +20,7 @@ interface SeoHeadProps {
   modifiedTime?: string;
   section?: string;
   tags?: string[];
-  structuredData?: StructuredData;
+  structuredData?: StructuredData | StructuredData[];
 }
 
 export function SeoHead({
@@ -59,25 +59,26 @@ export function SeoHead({
   const fullOgImage = ogImage.startsWith('http')
     ? ogImage
     : (siteUrl ? `${siteUrl}${ogImage}` : ogImage);
-  // Locale-aware canonical
+  // Locale-aware canonical (ru at root; en/uz prefixed)
   const pathname = clean(path);
-  const localeLower = (locale || 'uz').toLowerCase();
-  const isRu = localeLower.startsWith('ru');
+  const localeLower = (locale || 'ru').toLowerCase();
   const isEn = localeLower.startsWith('en');
-  const canonicalPath = isRu ? `/ru${pathname}` : isEn ? `/en${pathname}` : pathname; // uz default at root
+  const isUz = localeLower.startsWith('uz');
+  const canonicalPath = isEn ? `/en${pathname}` : isUz ? `/uz${pathname}` : pathname; // ru default at root
   const canonicalUrl = isServicePath ? undefined : (siteUrl ? `${siteUrl}${canonicalPath}` : canonicalPath);
 
   // Hreflang alternates for subpath locales (skip on service paths)
-  const altUzPath = pathname;
-  const altRuPath = `/ru${pathname}`;
+  const altRuPath = pathname;
   const altEnPath = `/en${pathname}`;
+  const altUzPath = `/uz${pathname}`;
   const languageAlternates: Record<string, string> | null = isServicePath
     ? null
     : {
-        uz: siteUrl ? `${siteUrl}${altUzPath}` : altUzPath,
         ru: siteUrl ? `${siteUrl}${altRuPath}` : altRuPath,
         en: siteUrl ? `${siteUrl}${altEnPath}` : altEnPath,
+        uz: siteUrl ? `${siteUrl}${altUzPath}` : altUzPath,
       };
+  const ogLocale = isEn ? 'en-US' : isUz ? 'uz-UZ' : 'ru-RU';
 
   return (
     <>
@@ -89,10 +90,10 @@ export function SeoHead({
         {/* Canonical URL (skipped on service paths) */}
         {!isServicePath && canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
         
-        {/* Language Alternates (uz root; ru/en prefixed). x-default -> uz */}
+        {/* Language Alternates (ru root; en/uz prefixed). x-default -> ru */}
         {!isServicePath && languageAlternates && (
           <>
-            <link rel="alternate" hrefLang="x-default" href={languageAlternates.uz} />
+            <link rel="alternate" hrefLang="x-default" href={languageAlternates.ru} />
             {Object.entries(languageAlternates).map(([lang, href]) => (
               <link key={lang} rel="alternate" hrefLang={lang} href={href} />
             ))}
@@ -108,7 +109,7 @@ export function SeoHead({
         <meta property="og:description" content={description} />
         <meta property="og:image" content={fullOgImage} />
         <meta property="og:site_name" content={siteName} />
-        <meta property="og:locale" content={locale || 'ru_RU'} />
+        <meta property="og:locale" content={ogLocale} />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -131,15 +132,24 @@ export function SeoHead({
         
         {/* Structured Data */}
         {structuredData && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                '@context': 'https://schema.org',
-                ...structuredData,
-              }),
-            }}
-          />
+          Array.isArray(structuredData) ? (
+            structuredData.map((sd, i) => (
+              <script
+                key={i}
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                  __html: JSON.stringify({ '@context': 'https://schema.org', ...sd }),
+                }}
+              />
+            ))
+          ) : (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({ '@context': 'https://schema.org', ...structuredData }),
+              }}
+            />
+          )
         )}
       </Head>
       

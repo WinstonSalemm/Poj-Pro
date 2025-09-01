@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/useTranslation";
+import { SeoHead } from "@/components/seo/SeoHead";
 
 type Lang = "ru" | "en" | "uz";
 
@@ -43,9 +44,7 @@ type NormsPayload = Record<Lang, RawNorm[]>;
 
 const langMap: Record<string, Lang> = {
   ru: "ru",
-  eng: "en",
   en: "en",
-  uzb: "uz",
   uz: "uz",
 };
 
@@ -83,6 +82,7 @@ export default function DocumentsPage() {
   const [data, setData] = useState<NormsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const locale = (i18n?.language || 'ru') as string;
 
   // краткая «шторка»
   const [bootLoading, setBootLoading] = useState(true);
@@ -123,6 +123,24 @@ export default function DocumentsPage() {
     return arr.map(normalize);
   }, [data, normLang]);
 
+  // Search and filter
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("");
+  const types = useMemo(() => {
+    const set = new Set<string>();
+    rows.forEach((r) => r.type && set.add(r.type));
+    return Array.from(set).sort();
+  }, [rows]);
+  const filteredRows = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return rows.filter((r) => {
+      const matchesType = !typeFilter || (r.type || "") === typeFilter;
+      const hay = `${r.title} ${r.code || ""} ${r.description || ""}`.toLowerCase();
+      const matchesQuery = !q || hay.includes(q);
+      return matchesType && matchesQuery;
+    });
+  }, [rows, query, typeFilter]);
+
   const showSkeleton = bootLoading || loading;
 
   // ------- Modal state -------
@@ -152,7 +170,24 @@ export default function DocumentsPage() {
 
   // ------- Render -------
   return (
-    <main className="relative mx-auto max-w-6xl px-4 md:px-6 py-8 mt-[96px]">
+    <>
+      <SeoHead
+        title={`${t("documents.title")} — POJ PRO`}
+        description={t("documents.subtitle", "Ключевые нормы и регламенты по пожарной безопасности")}
+        path="/documents"
+        locale={locale}
+        image="/OtherPics/logo.png"
+        structuredData={[
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: t("nav.home", "Home"), item: "/" },
+              { "@type": "ListItem", position: 2, name: t("documents.title"), item: "/documents" },
+            ],
+          },
+        ]}
+      />
+      <main className="relative mx-auto max-w-6xl px-4 md:px-6 py-8 mt-[96px]">
       {/* ШТОРКА */}
       {bootLoading && (
         <div className="fixed inset-0 z-[60] bg-white/95 text-black flex flex-col items-center justify-center animate-fadeIn">
@@ -177,26 +212,46 @@ export default function DocumentsPage() {
               {t("documents.subtitle", "Ключевые нормы и регламенты по пожарной безопасности")}
             </p>
           </div>
-          <Link
-            href="/documents/certificates"
-            className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-[#660000] px-2.5 py-1.5 text-xs sm:text-sm sm:px-3 sm:py-2 font-medium !text-[#660000] hover:bg-[#660000] hover:!text-white hover:border-neutral-300 transition"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="transition"
-              aria-hidden="true"
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+            <div className="flex items-center gap-2">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t("common.search", "Поиск")}
+                className="w-64 rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#660000]"
+              />
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="rounded-xl border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#660000] bg-white"
+              >
+                <option value="">{t("common.all", "Все")}</option>
+                {types.map((tp) => (
+                  <option key={tp} value={tp}>{tp}</option>
+                ))}
+              </select>
+            </div>
+            <Link
+              href="/documents/certificates"
+              className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-[#660000] px-2.5 py-1.5 text-xs sm:text-sm sm:px-3 sm:py-2 font-medium !text-[#660000] hover:bg-[#660000] hover:!text-white hover:border-neutral-300 transition"
             >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
-              <path d="M14 2v6h6" />
-              <path d="M8 14h8M8 17h8M8 11h5" />
-            </svg>
-            {t("certificates.title")}
-          </Link>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                className="transition"
+                aria-hidden="true"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
+                <path d="M14 2v6h6" />
+                <path d="M8 14h8M8 17h8M8 11h5" />
+              </svg>
+              {t("certificates.title")}
+            </Link>
+          </div>
 
         </div>
       </div>
@@ -226,7 +281,7 @@ export default function DocumentsPage() {
           </ul>
         ) : (
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {rows.map((item, idx) => (
+            {filteredRows.map((item, idx) => (
               <li
                 key={item.id ?? idx}
                 className="animate-in-up rounded-2xl border border-neutral-200 bg-white p-4 md:p-5 shadow-sm hover:shadow-md hover:-translate-y-[2px] transition will-change-transform"
@@ -264,8 +319,8 @@ export default function DocumentsPage() {
                   {item.description || "—"}
                 </p>
 
-                {/* Кнопка: открыть модалку */}
-                <div className="mt-4">
+                {/* Действия */}
+                <div className="mt-4 flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => openModal(item)}
@@ -277,10 +332,28 @@ export default function DocumentsPage() {
                       <path d="M9 7h8v8" stroke="currentColor" strokeWidth="1.6" />
                     </svg>
                   </button>
+                  {item.link && (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg border border-[#660000] px-3 py-2 text-xs font-medium !text-[#660000] bg-white hover:bg-[#660000] hover:!text-white transition"
+                      aria-label={t("common.download", "Скачать")}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M5 21h14" stroke="currentColor" strokeWidth="1.6" />
+                      </svg>
+                      {t("common.download", "Скачать")}
+                      {item.link.toLowerCase().endsWith('.pdf') && (
+                        <span className="ml-1 rounded-md bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-700">PDF</span>
+                      )}
+                    </a>
+                  )}
                 </div>
               </li>
             ))}
-            {rows.length === 0 && (
+            {filteredRows.length === 0 && (
               <li className="rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-700">
                 {/* пусто */}
               </li>
@@ -470,6 +543,7 @@ export default function DocumentsPage() {
           100% { background-position: 0 0 }
         }
       `}</style>
-    </main>
+      </main>
+    </>
   );
 }

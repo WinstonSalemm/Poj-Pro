@@ -4,8 +4,10 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import { usePageView } from "@/hooks/usePageView";
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
+  usePageView();
   const pathname = usePathname();
   const hideLayout = pathname === "/login" || pathname === "/register";
 

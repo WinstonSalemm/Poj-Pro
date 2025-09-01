@@ -7,6 +7,12 @@ This project is a Next.js (App Router) app. Below are safe steps to deploy witho
 - Package manager: npm
 - Environment variables configured (see `env/.env.example`).
 
+## Environment and Secrets
+- Do not commit `.env` files. `.env` is gitignored; use `env/.env.example` as a template.
+- Copy `env/.env.example` to `.env` locally and set values:
+  - `NEXT_PUBLIC_SITE_URL`, `SITE_URL`, `DATABASE_URL`, `NEXTAUTH_SECRET`, optional analytics IDs.
+- In CI/CD (Vercel/Netlify/Cloudflare), create env vars from `env/.env.example`.
+
 ## Build locally
 ```
 npm ci
@@ -37,6 +43,15 @@ npm start
 ## Headers and Caching
 - Security headers are defined in `next.config.ts` via `headers()`.
 - Static assets are managed by Next; long-term caching is automatic for hashed assets.
+
+### Optional HSTS
+HSTS is commented out in `next.config.ts`. Enable only when the site is fully HTTPS (apex + subdomains):
+```
+// {
+//   key: 'Strict-Transport-Security',
+//   value: 'max-age=15552000; includeSubDomains; preload',
+// },
+```
 
 ## Prisma
 - Ensure DATABASE_URL is set.

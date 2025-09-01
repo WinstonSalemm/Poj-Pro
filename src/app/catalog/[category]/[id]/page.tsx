@@ -90,6 +90,15 @@ export default async function ProductPage({ params }: any) {
         : undefined,
   } as const;
 
+  const breadcrumbsLd = {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Catalog", item: "/catalog" },
+      ...(dbProduct.category ? [{ "@type": "ListItem", position: 2, name: dbProduct.category.name || "", item: `/catalog/${dbProduct.category.slug}` }] : []),
+      { "@type": "ListItem", position: dbProduct.category ? 3 : 2, name: title, item: sitePath },
+    ],
+  } as const;
+
   return (
     <>
       <SeoHead
@@ -98,7 +107,7 @@ export default async function ProductPage({ params }: any) {
         path={sitePath}
         locale={locale}
         image={mainImage}
-        structuredData={productLd}
+        structuredData={[productLd, breadcrumbsLd]}
       />
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

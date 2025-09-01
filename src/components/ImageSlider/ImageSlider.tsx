@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 
 const IMAGES: string[] = [
     "/OtherPics/product1photo.png",
@@ -60,14 +61,26 @@ export default function ImageSlider() {
         >
             <div className="relative w-full h-[600px] max-[1024px]:h-[400px] max-[768px]:h-[300px] bg-transparent overflow-hidden">
                 {IMAGES.map((img, index) => (
-                    <button
+                    <div
                         key={index}
-                        type="button"
-                        onClick={() => goToSlide(index)}
-                        className={`absolute top-0 left-0 w-full h-full bg-white bg-no-repeat bg-center bg-contain opacity-0 transition-opacity duration-800 ease-in-out p-5 box-border cursor-pointer ${index === currentIndex ? "opacity-100 z-10 animate-fadeIn" : ""
-                            }`}
-                        style={{ backgroundImage: `url(${img})` }}
-                    />
+                        className={`absolute inset-0 opacity-0 transition-opacity duration-800 ease-in-out ${index === currentIndex ? "opacity-100 z-10 animate-fadeIn" : ""}`}
+                    >
+                        <Image
+                            src={img}
+                            alt={`Hero slide ${index + 1}`}
+                            fill
+                            priority={index === 0}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+                            className="object-contain bg-white p-5"
+                        />
+                        {/* Клик по слайду переводит к конкретному слайду (совместимость с прежним UX) */}
+                        <button
+                            type="button"
+                            onClick={() => goToSlide(index)}
+                            aria-label={`Go to slide ${index + 1}`}
+                            className="absolute inset-0 cursor-pointer"
+                        />
+                    </div>
                 ))}
 
                 {/* Prev Arrow */}

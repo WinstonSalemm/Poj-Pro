@@ -6,13 +6,6 @@ import { usePathname, useSearchParams } from 'next/navigation';
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const YM_ID = process.env.NEXT_PUBLIC_YM_ID ? Number(process.env.NEXT_PUBLIC_YM_ID) : undefined;
 
-// Provide a global type for Yandex.Metrika only (safe to augment)
-declare global {
-  interface Window {
-    ym?: (counterId: number, method: 'hit' | string, ...args: unknown[]) => void;
-  }
-}
-
 // Local, non-global types to interact with GA4 without 'any'
 type GtagFn = (command: 'config' | 'event', targetId: string, config?: Record<string, unknown>) => void;
 type YmFn = (counterId: number, method: 'hit' | string, ...args: unknown[]) => void;

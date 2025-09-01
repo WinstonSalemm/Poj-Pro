@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "open": "Filter",
+    "total": "Total",
+    "sort": {
+      "title": "Sort",
+      "relevance": "By relevance",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "nameAsc": "Name: A–Z",
+      "nameDesc": "Name: Z–A"
+    },
+    "price": {
+      "title": "Price",
+      "lt500k": "< 500,000",
+      "between500k2m": "500,000 – 2,000,000",
+      "gt2m": "> 2,000,000",
+      "all": "All"
+    }
+  }
+}

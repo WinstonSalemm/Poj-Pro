@@ -92,28 +92,35 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   return (
     <div
       onClick={() => onClick?.(product)}
-      className="group relative bg-white rounded-2xl p-4 border border-gray-200 hover:border-[#660000] hover:bg-gray-50 hover:shadow-md transition-all duration-300"
+      className="group relative bg-white rounded-2xl p-3 border border-gray-200 hover:border-[#660000] hover:bg-gray-50 hover:shadow-md transition-all duration-300"
     >
       {/* изображение */}
-      <div className="w-full h-40 flex items-center justify-center overflow-hidden rounded-xl bg-gray-100">
+      <div className="relative w-full overflow-hidden rounded-xl bg-gray-100 aspect-square">
         <Image
           src={product.image || '/OtherPics/placeholder.png'}
           alt={titleText}
-          width={220}
-          height={160}
+          fill
           sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 220px"
-          className="max-h-full object-contain transition-transform duration-300 transform-gpu group-hover:scale-105"
+          className="object-cover transition-transform duration-300 transform-gpu group-hover:scale-105"
           priority={false}
         />
+        {/* Быстрое действие: в корзину */}
+        <button
+          onClick={addToCart}
+          aria-label="Add to cart"
+          className="absolute top-2 right-2 z-10 rounded-full border border-[#660000] text-[#660000] bg-white/90 backdrop-blur px-3 py-1 text-xs shadow-sm hover:bg-[#660000] hover:text-white transition-colors"
+        >
+          +
+        </button>
       </div>
 
       {/* заголовок */}
-      <h3 className="mt-3 font-semibold text-[#660000] line-clamp-2 min-h-[3.2rem]">
+      <h3 className="mt-2 font-semibold text-[#660000] line-clamp-2 min-h-[3rem] text-[0.95rem]">
         {titleText}
       </h3>
 
       {/* цена */}
-      <div className="mt-1 min-h-[1.4rem] text-sm text-gray-700">
+      <div className="mt-1 min-h-[1.2rem] text-xs text-gray-700">
         {priceNum > 0 ? `${priceNum.toLocaleString("ru-UZ")} UZS` : ""}
       </div>
 
@@ -135,7 +142,7 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
             [
               "w-full rounded-xl py-2 font-medium border focus-visible:outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[#660000]/40 transition-colors duration-200",
               popularVariant
-                ? "bg-white text-[#660000] border-[#660000] hover:bg-[#660000] hover:text-white rounded-full h-11 min-h-[44px] shadow-sm"
+                ? "bg-white text-[#660000] border-[#660000] hover:bg-[#660000] hover:text-white rounded-full h-10 min-h-[40px] shadow-sm"
                 : "text-[#660000] hover:bg-[#660000]/5 border-[#660000]",
             ].join(" ")
           }

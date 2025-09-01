@@ -15,14 +15,11 @@ function titleFromFileName(name: string) {
 }
 
 export async function loadCertificates(): Promise<CertificateItem[]> {
-  // 1) Try to import JSON list from src/imports/certificates.json
+  // 1) Try to read JSON list from src/imports/certificates.json using fs (optional)
+  const jsonPath = path.join(process.cwd(), 'src', 'imports', 'certificates.json');
   try {
-    // Dynamic import allows optional presence
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const mod = await import('@/imports/certificates.json');
-    const raw: unknown = (mod as { default?: unknown }).default ?? (mod as unknown);
-    const list = raw as Array<{ title: string; href: string }>;
+    const data = await fs.readFile(jsonPath, 'utf8');
+    const list = JSON.parse(data) as Array<{ title: string; href: string }>;
     if (Array.isArray(list) && list.length) {
       return list.map((it, idx) => ({
         id: `json-${idx}`,

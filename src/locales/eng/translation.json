@@ -125,7 +125,7 @@
       "description": "If you have any questions or need advice on equipment, please contact us in any way that’s convenient for you.",
       "address": {
         "title": "Adress",
-        "value": "Tashkent, Example St., 10"
+        "value": "Tashkent city, Chilanzar district, 1st quarter, house 33 magazine BOLID with green wall"
       },
       "phone": {
         "title": "Phone"
@@ -165,6 +165,25 @@
         "title": "Proven Reliability",
         "text": "Over 12 years of flawless performance in the fire safety market. Thousands of satisfied clients trust us with their critical safety needs."
       }
+    }
+  },
+  "filters": {
+    "open": "Filter",
+    "total": "Total",
+    "sort": {
+      "title": "Sort",
+      "relevance": "Relevance",
+      "priceAsc": "Price: ascending",
+      "priceDesc": "Price: descending",
+      "nameAsc": "Name: A–Z",
+      "nameDesc": "Name: Z–A"
+    },
+    "price": {
+      "title": "Price",
+      "lt500k": "< 500 000",
+      "between500k2m": "500 000 – 2 000 000",
+      "gt2m": "> 2 000 000",
+      "all": "All"
     }
   },
   "categories": {

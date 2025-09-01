@@ -1,12 +1,11 @@
 declare module '@/lib/analytics' {
-  export function usePageView(): void;
-  export function trackEvent(
-    action: string,
-    category: string,
-    label?: string,
-    value?: number
-  ): void;
-  export function trackError(error: Error, context?: Record<string, unknown>): void;
+  export const GA_ID: string;
+  export const YM_ID: string;
+  export const isProd: boolean;
+  export const analyticsEnabled: boolean;
+  export function gaPageView(url: string): void;
+  export function trackEvent(name: string, params?: Record<string, unknown>): void;
+  export function ymReachGoal(goal: string, params?: Record<string, unknown>): void;
   export function trackWebVitals(metric: {
     id: string;
     name: string;

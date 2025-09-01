@@ -29,15 +29,15 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center space-x-1 bg-white/80 backdrop-blur-sm rounded-full p-1 border border-gray-200 shadow-sm">
+    <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full p-1 border border-gray-200 shadow-sm">
       {languages.map((lang) => (
         <button
           key={lang.code}
           onClick={() => changeLanguage(lang.code)}
-          className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
-            i18n.language === lang.code 
-              ? 'bg-[#660000] text-white' 
-              : 'text-gray-700 hover:bg-gray-100'
+          className={`btn-ghost h-8 w-8 rounded-full text-xs ${
+            (i18n.language === lang.code || (i18n.language || '').toLowerCase().startsWith(lang.code))
+              ? 'bg-brand text-white hover:bg-[#520000]'
+              : ''
           }`}
         >
           {lang.name}

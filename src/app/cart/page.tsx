@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { trackBeginCheckout } from '@/components/analytics/events';
 
 // --- helpers ---
 
@@ -176,6 +177,14 @@ export default function CartPage() {
       router.push(`/login?callbackUrl=${callbackUrl}`);
       return;
     }
+    // Analytics: begin_checkout
+    try {
+      trackBeginCheckout({
+        value: total,
+        currency: 'UZS',
+        items: items.map(it => ({ id: it.id, name: localized[it.id]?.name || it.name, price: it.price, quantity: it.qty })),
+      });
+    } catch {}
     setCheckoutOpen(true);
   };
 
@@ -184,7 +193,7 @@ export default function CartPage() {
   if (!showSkeleton && items.length === 0) {
     // Пустая корзина (уже после шторки)
     return (
-      <main className="container mx-auto mt-[100px] py-12 px-4 text-center relative">
+      <main className="container-section mt-[100px] py-12 text-center relative">
         {/* ШТОРКА */}
         {bootLoading && (
           <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
@@ -206,7 +215,7 @@ export default function CartPage() {
           <p className="text-gray-600 mb-6">
             {t('cart.emptyDescription') || "Looks like you haven't added any products to your cart yet."}
           </p>
-          <Link href="/catalog" className="inline-block bg-[#660000] !text-white px-6 py-2 rounded-md hover:bg-[#8B0000] transition-colors">
+          <Link href="/catalog" className="btn-primary inline-flex px-6 py-2">
             {t('cart.continueShopping') || 'Continue Shopping'}
           </Link>
         </div>
@@ -221,7 +230,7 @@ export default function CartPage() {
   const currency = 'UZS';
 
   return (
-    <main className="container mx-auto py-8 px-4 relative">
+    <main className="container-section py-8 relative">
       {/* ШТОРКА (белая) */}
       {bootLoading && (
         <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
@@ -232,7 +241,7 @@ export default function CartPage() {
         </div>
       )}
 
-      <h1 className={`text-3xl font-bold !text-[#660000] mb-8 transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <h1 className={`text-3xl font-bold text-brand mb-8 transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
         {t('cart.title') || 'Your Cart'}
       </h1>
 
@@ -338,14 +347,14 @@ export default function CartPage() {
           </div>
 
           <div className="mt-4 flex flex-col sm:flex-row justify-between gap-3">
-            <Link href="/catalog" className="!text-[#660000] hover:!text-[#8B0000] font-medium flex items-center justify-center">
+            <Link href="/catalog" className="text-brand hover:text-[#8B0000] font-medium flex items-center justify-center">
               ← {t('cart.continueShopping') || 'Continue Shopping'}
             </Link>
 
             {/* Кнопка открывает модалку очистки */}
             <button
               onClick={openClearModal}
-              className="!text-[#660000] hover:!text-[#8B0000] text-sm font-medium"
+              className="btn-ghost text-sm"
             >
               {t('cart.clearCart') || 'Clear Shopping Cart'}
             </button>
@@ -355,7 +364,7 @@ export default function CartPage() {
         {/* Order Summary */}
         <div className="lg:w-1/3">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold !text-[#660000] mb-4">
+            <h2 className="text-lg font-semibold text-brand mb-4">
               {t('cart.orderSummary') || 'Order Summary'}
             </h2>
             {showSkeleton ? (
@@ -399,7 +408,7 @@ export default function CartPage() {
                 <div className="pt-2">
                   <button
                     onClick={handleCheckout}
-                    className="w-full bg-[#660000] text-white py-3 px-4 rounded-md hover:bg-[#8B0000] transition-colors font-medium disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="btn-primary w-full py-3 px-4 disabled:opacity-70 disabled:cursor-not-allowed"
                     disabled={status === 'loading'}
                   >
                     {status === 'loading'
@@ -413,7 +422,7 @@ export default function CartPage() {
                 <div className="pt-2">
                   <a
                     href="tel:+998712536616"
-                    className="block w-full text-center border border-[#660000] !text-[#660000] py-3 px-4 rounded-md hover:bg-[#660000] hover:!text-white transition-colors font-medium"
+                    className="btn-ghost w-full border-brand text-brand hover:bg-brand hover:text-white"
                   >
                     +998 71 253 66 16
                   </a>
@@ -425,7 +434,7 @@ export default function CartPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={t("footer.social.telegramTitle")}
-                    className="block w-full text-center border border-[#660000] !text-[#660000] py-3 px-4 rounded-md hover:bg-[#660000] hover:!text-white transition-colors font-medium"
+                    className="btn-ghost w-full border-brand text-brand hover:bg-brand hover:text-white"
                   >
                     Telegram
                   </a>

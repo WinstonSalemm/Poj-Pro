@@ -18,10 +18,23 @@ const nextConfig: NextConfig = {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
+          // modern browsers ignore X-XSS-Protection; remove to avoid noise
+          // { key: 'X-XSS-Protection', value: '0' },
           {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
+          {
+            key: 'Permissions-Policy',
+            // disable sensitive features by default; extend as needed
+            value: 'geolocation=(), microphone=(), camera=()',
+          },
+          // Optional: enable HSTS only when the site is 100% HTTPS (apex + subdomains)
+          // After verifying HTTPS, uncomment the header below (max-age ~180 days):
+          // {
+          //   key: 'Strict-Transport-Security',
+          //   value: 'max-age=15552000; includeSubDomains; preload',
+          // },
         ],
       },
     ];
@@ -32,9 +45,9 @@ const nextConfig: NextConfig = {
   },
   // Disable React's StrictMode for development to prevent double rendering
   reactStrictMode: process.env.NODE_ENV !== 'production',
-  // Disable ESLint during build
+  // ESLint: do NOT ignore during build in CI
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: process.env.CI ? false : true,
   },
   // Disable TypeScript type checking during build
   typescript: {

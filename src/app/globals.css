@@ -11,13 +11,7 @@
   --font-mono: monospace;
 }
 
-/* ===== Tailwind С‚РµРјР° С‡РµСЂРµР· @theme ===== */
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-}
+/* ===== Remove Tailwind v4-only @theme usage (kept CSS variables) ===== */
 
 /* ===== РўС‘РјРЅР°СЏ С‚РµРјР° (Р°РІС‚Рѕ РїРѕ СЃРёСЃС‚РµРјРЅС‹Рј РЅР°СЃС‚СЂРѕР№РєР°Рј) ===== */
 @media (prefers-color-scheme: dark) {
@@ -28,13 +22,18 @@
 }
 
 /* ===== Р‘Р°Р·РѕРІС‹Рµ СЃС‚РёР»Рё ===== */
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  margin: 0;
-  padding: 0;
-  line-height: 1.5;
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    /* Base type scale: 15px on mobile, 16px from md */
+    @apply text-[15px] md:text-base antialiased;
+  }
+  h1, h2, h3, h4 { @apply tracking-tight; }
 }
 
 /* РЎР±СЂРѕСЃ РёР·РѕР±СЂР°Р¶РµРЅРёР№ */
@@ -52,6 +51,27 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+/* ===== Components layer: buttons and containers ===== */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-3.5 py-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/40 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-[#520000];
+  }
+  .btn-ghost {
+    @apply btn border border-gray-300 bg-white text-gray-800 hover:bg-gray-50;
+  }
+
+  /* Section container and vertical rhythm */
+  .container-section {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .section-y {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
 }
 
 /* === Animations and utilities moved from page.tsx === */

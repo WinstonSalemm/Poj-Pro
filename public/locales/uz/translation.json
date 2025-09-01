@@ -1,0 +1,21 @@
+{
+  "filters": {
+    "open": "Filtr",
+    "total": "Jami",
+    "sort": {
+      "title": "Saralash",
+      "relevance": "Moslik bo‘yicha",
+      "priceAsc": "Narx: o‘sish tartibida",
+      "priceDesc": "Narx: kamayish tartibida",
+      "nameAsc": "Nomi: A–Z",
+      "nameDesc": "Nomi: Z–A"
+    },
+    "price": {
+      "title": "Narx",
+      "lt500k": "< 500 000",
+      "between500k2m": "500 000 – 2 000 000",
+      "gt2m": "> 2 000 000",
+      "all": "Barchasi"
+    }
+  }
+}

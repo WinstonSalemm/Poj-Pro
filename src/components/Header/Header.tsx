@@ -74,12 +74,24 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className={`fixed top-0 z-[999] w-full border-b border-[#660000] bg-[#f8f8f8] transition-[box-shadow] duration-200 ${
-        isScrolled ? "hdr-shadow-on" : "hdr-shadow"
+      className={`sticky top-0 z-[999] w-full border-b border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 transition-shadow duration-200 ${
+        isScrolled ? "shadow-sm" : "shadow-none"
       }`}
+      // iOS: защитим от «ухода» под вырез и наложений
+      style={{
+        paddingTop: "max(0px, env(safe-area-inset-top))", // iOS safe-area
+        WebkitTransform: "translateZ(0)", // сглаживаем артефакты композитинга
+      }}
     >
       {/* ROW */}
-      <div className="mx-auto flex min-h-[68px] max-w-[1380px] items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
+      <div
+        className="container-section flex min-h-[68px] items-center justify-between gap-2"
+        // iOS: safe-area по бокам, чтобы бургер не уползал под вырез
+        style={{
+          paddingLeft: "max(12px, env(safe-area-inset-left))",
+          paddingRight: "max(12px, env(safe-area-inset-right))",
+        }}
+      >
         {/* LEFT: Burger (mobile) / Left nav (desktop) */}
         <div className="flex min-w-[44px] items-center justify-start">
           {/* Burger: видим ДО lg */}
@@ -89,20 +101,26 @@ export default function Header() {
               setLangOpen(false);
             }}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            className="z-[22] flex h-6 w-8 flex-col justify-between lg:hidden"
+            aria-controls="mobile-nav"
+            aria-expanded={mobileOpen}
+            // iOS: увеличенная hit-area, явный цвет и высокий z-index
+            className="relative z-[1002] lg:hidden inline-flex items-center justify-center w-11 h-11 -ml-1 rounded-md outline-none touch-manipulation focus-visible:ring-2 focus-visible:ring-brand/40"
+            style={{ WebkitTapHighlightColor: "transparent" }}
           >
+            {/* три полоски */}
             <span
-              className={`h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
+              className={`block w-7 h-[2px] rounded bg-brand transition-transform duration-300 ${
                 mobileOpen ? "translate-y-[10px] rotate-45" : ""
               }`}
             />
             <span
-              className={`h-[2px] rounded bg-[#660000] transition-opacity duration-300 ${
+              className={`block w-7 h-[2px] rounded bg-brand transition-opacity duration-300 ${
                 mobileOpen ? "opacity-0" : "opacity-100"
               }`}
+              style={{ marginTop: 6, marginBottom: 6 }}
             />
             <span
-              className={`h-[2px] rounded bg-[#660000] transition-transform duration-300 ${
+              className={`block w-7 h-[2px] rounded bg-brand transition-transform duration-300 ${
                 mobileOpen ? "-translate-y-[10px] -rotate-45" : ""
               }`}
             />
@@ -114,7 +132,7 @@ export default function Header() {
               <Link
                 key={item.id}
                 href={item.href}
-                className="nav-underline relative bg-transparent text-[14.7px] font-medium tracking-[0.02em] !text-[#660000] hover:text-[#660000]"
+                className="nav-underline relative bg-transparent text-[14.7px] font-medium tracking-[0.02em] text-brand hover:text-brand"
                 style={{ animationDelay: `${0.08 + idx * 0.07}s` }}
               >
                 {t(item.translationKey)}
@@ -145,7 +163,7 @@ export default function Header() {
           {/* Mobile compact controls */}
           <div className="flex flex-wrap items-center justify-end gap-2 lg:hidden">
             {/* Cart */}
-            <div className="text-[#660000] shrink-0">
+            <div className="text-brand shrink-0">
               <CartIcon />
             </div>
 
@@ -153,8 +171,7 @@ export default function Header() {
             <div className="relative shrink-0" ref={switcherMobileRef}>
               <button
                 type="button"
-                className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 whitespace-nowrap
-                           max-[380px]:px-1.5 max-[380px]:text-[10.5px]"
+                className="btn-ghost h-8 px-2 text-xs whitespace-nowrap max-[380px]:px-1.5 max-[380px]:text-[10.5px]"
                 onClick={() => setLangOpen(!langOpen)}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
@@ -171,7 +188,7 @@ export default function Header() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 z-20 mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                <div className="absolute right-0 z-[1001] mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5">
                   <div className="py-1">
                     {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
                       <button
@@ -203,18 +220,17 @@ export default function Header() {
               </Link>
             ))}
 
-            <div className="text-[#660000]">
+            <div className="text-brand">
               <CartIcon />
             </div>
 
-            {/* На десктопе можно тоже использовать бренд-кнопку обычного размера */}
             <AuthButton />
 
             {/* Language (desktop) */}
             <div className="relative" ref={switcherDesktopRef}>
               <button
                 type="button"
-                className="flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs md:text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                className="btn-ghost h-9 px-3 text-sm"
                 onClick={() => setLangOpen(!langOpen)}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
@@ -231,7 +247,7 @@ export default function Header() {
               </button>
 
               {langOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-20 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                <div className="absolute right-0 z-[1001] mt-2 w-20 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5">
                   <div className="py-1">
                     {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
                       <button
@@ -254,16 +270,23 @@ export default function Header() {
 
       {/* Mobile menu (до lg) */}
       <nav
-        className={`absolute left-0 right-0 top-[68px] border-b border-[#f2f2f2] bg-white shadow-[0_3px_24px_rgba(102,0,0,0.08)] lg:hidden ${
+        id="mobile-nav"
+        className={`absolute left-0 right-0 top-[68px] border-b border-neutral-200 bg-white shadow-[0_3px_24px_rgba(102,0,0,0.08)] lg:hidden ${
           mobileOpen ? "flex flex-col" : "hidden"
         }`}
+        // iOS: не перекрывать кнопку/шапку и учитывать safe-area
+        style={{
+          paddingLeft: "max(12px, env(safe-area-inset-left))",
+          paddingRight: "max(12px, env(safe-area-inset-right))",
+          zIndex: 1000,
+        }}
       >
         {[...menuLeft, ...menuRight].map((item: MenuItem) => (
           <Link
             key={item.id}
             href={item.href}
             onClick={() => setMobileOpen(false)}
-            className="w-full border-b border-[#eee] px-[20px] py-[16px] text-left text-[17px] !text-[#660000] hover:bg-gray-50"
+            className="w-full border-b border-neutral-200 px-[20px] py-[16px] text-left text-[17px] text-brand hover:bg-gray-50"
           >
             {t(item.translationKey)}
           </Link>
@@ -278,7 +301,7 @@ export default function Header() {
                 setMobileOpen(false);
                 router.push('/');
               }}
-              className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
+              className="flex-1 text-center btn-primary"
             >
               {t('auth.signOut')}
             </button>
@@ -290,14 +313,14 @@ export default function Header() {
                   try { (async () => { (await import("next-auth/react")).signIn(); })(); } catch {}
                   setMobileOpen(false);
                 }}
-                className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
+                className="flex-1 btn-ghost"
               >
                 {t('auth.signIn')}
               </button>
               <Link
                 href="/register"
                 onClick={() => setMobileOpen(false)}
-                className="flex-1 text-center rounded-md bg-[#660000] px-3 py-2 text-sm font-semibold text-white hover:bg-[#520000]"
+                className="flex-1 text-center btn-primary"
               >
                 {t('auth.register')}
               </Link>

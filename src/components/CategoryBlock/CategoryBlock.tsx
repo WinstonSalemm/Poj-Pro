@@ -84,6 +84,7 @@ export default function CategoryBlock() {
                       width={160}
                       height={160}
                       className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-[1.07]"
+                      sizes="(max-width: 640px) 140px, (max-width: 1024px) 160px, 180px"
                       loading="lazy"
                       onError={(e) => {
                         // next/image проксирует событие к <img>, так что это ок
