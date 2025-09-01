@@ -54,6 +54,10 @@
     "title": "Kompaniya haqida",
     "subtitle": "Bizning afzalliklarimiz",
     "more": "Batafsil",
+    "featuredSupplier": {
+      "title": "Bizning eng yirik oʻt oʻchirgichlar va yongʻin xavfsizligi uskunalari yetkazib beruvchimiz.",
+      "cta": "Rasmiy veb-saytga oʻtish uchun bosing"
+    },
     "welcome": "POJ PRO onlayn do'koniga xush kelibsiz. Bizning kompaniyamiz O'zbekistonda yong'in xavfsizligi uskunalari va yong'inga qarshi himoya vositalarini sotishga ixtisoslashgan.",
     "mission": "Bizning vazifamiz - ishonchli ishlab chiqaruvchilardan faqat yuqori sifatli, sertifikatlangan uskunalarni taklif qilish orqali uyingiz va biznesingiz xavfsizligini ta'minlashdir.",
     "meta": {

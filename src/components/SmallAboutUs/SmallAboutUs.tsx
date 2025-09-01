@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { FaTruck, FaBoxOpen, FaHandshake, FaPhoneAlt, FaChartLine } from "react-icons/fa";
 import { BsCartCheck } from "react-icons/bs";
 
 export default function SmallAboutUs() {
+  // Use default namespace typing; keys are fully-qualified (e.g., 'aboutus.*')
   const { t } = useTranslation();
 
   const reasons = [
@@ -44,6 +46,35 @@ export default function SmallAboutUs() {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Featured supplier card: Ogneborets */}
+        <div className="mt-6">
+          <a
+            href="https://www.ogneborets.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t('aboutus.featuredSupplier.aria', { defaultValue: 'Открыть сайт поставщика Огнеборец' })}
+            className="block"
+          >
+            <div
+              className="flex flex-col items-center gap-3 bg-white rounded-2xl p-7 md:p-8 shadow hover:shadow-lg transition-shadow max-w-[600px] mx-auto border-2 border-[#660000]/30 hover:border-[#660000]/50"
+            >
+              <Image
+                src="/brands/ogneborets.svg"
+                alt="Логотип поставщика Огнеборец"
+                width={640}
+                height={180}
+                className="h-32 md:h-36 w-auto object-contain"
+                priority
+                sizes="(max-width: 768px) 256px, 600px"
+              />
+              <div className="text-center">
+                <div className="text-[#660000] font-semibold text-lg md:text-xl">{t('aboutus.featuredSupplier.title', { defaultValue: 'Наш самый крупный поставщик Огнетушителей и пожарной техники безопасности' })}</div>
+                <div className="text-[#965454] text-sm mt-1">{t('aboutus.featuredSupplier.cta', { defaultValue: 'Нажмите, чтобы перейти на официальный сайт' })}</div>
+              </div>
+            </div>
+          </a>
         </div>
 
         <div className="flex justify-center">

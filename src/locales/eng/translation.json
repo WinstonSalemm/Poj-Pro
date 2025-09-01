@@ -110,6 +110,10 @@
     "title": "About Us",
     "subtitle": "Our Advantages",
     "more": "Read more",
+    "featuredSupplier": {
+      "title": "Our largest supplier of fire extinguishers and firefighting equipment.",
+      "cta": "Click to visit the official website"
+    },
     "suppliers": {
       "title": "Below are our official suppliers and partners.",
       "subtitle": "We have been working together reliably for over 10 years."

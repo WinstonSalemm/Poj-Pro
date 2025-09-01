@@ -101,22 +101,23 @@ export default function AboutPage() {
           {t("suppliers.subtitle")}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
           {suppliers.map((supplier, idx) => (
             <div
               key={supplier.slug}
-              className="animate-in-up"
+              className="animate-in-up h-full"
               style={{
                 animationDelay: `${idx * 0.07}s`,
                 animationFillMode: "backwards",
               }}
             >
               {/* Если внутри BrandCard свои цвета — можно передать проп или обернуть в div с text-[#660000] */}
-              <div className="text-[#660000]">
+              <div className="text-[#660000] h-full">
                 <BrandCard
                   name={supplier.name}
                   logo={supplier.logo}
                   href={supplier.href}
+                  size={supplier.slug === 'ogneborets' ? 'xl' : (supplier.slug === 'elis' ? 'lg' : 'md')}
                 />
               </div>
             </div>
