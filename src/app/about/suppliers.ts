@@ -9,7 +9,7 @@ export const suppliers: Supplier[] = [
   {
     slug: 'ogneborets',
     name: 'ООО "Огнеборец"',
-    href: 'https://www.ogneborets.com/',
+    href: 'https://www.510777.xn--p1ai/ru',
     logo: '/brands/ogneborets.svg'
   },
   {

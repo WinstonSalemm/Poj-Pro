@@ -51,7 +51,7 @@ export default function SmallAboutUs() {
         {/* Featured supplier card: Ogneborets */}
         <div className="mt-6">
           <a
-            href="https://www.ogneborets.com/"
+            href="https://www.510777.xn--p1ai/ru"
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('aboutus.featuredSupplier.aria', { defaultValue: 'Открыть сайт поставщика Огнеборец' })}
