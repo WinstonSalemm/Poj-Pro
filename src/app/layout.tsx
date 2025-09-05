@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 import './globals.css';
 import { Inter } from 'next/font/google';
-import type { Viewport } from 'next';
+import type { Viewport, Metadata } from 'next';
 import { headers } from 'next/headers';
 import Script from 'next/script';
 import { isProd, GA_ID, YM_ID, GTM_ID } from '@/lib/analytics';
@@ -16,6 +16,7 @@ import ClientWrapper from '@/app/ClientWrapper';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import Analytics from '@/components/Analytics';
+import { SITE_URL } from '@/lib/site';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -33,6 +34,11 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#000000' },
   ],
+};
+
+// Base metadata (applies to pages that rely on app layout defaults)
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
 };
 
 export default async function RootLayout({

@@ -202,8 +202,14 @@ interface CatalogViewProps {
 }
 
 export default function CatalogView({ categories, dictionary, locale }: CatalogViewProps) {
-  // Ensure categories is an array
-  const safeCategories = Array.isArray(categories) ? categories : [];
+  // Normalize and guard categories input
+  const safeCategories = (Array.isArray(categories) ? categories : [])
+    .filter((c) => c && typeof (c as any).slug === 'string' && ((c as any).slug as string).trim().length > 0)
+    .map((c) => ({
+      ...c,
+      slug: String((c as any).slug || '').trim(),
+      name: typeof (c as any).name === 'string' && (c as any).name.trim() ? String((c as any).name).trim() : String((c as any).slug || '').trim(),
+    }));
   
   const lang = normalizeLang(String(locale));
 
@@ -237,7 +243,7 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
 
   // Create a mapping of category slugs to their translated names (prefer constants/overrides)
   const categoryLabels = safeCategories.reduce((acc, category) => {
-    const slug = category.slug;
+    const slug = (category?.slug ?? '').toString();
     const normalizedSlug = slug.replace(/_/g, '-');
     const altSlug = slug.replace(/-/g, '_');
 
@@ -275,9 +281,11 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
     }
 
     // 5) Fallback to pretty slug or backend name
-    acc[slug] = fallbackName(category.name || slug);
+    acc[slug] = fallbackName((category as any).name || slug);
     return acc;
   }, {} as Record<string, string>);
+
+  const sorted = [...safeCategories].sort((a, b) => getPriority(a.slug) - getPriority(b.slug));
 
   return (
     <main className="bg-[#F8F9FA] min-h-screen relative">
@@ -303,10 +311,17 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
           {dictionary.catalog.description}
         </p>
 
-        <div className="grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-6 justify-items-center">
-          {[...safeCategories]
-            .sort((a, b) => getPriority(a.slug) - getPriority(b.slug))
-            .map((cat, idx) => (
+        {sorted.length === 0 ? (
+          <div className="max-w-2xl mx-auto mt-8 text-center text-neutral-600">
+            <div className="mb-4 text-lg">{(dictionary as any)?.catalog?.emptyTitle || 'Категории не найдены'}</div>
+            <p className="mb-6">{(dictionary as any)?.catalog?.emptyDescription || 'Попробуйте воспользоваться поиском или зайдите позже.'}</p>
+            <div className="w-full md:w-[340px] lg:w-[420px] mx-auto">
+              <CatalogProductSearch locale={locale} />
+            </div>
+          </div>
+        ) : (
+          <div className="grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-6 justify-items-center">
+          {sorted.map((cat, idx) => (
             <Link
               key={cat.id}
               href={`/catalog/${cat.slug}`}
@@ -337,7 +352,8 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
               </div>
             </Link>
           ))}
-        </div>
+          </div>
+        )}
       </section>
 
       {/* keyframes */}

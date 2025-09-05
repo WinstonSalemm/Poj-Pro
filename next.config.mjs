@@ -63,7 +63,14 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ['localhost', 'cdn.poj-pro.uz', 'placehold.co'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'poj-pro.uz' },
+      { protocol: 'https', hostname: 'www.poj-pro.uz' },
+      { protocol: 'https', hostname: 'cdn.poj-pro.uz' },
+      { protocol: 'https', hostname: 'placehold.co' },
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'localhost' },
+    ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
