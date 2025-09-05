@@ -3,11 +3,11 @@
 import { useTranslation } from '@/i18n/useTranslation';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { trackBeginCheckout } from '@/components/analytics/events';
+import { evRemoveFromCart } from '@/lib/analytics/dataLayer';
 
 // --- helpers ---
 
@@ -162,7 +162,21 @@ export default function CartPage() {
   const openRemoveModal = (id: string | number) => setRemoveModalId(id);
   const closeRemoveModal = () => setRemoveModalId(null);
   const confirmRemoveOne = () => {
-    if (removeModalId !== null) removeItem(removeModalId);
+    if (removeModalId !== null) {
+      try {
+        const it = items.find(x => String(x.id) === String(removeModalId));
+        if (it) {
+          evRemoveFromCart({
+            item_id: it.id,
+            item_name: localized[it.id]?.name || it.name,
+            price: Number(it.price) || undefined,
+            quantity: it.qty || 1,
+            currency: 'UZS',
+          });
+        }
+      } catch {}
+      removeItem(removeModalId);
+    }
     setRemoveModalId(null);
   };
 
@@ -298,12 +312,11 @@ export default function CartPage() {
 
                           <div className="relative h-20 w-20 rounded-md overflow-hidden bg-gray-100">
                             {normalizeImageUrl(localized[item.id]?.image || item.image) ? (
-                              <Image
+                              <img
                                 src={normalizeImageUrl(localized[item.id]?.image || item.image)}
                                 alt={localized[item.id]?.name || item.name || (t('cart.product') || 'Product')}
-                                fill
-                                sizes="80px"
-                                className="object-contain p-1"
+                                className="absolute inset-0 w-full h-full object-contain p-1"
+                                loading="lazy"
                               />
                             ) : (
                               <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs text-center p-2">
@@ -410,6 +423,7 @@ export default function CartPage() {
                     onClick={handleCheckout}
                     className="btn-primary w-full py-3 px-4 disabled:opacity-70 disabled:cursor-not-allowed"
                     disabled={status === 'loading'}
+                    data-testid="cart-checkout-button"
                   >
                     {status === 'loading'
                       ? t('cart.loading') || 'Loading...'

@@ -1,7 +1,7 @@
 'use client';
 
 import Head from 'next/head';
-import Script from 'next/script';
+import { SITE_URL, SITE_NAME } from '@/lib/site';
 
 type StructuredData = {
   '@type'?: string;
@@ -21,6 +21,8 @@ interface SeoHeadProps {
   section?: string;
   tags?: string[];
   structuredData?: StructuredData | StructuredData[];
+  // When true, canonical and hreflang will use subpath locales (/en, /uz). Default: false.
+  useLocaleSubpaths?: boolean;
 }
 
 export function SeoHead({
@@ -36,19 +38,16 @@ export function SeoHead({
   section,
   tags = [],
   structuredData,
+  useLocaleSubpaths = false,
 }: SeoHeadProps) {
-  const siteName = 'POJ PRO';
-  // Determine base URL from env with safe fallback to relative URLs
-  const rawEnv =
-    (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL)) ||
-    (typeof process !== 'undefined' && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '') ||
-    '';
-  const siteUrl = rawEnv.replace(/\/$/, '');
+  const siteName = SITE_NAME;
+  // Use global site URL to ensure absolute canonicals
+  const siteUrl = SITE_URL;
 
   // Tracking hook removed (no-op) to avoid build errors if analytics isn't configured
 
   // Helpers
-  const ensureLeadingSlash = (p: string) => p.startsWith('/') ? p : `/${p}`;
+  const ensureLeadingSlash = (p: string) => (p.startsWith('/') ? p : `/${p}`);
   const clean = (p: string) => ensureLeadingSlash(p).replace(/\/+/g, '/');
   const isServicePath = /^\s*\/adminProducts(\/|$)/.test(path);
 
@@ -64,7 +63,9 @@ export function SeoHead({
   const localeLower = (locale || 'ru').toLowerCase();
   const isEn = localeLower.startsWith('en');
   const isUz = localeLower.startsWith('uz');
-  const canonicalPath = isEn ? `/en${pathname}` : isUz ? `/uz${pathname}` : pathname; // ru default at root
+  const canonicalPath = useLocaleSubpaths
+    ? (isEn ? `/en${pathname}` : isUz ? `/uz${pathname}` : pathname) // ru default at root
+    : pathname;
   const canonicalUrl = isServicePath ? undefined : (siteUrl ? `${siteUrl}${canonicalPath}` : canonicalPath);
 
   // Hreflang alternates for subpath locales (skip on service paths)
@@ -73,11 +74,13 @@ export function SeoHead({
   const altUzPath = `/uz${pathname}`;
   const languageAlternates: Record<string, string> | null = isServicePath
     ? null
-    : {
-        ru: siteUrl ? `${siteUrl}${altRuPath}` : altRuPath,
-        en: siteUrl ? `${siteUrl}${altEnPath}` : altEnPath,
-        uz: siteUrl ? `${siteUrl}${altUzPath}` : altUzPath,
-      };
+    : useLocaleSubpaths
+      ? {
+          ru: siteUrl ? `${siteUrl}${altRuPath}` : altRuPath,
+          en: siteUrl ? `${siteUrl}${altEnPath}` : altEnPath,
+          uz: siteUrl ? `${siteUrl}${altUzPath}` : altUzPath,
+        }
+      : null;
   const ogLocale = isEn ? 'en-US' : isUz ? 'uz-UZ' : 'ru-RU';
 
   return (
@@ -152,68 +155,6 @@ export function SeoHead({
           )
         )}
       </Head>
-      
-      {/* Google Analytics */}
-      {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
-        <>
-          <Script
-            strategy="afterInteractive"
-            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
-          />
-          <Script
-            id="google-analytics"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}', {
-                  page_path: window.location.pathname,
-                });
-              `,
-            }}
-          />
-        </>
-      )}
-      
-      {/* Yandex.Metrika */}
-      {process.env.NEXT_PUBLIC_YM_ID && (
-        <Script
-          id="yandex-metrika"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-              m[i].l=1*new Date();
-              for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-              k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-              (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-              
-              ym(${process.env.NEXT_PUBLIC_YM_ID}, "init", {
-                clickmap:true,
-                trackLinks:true,
-                accurateTrackBounce:true,
-                webvisor:true
-              });
-            `,
-          }}
-        />
-      )}
-      
-      {/* Yandex.Metrika noscript fallback */}
-      {process.env.NEXT_PUBLIC_YM_ID && (
-        <noscript>
-          <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={`https://mc.yandex.ru/watch/${process.env.NEXT_PUBLIC_YM_ID}`} 
-              style={{ position: 'absolute', left: '-9999px' }} 
-              alt="" 
-            />
-          </div>
-        </noscript>
-      )}
     </>
   );
 }

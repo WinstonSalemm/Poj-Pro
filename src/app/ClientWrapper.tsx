@@ -2,20 +2,23 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
 import { usePageView } from "@/hooks/usePageView";
+import { isProd } from '@/lib/analytics';
+import PerformanceTracker from '@/components/PerformanceTracker';
 
-export default function ClientWrapper({ children }: { children: React.ReactNode }) {
+interface ClientWrapperProps {
+  children?: React.ReactNode;
+}
+
+export default function ClientWrapper({ children }: ClientWrapperProps) {
   usePageView();
   const pathname = usePathname();
   const hideLayout = pathname === "/login" || pathname === "/register";
 
   return (
     <>
-      {!hideLayout && <Header />}
       <main className="flex-grow">{children}</main>
-      {!hideLayout && <Footer />}
+      {isProd && <PerformanceTracker />}
     </>
   );
 }

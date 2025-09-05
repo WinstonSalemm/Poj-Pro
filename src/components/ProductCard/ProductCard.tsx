@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { memo, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useTranslation } from "react-i18next";
 import type { Product as CanonicalProduct } from "@/types/product";
+import { trackAddToCart } from "@/components/analytics/events";
 
 // ключи переводов
 const TRANSLATION_KEYS = {
@@ -22,6 +22,24 @@ function parsePriceUZS(price: string | number | undefined): number {
   if (!price) return 0;
   const n = Number(String(price).replace(/[^\d]/g, ""));
   return Number.isFinite(n) ? n : 0;
+}
+
+const PLACEHOLDER_IMG = "/OtherPics/product2photo.jpg";
+
+// Normalize image URLs: prefix bare filenames with /ProductImages/ and ensure leading slash.
+function normalizeImageUrl(u?: string): string {
+  if (!u) return PLACEHOLDER_IMG;
+  let s = String(u).trim();
+  if (!s) return PLACEHOLDER_IMG;
+  // keep external/data/blob URLs as-is
+  if (/^(https?:|data:|blob:)/i.test(s)) return s;
+  // strip leading ./ and public/ prefixes
+  s = s.replace(/^\.\/+/, "");
+  s = s.replace(/^public[\\/]/i, "");
+  // if it's a bare filename without any slashes, prefix ProductImages
+  if (!/[\\/]/.test(s)) s = `ProductImages/${s}`;
+  if (!s.startsWith("/")) s = "/" + s;
+  return s;
 }
 
 interface ProductCardProps {
@@ -68,12 +86,23 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   const detailsHref = categoryPart
     ? `/catalog/${encodeURIComponent(String(categoryPart))}/${encodeURIComponent(String(product.slug))}`
     : `/catalog/${encodeURIComponent(String(product.slug))}`;
+  
 
   const addToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const imageUrl = product.image || '/OtherPics/placeholder.png';
+    const primary = (product.image && product.image) || (Array.isArray(product.images) && product.images[0]) || undefined;
+    const imageUrl = normalizeImageUrl(primary);
     addItem(product.id, priceNum, titleText, imageUrl);
+    try {
+      trackAddToCart({
+        item_id: product.id,
+        item_name: titleText,
+        price: priceNum,
+        quantity: 1,
+        currency: 'UZS',
+      });
+    } catch {}
   };
 
   const onQtyChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -96,19 +125,18 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
     >
       {/* изображение */}
       <div className="relative w-full overflow-hidden rounded-xl bg-gray-100 aspect-square">
-        <Image
-          src={product.image || '/OtherPics/placeholder.png'}
+        <img
+          src={normalizeImageUrl((product.image && product.image) || (Array.isArray(product.images) && product.images[0]) || undefined)}
           alt={titleText}
-          fill
-          sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 220px"
-          className="object-cover transition-transform duration-300 transform-gpu group-hover:scale-105"
-          priority={false}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 transform-gpu group-hover:scale-105"
+          loading="lazy"
         />
         {/* Быстрое действие: в корзину */}
         <button
           onClick={addToCart}
           aria-label="Add to cart"
           className="absolute top-2 right-2 z-10 rounded-full border border-[#660000] text-[#660000] bg-white/90 backdrop-blur px-3 py-1 text-xs shadow-sm hover:bg-[#660000] hover:text-white transition-colors"
+          data-testid="product-card-add"
         >
           +
         </button>
@@ -146,6 +174,7 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
                 : "text-[#660000] hover:bg-[#660000]/5 border-[#660000]",
             ].join(" ")
           }
+          data-testid="product-card-add"
         >
           {t(TRANSLATION_KEYS.addToCart, "В корзину")}
         </button>

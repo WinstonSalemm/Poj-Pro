@@ -16,12 +16,22 @@ function generateNonce() {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // 1) Никогда не трогаем API/Next/статику/иконки/NextAuth/webhooks
+  // 1) Обработка статических ассетов с кешированием
+  if (
+    pathname.startsWith('/_next/static') ||
+    pathname.startsWith('/static') ||
+    pathname.match(/\.(js|css|woff2?|eot|ttf|otf|svg|png|jpg|jpeg|gif|ico|webp|avif)$/i)
+  ) {
+    const response = NextResponse.next();
+    // Кешируем статические ассеты на 1 год с immutable
+    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    return response;
+  }
+
+  // 2) Пропускаем API и другие системные пути
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/static') ||
-    pathname.startsWith('/images') ||
     pathname === '/favicon.ico' ||
     pathname.startsWith('/icon') ||
     pathname.startsWith('/apple-touch-icon') ||

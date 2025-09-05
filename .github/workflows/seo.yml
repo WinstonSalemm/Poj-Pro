@@ -1,0 +1,67 @@
+name: SEO & Lighthouse CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set env for Node memory
+        run: echo "NODE_OPTIONS=--max_old_space_size=4096" >> $GITHUB_ENV
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers (for e2e)
+        run: npx playwright install --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Start app (background)
+        run: |
+          nohup pnpm start:ci > .next-start.log 2>&1 &
+          echo "Waiting for http://localhost:3000 ..."
+          for i in {1..30}; do
+            if curl -sSf http://localhost:3000 >/dev/null; then echo "Up"; break; fi;
+            sleep 2;
+          done
+
+      - name: Run ci:seo (tests + LHCI dev/prod, mobile/desktop)
+        env:
+          NEXT_PUBLIC_SITE_URL: https://poj-pro.uz
+        run: pnpm run ci:seo
+
+      - name: Upload seo-reports artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-reports
+          path: seo-reports/
+
+      - name: Upload Next start log (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-start-log
+          path: .next-start.log
+          if-no-files-found: warn

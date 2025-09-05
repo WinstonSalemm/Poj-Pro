@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { Product } from './api/products';
+import { SEOSection } from '@/i18n/seo.types';
 
 // Site configuration
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://poj-pro.uz';
@@ -136,9 +137,84 @@ export function generateOrganizationStructuredData() {
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo.png`,
     sameAs: [
-      'https://www.instagram.com/pojpro',
-      'https://www.facebook.com/pojpro',
-      'https://t.me/pojpro',
+      'https://t.me/pojpro_uz',
+      'https://www.instagram.com/poj_pro_uz/',
+      'https://www.facebook.com/pojpro.uz/',
     ],
+  };
+}
+
+interface SEOContentMetadataParams {
+  section: SEOSection;
+  locale: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: MetadataType;
+}
+
+/**
+ * Generates metadata for SEO content pages
+ */
+export function generateSEOContentMetadata({
+  section,
+  locale,
+  title: customTitle,
+  description: customDescription,
+  image = '/images/og-default.jpg',
+  type = 'website',
+}: SEOContentMetadataParams): Metadata {
+  // Default title and description based on section
+  let title = 'POJ PRO';
+  let description = 'Профессиональные решения в области пожарной безопасности';
+  
+  // In a real implementation, you would fetch these from i18n
+  // const { t } = await import(`@/i18n/server`);
+  // const content = t(section, { returnObjects: true });
+  // const meta = content.meta || {};
+  // title = meta.title || title;
+  // description = meta.description || description;
+  
+  // Use custom values if provided
+  if (customTitle) title = customTitle;
+  if (customDescription) description = customDescription;
+  
+  // Generate canonical URL
+  const path = section === 'homepage' ? '/' : `/${section?.replace(/\./g, '/') || ''}`;
+  const url = `${SITE_URL}${locale === 'ru' ? '' : `/${locale}`}${path}`;
+  
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+      languages: {
+        'ru': locale === 'ru' ? url : `${SITE_URL}${path}`,
+        'uz': locale === 'uz' ? url : `${SITE_URL}/uz${path}`,
+        'en': locale === 'en' ? url : `${SITE_URL}/en${path}`,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'POJ PRO',
+      locale,
+      type,
+      images: [
+        {
+          url: image.startsWith('http') ? image : `${SITE_URL}${image}`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image.startsWith('http') ? image : `${SITE_URL}${image}`],
+    },
   };
 }

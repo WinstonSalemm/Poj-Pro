@@ -1,0 +1,17 @@
+OOO "Poj Pro"
+Street: Чиланзарский район, 1 квартал, дом 33, магазин BOLID
+City: Ташкент, Toshkent
+Postcode: 
+Country: UZ
+Phone: +998 99 393 66 16
+Website: https://www.poj-pro.uz/
+PriceRange: от 1$ до 250$
+Hours: Mon-Fri 09:00-18:00; Sat 10:00-15:00; Sun 12:00-17:00
+ServiceArea: ВЕСЬ УЗБЕКИСТАН
+Social:
+  - https://www.instagram.com/security_system_tashkent/
+  - https://t.me/pojsystema
+  - https://t.me/Pro_security_uz
+Maps: https://www.google.com/maps/place/POj+PRO+(%D0%BC%D0%B0%D0%B3%D0%B0%D0%B7%D0%B8%D0%BD+BOLID)/@41.2840709,69.2296625,18z/data=!4m6!3m5!1s0x38ae8b654ce3be15:0x764ece0d6201569b!8m2!3d41.283467!4d69.2303922!16s%2Fg%2F11xn1gh5vq?entry=ttu
+Certificates: https://www.poj-pro.uz/documents/certificates
+Languages: RU, UZ

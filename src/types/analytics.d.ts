@@ -1,6 +1,7 @@
 declare module '@/lib/analytics' {
   export const GA_ID: string;
   export const YM_ID: string;
+  export const GTM_ID: string;
   export const isProd: boolean;
   export const analyticsEnabled: boolean;
   export function gaPageView(url: string): void;

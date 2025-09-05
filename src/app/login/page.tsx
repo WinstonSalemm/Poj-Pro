@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const MotionImg = dynamic(() => import('framer-motion').then(mod => mod.motion.img));
+const MotionH2 = dynamic(() => import('framer-motion').then(mod => mod.motion.h2));
+const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div));
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
@@ -49,7 +53,7 @@ export default function LoginPage() {
       </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         {/* ЛОГО */}
-        <motion.img
+        <MotionImg
           src="/OtherPics/logo.svg"
           alt="POJ PRO"
           className="mx-auto h-16 w-auto"
@@ -59,17 +63,17 @@ export default function LoginPage() {
         />
 
         {/* Заголовок */}
-        <motion.h2
+        <MotionH2
           className="mt-6 text-center text-3xl font-extrabold text-[#660000]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
           {t('auth.loginPage.title')}
-        </motion.h2>
+        </MotionH2>
       </div>
 
-      <motion.div
+      <MotionDiv
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -141,7 +145,7 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

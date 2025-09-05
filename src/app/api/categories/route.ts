@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { withApiCache } from '@/lib/cacheMiddleware';
+import { cacheKeys } from '@/lib/redis';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-static';
 export const revalidate = 60;
 
-const jsonHeaders = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Cache-Control': 's-maxage=60, stale-while-revalidate=600',
-};
 
 // Normalize supported locales
 function normalize(raw: string | null): 'ru'|'en'|'uz' {
@@ -19,7 +17,13 @@ function normalize(raw: string | null): 'ru'|'en'|'uz' {
   return 'ru';
 }
 
-export async function GET(req: NextRequest) {
+export const GET = withApiCache({
+  keyGenerator: (req) => {
+    const { searchParams } = new URL(req.url);
+    const locale = normalize(searchParams.get('locale'));
+    return cacheKeys.category(locale);
+  },
+})(async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = normalize(searchParams.get('locale'));
   const t0 = Date.now();
@@ -49,7 +53,7 @@ export async function GET(req: NextRequest) {
     });
 
     // можно отдать как есть; products здесь — просто индикатор наличия
-    return NextResponse.json({ categories }, { headers: jsonHeaders });
+    return NextResponse.json({ categories });
   } catch (e: unknown) {
     const took_ms = Date.now() - t0;
     if (e instanceof Error) {
@@ -65,6 +69,6 @@ export async function GET(req: NextRequest) {
         name: undefined, code: undefined, message: String(e), took_ms,
       });
     }
-    return NextResponse.json({ categories: [], error: 'db_or_query_error' }, { headers: jsonHeaders });
+    return NextResponse.json({ categories: [], error: 'db_or_query_error' });
   }
-}
+});

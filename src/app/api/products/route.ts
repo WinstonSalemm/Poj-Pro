@@ -1,25 +1,29 @@
+// src/app/api/products/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { withApiCache } from '@/lib/cacheMiddleware';
+import { cacheKeys } from '@/lib/redis';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-static';
-export const revalidate = 60;
+// API дергается из клиента — пусть будет всегда динамическим,
+// а кеш контролируем сами через withApiCache.
+export const dynamic = 'force-dynamic';
 
-const jsonHeaders = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Cache-Control': 's-maxage=60, stale-while-revalidate=600',
-};
-
-function normalize(raw: string | null): 'ru'|'en'|'uz' {
+function normalize(raw: string | null): 'ru' | 'en' | 'uz' {
   const v = (raw ?? 'ru').toLowerCase();
-  // Avoid `any`: explicitly narrow to the literal union
   if (v === 'ru' || v === 'en' || v === 'uz') return v;
   if (v.startsWith('en')) return 'en';
   if (v.startsWith('uz')) return 'uz';
   return 'ru';
 }
 
-export async function GET(req: NextRequest) {
+export const GET = withApiCache({
+  keyGenerator: (req) => {
+    const { searchParams } = new URL(req.url);
+    const locale = normalize(searchParams.get('locale'));
+    return cacheKeys.products(locale);
+  },
+})(async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = normalize(searchParams.get('locale'));
   const t0 = Date.now();
@@ -28,7 +32,7 @@ export async function GET(req: NextRequest) {
     const products = await prisma.product.findMany({
       where: {
         isActive: true,
-        i18n: { some: { locale } },   // <-- фильтр по локали уходит в ProductI18n
+        i18n: { some: { locale } }, // фильтр по локали у связанной таблицы
       },
       orderBy: { id: 'asc' },
       take: 500,
@@ -39,13 +43,15 @@ export async function GET(req: NextRequest) {
         },
         category: { select: { id: true, slug: true, name: true } },
         certificates: {
-          include: { certificate: { select: { id: true, title: true, href: true } } },
+          include: {
+            certificate: { select: { id: true, title: true, href: true } },
+          },
         },
       },
     });
 
-    // Расплющим локализованные поля (берём первую запись для выбранной локали)
-    const hydrated = products.map(p => {
+    // Расплющим локализованные поля
+    const hydrated = products.map((p) => {
       const t = p.i18n[0] ?? null;
       return {
         id: p.id,
@@ -58,7 +64,7 @@ export async function GET(req: NextRequest) {
         specs: p.specs,
         isActive: p.isActive,
         category: p.category,
-        certificates: p.certificates.map(pc => pc.certificate),
+        certificates: p.certificates.map((pc) => pc.certificate),
         title: t?.title ?? null,
         summary: t?.summary ?? null,
         description: t?.description ?? null,
@@ -67,9 +73,18 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({ success: true, data: { products: hydrated } }, { headers: jsonHeaders });
-  } catch (e: unknown) {
-    // Safely narrow the error without using `any`
+    return NextResponse.json(
+      { success: true, data: { products: hydrated } },
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      }
+    );
+  } catch (e) {
+    // без any — чуть аккуратнее вытащим детали
     let name: string | undefined;
     let code: string | number | undefined;
     let message: string | undefined;
@@ -81,11 +96,18 @@ export async function GET(req: NextRequest) {
       const maybe = (e as { code?: unknown }).code;
       if (typeof maybe === 'string' || typeof maybe === 'number') code = maybe;
     }
-    console.error('[api/products] FAIL', {
-      name, code, message, took_ms: Date.now() - t0,
-    }, e);
-    // fail-open: чтобы UI не падал (единый формат ответа)
-    return NextResponse.json({ success: false, data: { products: [] }, error: 'db_or_query_error' }, { headers: jsonHeaders });
-  }
-}
+    console.error('[/api/products] FAIL', { name, code, message, took_ms: Date.now() - t0 }, e);
 
+    // fail-open: отдаём 200, чтобы клиент не падал
+    return NextResponse.json(
+      { success: false, data: { products: [] }, error: 'db_or_query_error' },
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      }
+    );
+  }
+});

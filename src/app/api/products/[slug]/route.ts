@@ -61,8 +61,8 @@ export async function GET(req: NextRequest) {
 
     if (!product) {
       return NextResponse.json(
-        { success: false, message: 'Product not found' }, 
-        { status: 404 }
+        { success: false, data: null, error: 'not_found' },
+        { status: 200, headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
@@ -114,11 +114,13 @@ export async function GET(req: NextRequest) {
     console.error('Error fetching product:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json(
-      { 
-        success: false, 
-        message: `Failed to fetch product: ${errorMessage}` 
+      {
+        success: false,
+        data: null,
+        error: 'server_error',
+        message: `Failed to fetch product: ${errorMessage}`,
       },
-      { status: 500 }
+      { status: 200, headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }

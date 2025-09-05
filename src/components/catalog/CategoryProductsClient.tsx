@@ -3,14 +3,20 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ProductCard from "@/components/ProductCard/ProductCard";
+import { evViewItemList } from "@/lib/analytics/dataLayer";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { SeoHead } from "@/components/seo/SeoHead";
 import type { Product } from "@/types/product";
 import FiltersSidebar, { type FiltersState, type SortKey } from "./FiltersSidebar";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
+import { CATEGORY_NAMES } from "@/constants/categories";
+import { CATEGORY_NAME_OVERRIDES, type Lang } from "@/constants/categoryNameOverrides";
 
 function fallbackName(key: string): string {
-  return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return key
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export default function CategoryProductsClient({
@@ -39,8 +45,20 @@ export default function CategoryProductsClient({
     const dict = t("categories", { returnObjects: true, defaultValue: {} }) as
       | Record<string, string>
       | undefined;
-    return dict?.[rawCategory] || fallbackName(rawCategory);
-  }, [t, rawCategory]);
+    const l = (lang as Lang) || "ru";
+    const normalizedSlug = rawCategory.replace(/_/g, '-');
+    const altSlug = rawCategory.replace(/-/g, '_');
+    const override =
+      (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<Lang, string>>>)[rawCategory] ||
+      CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
+      CATEGORY_NAME_OVERRIDES[altSlug];
+    const constName =
+      (CATEGORY_NAMES as Record<string, Partial<Record<Lang, string>>>)[rawCategory]?.[l] ||
+      CATEGORY_NAMES[normalizedSlug]?.[l] ||
+      CATEGORY_NAMES[altSlug]?.[l];
+    const dictName = dict?.[rawCategory] || dict?.[normalizedSlug] || dict?.[altSlug];
+    return override?.[l] || constName || dictName || fallbackName(rawCategory);
+  }, [t, rawCategory, lang]);
 
   const filteredProducts = useMemo(() => {
     const list = !searchQuery
@@ -78,6 +96,22 @@ export default function CategoryProductsClient({
     }
   }, [filteredProducts, sort]);
 
+  // Push a typed list view on initial render of the list (debounced by bootLoading)
+  useEffect(() => {
+    if (bootLoading) return;
+    try {
+      const items = sortedProducts.slice(0, 20).map(p => ({
+        id: p.id,
+        name: p.title || p.name,
+        price: typeof p.price === 'number' ? p.price : Number(p.price) || undefined,
+        quantity: 1,
+        category: rawCategory,
+      }));
+      evViewItemList({ items, list_id: rawCategory, list_name: categoryTitle });
+    } catch {}
+    // push again if sorting changes significantly
+  }, [bootLoading, rawCategory, categoryTitle, sortedProducts]);
+
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(e.target.value);
@@ -87,27 +121,12 @@ export default function CategoryProductsClient({
 
   return (
     <>
-      <SeoHead
-        title={`${categoryTitle} — купить в Ташкенте | POJ PRO.`}
-        description={
-          (
-            lang === 'en'
-              ? `${categoryTitle} — buy in Tashkent | POJ PRO. Certified equipment and accessories. Delivery across Uzbekistan.`
-              : lang === 'uz'
-                ? `${categoryTitle} — Toshkentda xarid qiling | POJ PRO. Sertifikatlangan uskunalar va aksessuarlar. Oʻzbekiston boʻylab yetkazib berish.`
-                : `${categoryTitle} — купить в Ташкенте | POJ PRO. Сертифицированное оборудование и комплектующие. Доставка по Узбекистану.`
-          ).slice(0, 160)
-        }
-        path={`/catalog/${encodeURIComponent(rawCategory)}`}
-        locale={lang}
-        image={undefined}
-      />
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="container-section section-y mt-[100px]">
           <Breadcrumbs
             items={[
-              { name: t('common.home', 'Home'), href: '/' },
-              { name: t('header.catalog', 'Catalog'), href: '/catalog' },
+              { name: t('common.home', 'Home'), href: `/` },
+              { name: t('header.catalog', 'Catalog'), href: `/catalog` },
               { name: categoryTitle },
             ]}
           />

@@ -1,8 +1,9 @@
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 export const YM_ID = process.env.NEXT_PUBLIC_YM_ID || "";
+export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";
 
 export const isProd = process.env.NODE_ENV === "production";
-export const analyticsEnabled = isProd && (!!GA_ID || !!YM_ID);
+export const analyticsEnabled = isProd && (!!GA_ID || !!YM_ID || !!GTM_ID);
 
 // ---- GA4 ----
 declare global {

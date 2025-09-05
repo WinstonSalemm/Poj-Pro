@@ -15,12 +15,14 @@ export function normalizeLocale(input?: string | null): Locale {
 }
 
 // Dictionaries are plain nested objects
-export type Messages = Record<string, unknown>;
+export type Messages = typeof ru;
 
 const DICTS: Record<Locale, Messages> = {
-  ru: ru as Messages,
-  en: en as Messages,
-  uz: uz as Messages,
+  ru: ru,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  en: en as any, // Cast because en dictionary is incomplete
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  uz: uz as any, // Cast because uz dictionary is incomplete
 };
 
 export async function getDictionary(locale: Locale): Promise<Messages> {

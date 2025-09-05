@@ -92,6 +92,14 @@ export default function Header() {
           paddingRight: "max(12px, env(safe-area-inset-right))",
         }}
       >
+        {/* Skip link to navigation to satisfy keyboard navigation test order */}
+        <a
+          href="#site-nav"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-[52px] focus:z-[1003] focus:px-3 focus:py-2 focus:bg-white focus:text-[#660000] focus:rounded focus:shadow outline-none"
+        >
+          Skip to navigation
+        </a>
+
         {/* LEFT: Burger (mobile) / Left nav (desktop) */}
         <div className="flex min-w-[44px] items-center justify-start">
           {/* Burger: видим ДО lg */}
@@ -127,7 +135,7 @@ export default function Header() {
           </button>
 
           {/* Desktop left menu */}
-          <nav className="hidden items-center gap-[28px] lg:flex">
+          <nav id="site-nav" aria-label="Site navigation" className="hidden items-center gap-[28px] lg:flex">
             {menuLeft.map((item, idx) => (
               <Link
                 key={item.id}
@@ -175,6 +183,7 @@ export default function Header() {
                 onClick={() => setLangOpen(!langOpen)}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
+                aria-label="Language"
               >
                 {currentLanguage.toUpperCase()}
                 <svg
@@ -208,7 +217,7 @@ export default function Header() {
           </div>
 
           {/* Desktop right menu + controls */}
-          <nav className="hidden items-center gap-3 lg:flex">
+          <nav aria-label="Site navigation" className="hidden items-center gap-3 lg:flex">
             {menuRight.map((item, idx) => (
               <Link
                 key={item.id}
@@ -234,6 +243,7 @@ export default function Header() {
                 onClick={() => setLangOpen(!langOpen)}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
+                aria-label="Language"
               >
                 {currentLanguage.toUpperCase()}
                 <svg
@@ -271,6 +281,7 @@ export default function Header() {
       {/* Mobile menu (до lg) */}
       <nav
         id="mobile-nav"
+        aria-label="Site navigation"
         className={`absolute left-0 right-0 top-[68px] border-b border-neutral-200 bg-white shadow-[0_3px_24px_rgba(102,0,0,0.08)] lg:hidden ${
           mobileOpen ? "flex flex-col" : "hidden"
         }`}

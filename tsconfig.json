@@ -11,6 +11,13 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "noEmit": true,
     "esModuleInterop": true,
     "moduleResolution": "bundler",
@@ -32,7 +39,9 @@
       "node",
       "react",
       "react-dom",
-      "next-i18next"
+      "next-i18next",
+      "jest",
+      "@testing-library/jest-dom"
     ]
   },
   "include": [
@@ -42,7 +51,7 @@
     "next-env.d.ts",
     "src/types/**/*.d.ts",
     "node_modules/.cache/next/types/**/*.ts"
-, "scripts/transfer-sqlite-to-mysql.mjs"  ],
+, "scripts/transfer-sqlite-to-mysql.mjs", "src/components/CategoryBlock/index.ts.bak"  ],
   "exclude": [
     "node_modules",
     "node_modules.broken-*",

@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div));
+const MotionImg = dynamic(() => import('framer-motion').then(mod => mod.motion.img));
+const MotionButton = dynamic(() => import('framer-motion').then(mod => mod.motion.button));
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
@@ -68,14 +72,14 @@ export default function RegisterPage() {
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
-      <motion.div
+      <MotionDiv
         className="sm:mx-auto sm:w-full sm:max-w-md text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         {/* Лого */}
-        <motion.img
+        <MotionImg
           src="/OtherPics/logo.svg"
           alt="POJ PRO"
           className="mx-auto h-16 w-auto"
@@ -87,14 +91,15 @@ export default function RegisterPage() {
         <h2 className="mt-6 text-center text-3xl font-extrabold text-[#660000]">
           {t('auth.registerPage.title')}
         </h2>
-      </motion.div>
+      </MotionDiv>
 
-      <motion.div
+      <MotionDiv
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
+
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
             <div className="mb-4 rounded-md bg-red-50 p-4">
@@ -169,7 +174,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <motion.button
+              <MotionButton
                 type="submit"
                 disabled={isLoading}
                 whileHover={{ scale: 1.02 }}
@@ -179,11 +184,11 @@ export default function RegisterPage() {
                 }`}
               >
                 {isLoading ? t('auth.registerPage.registering') : t('auth.registerPage.register')}
-              </motion.button>
+              </MotionButton>
             </div>
           </form>
         </div>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

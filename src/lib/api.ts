@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { headers } from 'next/headers';
+import { SITE_URL } from '@/lib/site';
 
 export type Locale = 'ru' | 'en' | 'uz';
 
@@ -23,7 +24,9 @@ export async function getBaseUrl(): Promise<string> {
     // headers() may be unavailable during certain build/ISR phases
   }
 
+  // Prefer configured site URL to avoid localhost during build
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (SITE_URL) return SITE_URL;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   if (process.env.RAILWAY_PUBLIC_DOMAIN) return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
   return 'http://localhost:3000';

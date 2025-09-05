@@ -1,0 +1,47 @@
+stages:
+  - build
+  - test
+  - seo
+
+variables:
+  NODE_ENV: production
+  NEXT_PUBLIC_SITE_URL: "https://poj-pro.uz"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+image: node:20
+
+before_script:
+  - corepack enable
+  - corepack prepare pnpm@9 --activate
+  - pnpm --version
+  - pnpm install --frozen-lockfile
+
+build:
+  stage: build
+  script:
+    - pnpm build
+  artifacts:
+    paths:
+      - .next/
+    when: always
+
+seo:
+  stage: seo
+  needs: ["build"]
+  script:
+    - pnpm start:ci &
+    - npx wait-on http://localhost:3000
+    - pnpm run ci:seo
+  artifacts:
+    name: "seo-reports-${CI_COMMIT_SHORT_SHA}"
+    when: always
+    expire_in: 1 week
+    paths:
+      - seo-reports/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH

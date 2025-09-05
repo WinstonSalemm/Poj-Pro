@@ -70,7 +70,7 @@ export default function SmallAboutUs() {
                 sizes="(max-width: 768px) 256px, 600px"
               />
               <div className="text-center">
-                <div className="text-[#660000] font-semibold text-lg md:text-xl">{t('aboutus.featuredSupplier.title', { defaultValue: 'Наш самый крупный поставщик Огнетушителей и пожарной техники безопасности' })}</div>
+                <div className="text-[#660000] font-semibold text-lg md:text-xl">{t('aboutus.featuredSupplier.title', { defaultValue: "Наш главный поставщик — 'Огнеборец'. Мы предлагаем купить огнетушители и все необходимое для пожарной безопасности в Ташкенте по лучшим ценам." })}</div>
                 <div className="text-[#965454] text-sm mt-1">{t('aboutus.featuredSupplier.cta', { defaultValue: 'Нажмите, чтобы перейти на официальный сайт' })}</div>
               </div>
             </div>

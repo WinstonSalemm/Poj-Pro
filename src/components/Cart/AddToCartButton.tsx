@@ -5,6 +5,20 @@ import { useCart } from '@/context/CartContext';
 import { useTranslation } from '@/i18n/useTranslation';
 import { trackAddToCart } from '@/components/analytics/events';
 
+// Normalize image URLs to a consistent public path and provide fallback
+const PLACEHOLDER_IMG = '/OtherPics/product2photo.jpg';
+function normalizeImageUrl(u?: string): string {
+  if (!u) return PLACEHOLDER_IMG;
+  let s = String(u).trim();
+  if (!s) return PLACEHOLDER_IMG;
+  if (/^(https?:|data:|blob:)/i.test(s)) return s;
+  s = s.replace(/^\.\/+/, '');
+  s = s.replace(/^public[\\/]/i, '');
+  if (!/[\\/]/.test(s)) s = `ProductImages/${s}`;
+  if (!s.startsWith('/')) s = '/' + s;
+  return s;
+}
+
 interface AddToCartButtonProps {
   productId: string | number;
   quantity?: number;
@@ -52,9 +66,10 @@ export function AddToCartButton({
       const data = json?.data || {};
       const title: string = (data.title as string) || String(productId);
       const price: number = typeof data.price === 'number' ? data.price : 0;
-      const image: string = Array.isArray(data.images) && data.images[0]
+      const rawImage: string = Array.isArray(data.images) && data.images[0]
         ? data.images[0]
-        : '/OtherPics/product2photo.jpg';
+        : PLACEHOLDER_IMG;
+      const image = normalizeImageUrl(rawImage);
 
       // Add to cart (initial add is qty 1 or increments by 1)
       addItem(productId, price, title, image);
@@ -115,6 +130,7 @@ export function AddToCartButton({
         ${isInCart(productId) ? 'bg-gray-400 hover:bg-gray-400 cursor-default' : ''}
       `}
       aria-label={t('cart.addToCart') || 'Add to cart'}
+      data-testid="add-to-cart-button"
     >
       {isAdding ? (
         <>

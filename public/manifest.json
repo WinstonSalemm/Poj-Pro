@@ -1,0 +1,27 @@
+{
+  "name": "POJ PRO - Пожарное оборудование",
+  "short_name": "POJ PRO",
+  "description": "Профессиональное пожарное оборудование и средства безопасности в Ташкенте",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#660000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/OtherPics/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/OtherPics/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["business", "shopping"],
+  "lang": "ru",
+  "dir": "ltr"
+}

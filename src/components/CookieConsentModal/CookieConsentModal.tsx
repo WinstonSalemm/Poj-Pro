@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { consentGrantAll } from "@/lib/analytics/dataLayer";
 
 export default function CookieConsentModal() {
   const { t } = useTranslation();
@@ -24,6 +25,8 @@ export default function CookieConsentModal() {
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     
     document.cookie = `cookiesAccepted=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+    // Update Consent Mode to granted
+    try { consentGrantAll(); } catch {}
     setVisible(false);
   };
 
