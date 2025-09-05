@@ -37,19 +37,38 @@ export async function safeJson<T = unknown>(res: Response): Promise<T> {
   const ct = res.headers.get('content-type') || '';
   if (!ct.includes('application/json')) {
     const text = await res.text().catch(() => '');
+    console.error('[safeJson] Invalid content-type:', ct, 'first bytes:', text.slice(0, 200));
     throw new Error(`Invalid response format: expected JSON, got "${ct}". First bytes: ${text.slice(0, 120)}`);
   }
-  return res.json() as Promise<T>;
+  try {
+    const json = (await res.json()) as T;
+    const brief = Array.isArray(json)
+      ? `array(length=${(json as any[]).length})`
+      : json && typeof json === 'object'
+        ? `object(keys=${Object.keys(json as any).slice(0, 8).join(',')})`
+        : typeof json;
+    console.log('[safeJson] Parsed payload:', brief);
+    return json;
+  } catch (e) {
+    console.error('[safeJson] JSON parse error:', e);
+    throw e;
+  }
 }
 
 export async function fetchAPI<T = unknown>(path: string, init?: RequestInit): Promise<T> {
   const url = /^https?:\/\//i.test(path) ? path : `${await getBaseUrl()}${path}`;
+  const method = (init?.method || 'GET').toUpperCase();
+  console.log('[fetchAPI]', method, url);
   const res = await fetch(url, {
     cache: 'force-cache',
     next: { revalidate: 60 },
     ...init,
   });
+  const ct = res.headers.get('content-type') || '';
+  console.log('[fetchAPI] status', res.status, res.statusText, 'content-type', ct);
   if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    console.error('[fetchAPI] non-OK first bytes:', body.slice(0, 200));
     throw new Error(`API ${url} failed: ${res.status} ${res.statusText}`);
   }
   return safeJson<T>(res);

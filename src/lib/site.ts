@@ -5,7 +5,7 @@
 const rawSiteUrl =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) ||
   (typeof process !== 'undefined' && process.env.SITE_URL) ||
-  'https://poj-pro.uz';
+  'https://www.poj-pro.uz';
 
 export const SITE_URL = rawSiteUrl.replace(/\/$/, '');
 export const SITE_NAME = 'POJ PRO';
