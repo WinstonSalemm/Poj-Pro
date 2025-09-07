@@ -9,6 +9,8 @@ import type { Product } from "@/types/product";
 import FiltersSidebar, { type FiltersState, type SortKey } from "./FiltersSidebar";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import { CATEGORY_NAMES } from "@/constants/categories";
+import FaqJsonLd from "@/components/seo/FaqJsonLd";
+import { CATEGORY_SEO, resolveCategoryKey } from "@/constants/categorySeo";
 import { CATEGORY_NAME_OVERRIDES, type Lang } from "@/constants/categoryNameOverrides";
 
 function fallbackName(key: string): string {
@@ -121,6 +123,15 @@ export default function CategoryProductsClient({
 
   return (
     <>
+      {/* SEO: Category-specific FAQ JSON-LD */}
+      {(() => {
+        const key = resolveCategoryKey(rawCategory.replace(/_/g, '-'));
+        const cfg = key ? CATEGORY_SEO[key] : undefined;
+        if (cfg?.faqs && cfg.faqs.length) {
+          return <FaqJsonLd faqs={cfg.faqs} />;
+        }
+        return null;
+      })()}
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="container-section section-y mt-[100px]">
           <Breadcrumbs
@@ -174,6 +185,33 @@ export default function CategoryProductsClient({
 
             {/* Content */}
             <div className="flex-1">
+              {/* SEO intro for category (text + internal links) */}
+              {(() => {
+                const key = resolveCategoryKey(rawCategory.replace(/_/g, '-'));
+                const cfg = key ? CATEGORY_SEO[key] : undefined;
+                if (!cfg) return null;
+                const paragraphs = cfg.intro || [];
+                const links = cfg.links || [];
+                if (!paragraphs.length && !links.length) return null;
+                return (
+                  <div className="mb-6 bg-white border border-gray-200 rounded-2xl p-4 text-gray-800">
+                    {paragraphs.map((p, i) => (
+                      <p key={i} className={i === paragraphs.length - 1 ? "mb-0" : "mb-2"}>{p}</p>
+                    ))}
+                    {!!links.length && (
+                      <p className="mt-2 mb-0">
+                        {links.map((l, idx) => (
+                          <>
+                            {idx > 0 ? ' ' : ''}
+                            <a key={l.href} href={l.href} className="underline hover:no-underline">{l.label}</a>
+                            {idx < links.length - 1 ? ' ' : ''}
+                          </>
+                        ))}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
               {bootLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {Array.from({ length: 8 }).map((_, i) => (

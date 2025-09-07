@@ -76,6 +76,14 @@ export default async function RootLayout({
 
         
 
+        {/* Google Search Console verification (optional via env) */}
+        {process.env.NEXT_PUBLIC_GSC_VERIFICATION ? (
+          <meta
+            name="google-site-verification"
+            content={process.env.NEXT_PUBLIC_GSC_VERIFICATION}
+          />
+        ) : null}
+
         {/* GTM + Consent (prod) */}
         {isProd && GTM_ID ? (
           <Script id="gtm-init" nonce={nonce} strategy="beforeInteractive">

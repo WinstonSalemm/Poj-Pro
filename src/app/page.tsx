@@ -4,6 +4,7 @@ import PopularProductsBlock from "@/components/PopularProductsBlock/PopularProdu
 import { getLocale } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateOrganization, generateWebSite } from "@/components/seo/snippets";
+import Link from "next/link";
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -16,6 +17,23 @@ export default async function HomePage() {
         popularProducts={<PopularProductsBlock locale={locale} />}
         categoryBlock={<CategoryBlock locale={locale} />}
       />
+      {/* SEO: Popular local queries and quick links */}
+      <section className="container-section section-y">
+        <h2 className="text-xl font-semibold !text-[#660000] mb-3">Популярные запросы в Ташкенте</h2>
+        <nav aria-label="Популярные запросы" className="text-[#660000]">
+          <ul className="flex flex-wrap gap-2">
+            <li><Link href="/lp/ognetushiteli-tashkent" className="underline hover:no-underline">огнетушители ташкент купить</Link></li>
+            <li><Link href="/lp/pozharnye-rukava-tashkent" className="underline hover:no-underline">пожарные рукава ташкент купить</Link></li>
+            <li><Link href="/lp/kronshtejny-ognetushiteley-tashkent" className="underline hover:no-underline">кронштейны огнетушителей ташкент купить</Link></li>
+            <li><Link href="/lp/pozharnye-shkafy-tashkent" className="underline hover:no-underline">пожарные шкафы ташкент купить</Link></li>
+            <li><Link href="/lp/pozharnaya-signalizatsiya-tashkent" className="underline hover:no-underline">пожарная сигнализация ташкент купить</Link></li>
+            <li><Link href="/lp/datchiki-dyma-tashkent" className="underline hover:no-underline">датчики дыма ташкент купить</Link></li>
+            <li><Link href="/lp/sprinkler-sistemy-tashkent" className="underline hover:no-underline">спринклерные системы ташкент</Link></li>
+            <li><Link href="/lp/pozharnye-gidranty-tashkent" className="underline hover:no-underline">пожарные гидранты ташкент</Link></li>
+            <li><Link href="/lp/siz-tashkent" className="underline hover:no-underline">средства индивидуальной защиты ташкент</Link></li>
+          </ul>
+        </nav>
+      </section>
     </main>
   );
 }
