@@ -3,10 +3,115 @@
     "title": "Qidirish",
     "placeholder": "Mahsulotlarni qidirish..."
   },
+  "guide": {
+    "title": "Yong'in xavfsizligi bo'yicha gid",
+    "intro": "Uy, ofis va omborlarda yong'in xavfsizligi uskunalarini qayerga, nechta va nima uchun o'rnatish bo'yicha amaliy maslahatlar.",
+    "toc": { "title": "Mundarija" },
+    "quickLinks": { "title": "Katalogga tezkor havolalar" },
+    "tablesTitle": "Minimal to'plam (taxminan)",
+    "tables": {
+      "headers": {
+        "type": "Turi",
+        "qty": "Soni",
+        "mount": "O'rnatish",
+        "notes": "Izohlar"
+      },
+      "apartment": [
+        { "type": "OP‑5 / OP‑10", "qty": "1–2", "mount": "Kronshteyn ~1.5 m", "notes": "Chiqish/oshxona yonida" },
+        { "type": "OU‑3 / OU‑5", "qty": "1", "mount": "Kronshteyn", "notes": "Elektr shit yonida" },
+        { "type": "Tutun detektori", "qty": "2–3", "mount": "Shift", "notes": "Yo'lak/yotoq xonalari" }
+      ],
+      "office": [
+        { "type": "OP‑5 / OP‑10", "qty": "me'yor bo'yicha", "mount": "Kronshteyn", "notes": "Qavat bo'ylab taqsimlash" },
+        { "type": "OU‑5", "qty": "1+", "mount": "Kronshteyn", "notes": "Shit/server xonasi" },
+        { "type": "Yong'in shkafi", "qty": "loyiha bo'yicha", "mount": "Devoriy", "notes": "Shlang+stvol+ventil" }
+      ],
+      "warehouse": [
+        { "type": "OP‑10 / OP‑50", "qty": "bir tekis", "mount": "Kronshteyn/aravacha", "notes": "Qamrov zonalari" },
+        { "type": "Kukunli modul (MPP)", "qty": "xavfga ko'ra", "mount": "Mahkamlash", "notes": "Mahalliy himoya" },
+        { "type": "Gidrant/shkaf", "qty": "loyiha bo'yicha", "mount": "Doimiy", "notes": "Kirish imkoniyati" }
+      ]
+    },
+    "cta": {
+      "title": "Tanlashda yordam kerakmi?",
+      "subtitle": "Kommersiya taklifi tayyorlaymiz, maslahat beramiz va optimal to'plamni tavsiya qilamiz.",
+      "requestQuote": "Komm. taklif so'rash",
+      "consultation": "Konsultatsiya",
+      "priceList": "Praysni olish"
+    },
+    "sections": {
+      "apartment": {
+        "title": "Xonadon",
+        "recs": [
+          "Chiqish yoki oshxona yaqinida OP‑5/OP‑10; o‘rnatish ~1,5 m (tutqichgacha), kirish erkin bo‘lsin.",
+          "Elektr shitlari va server burchagi yonida OU‑3/OU‑5 — elektr uchun xavfsiz.",
+          "Yo‘lak/xonalarda tutun detektorlari va ovozli ogohlantirish.",
+          "Oshxona uchun yong‘in qoplami va issiqqa chidamli qo‘lqoplar.",
+          "Evakuatsiya yo‘laklarini to‘sib qo‘ymang, yo‘llar ochiq bo‘lsin."
+        ]
+      },
+      "office": {
+        "title": "Ofis",
+        "recs": [
+          "Maydon/qatlar bo‘yicha me’yorlarga asosan OP‑5/OP‑10 ni taqsimlang; kirishlar va printer xonalariga yaqin.",
+          "Elektr shitlari/server xonasi yaqinida OU‑5; CO2 ni A sinfi (qog‘oz/mebel)da ishlatmaslik kerak.",
+          "Loyihaga binoan yong‘in shkaflari/shalanglar; kirishlar ochiq va belgilangan bo‘lsin.",
+          "Yong‘in signalizatsiyasi va ogohlantirish tizimi; muntazam tekshiruvlar.",
+          "Evakuatsiya rejasi va xodimlarni o‘qitish; birinchi yordam vositalari."
+        ]
+      },
+      "warehouse": {
+        "title": "Ombor",
+        "recs": [
+          "Hududni qamrab oladigan tarzda OP‑10/OP‑50; stellaj yo‘laklari uchun OP‑50 aravachalari.",
+          "Xavf yuqori zonalar uchun kukunli o‘chirish modullari (MPP).",
+          "Loyihaga muvofiq gidrantlar/shkaflar; doimiy erkin kirish.",
+          "Xavfsizlik belgilari, yo‘lak chiziqlari, chiqishlar to‘sib qo‘yilmasin.",
+          "Avtomatik signalizatsiya, ogohlantirish va muntazam mashg‘ulotlar."
+        ]
+      },
+      "maintenance": {
+        "title": "Texnik xizmat ko'rsatish",
+        "recs": [
+          "Har qanday ishga tushirilgandan keyin va pasportdagi servis oralig'iga ko'ra qayta zaryadlang.",
+          "Har hafta plomba va manometrni tekshiring (strelka yashil zonada).",
+          "Quruq joyda saqlang, issiq/sovuqdan himoya qiling; devor kronshteyniga mahkamlash.",
+          "Hisob va xizmat ko'rsatish jurnalini yuriting, ish dalolatnomalarini ilova qiling.",
+          "Shlanglarni vaqti-vaqti bilan bosim sinovidan o'tkazing; sizdirish ehtimolini kuzating."
+        ]
+      },
+      "signage": {
+        "title": "Belgilar va evakuatsiya",
+        "recs": [
+          "Chiqish belgilari va yo'nalish strelkalarini fotolyuminestsentli qilib o'rnating.",
+          "O't o'chirgichlar, shkaflar, chaqiruv punktlari/telefonlar joylashuvini belgilang.",
+          "Evakuatsiya rejalari ko'rinarli joyda bo'lsin, joylashuv o'zgarsa yangilang.",
+          "Yo'laklar ochiq bo'lsin; favqulodda chiqish eshiklari ish vaqtida qulflanmasin.",
+          "Evakuatsiya mashg'ulotlarini yiliga 1–2 marta o'tkazing."
+        ]
+      }
+    },
+    "faqTitle": "Ko'p so'raladigan savollar",
+    "faq": [
+      { "q": "OP va OU o‘rtasidagi farq nima?", "a": "OP — kukunli, A/B/C/E sinflarida universal, iz qoldiradi. OU — karbonat angidrid (CO2), elektr jihozlari va suyuqliklar uchun, iz qoldirmaydi, yopiq kichik xonalarda xavfli (bo‘g‘ilish havfi)." },
+      { "q": "O‘t o‘chirgich hajmini qanday tanlash kerak?", "a": "Uy: OP‑5/OP‑10. Ofis: maydon/kategoriya me’yorlariga binoan OP‑5–10. Ombor: OP‑10/OP‑50 va aravachalar. Yong‘in sinflari va kirish qulayligini hisobga oling." },
+      { "q": "CO2 bilan qog‘oz/ yog‘ochni o‘chirish mumkinmi?", "a": "CO2 elektr jihozlari va suyuqliklarda samarali; A sinfi (qog‘oz/ yog‘och) uchun kukun/suv/ko‘pik ma’qul. CO2 tez tarqaladi, qayta yonish ehtimoli bor." },
+      { "q": "A/B/C/E yong‘in sinflari nimani anglatadi?", "a": "A — qattiq moddalar (qog‘oz, yog‘och), B — suyuqliklar, C — gazlar, E — kuchlanish ostidagi elektr. O‘t o‘chirgichni sinfga mos tanlang." },
+      { "q": "Qachon servis/qayta zaryad kerak?", "a": "Har qanday ishlatishdan keyin; pasportdagi servis intervaliga muvofiq; bosim yashil zonadan chiqqanda; shikastlanganda." },
+      { "q": "O‘t o‘chirgichni qanday saqlash kerak?", "a": "Quruq joyda, issiqlik manbalaridan yiroqda, oson kirish mumkin bo‘lgan joyda; kronshteynga mahkamlangan, plomba butun, manometr yashil zonada." },
+      { "q": "Belgilar va evakuatsiya rejasi kerakmi?", "a": "Ofis/omborlar uchun — ha: rejalar, chiqish belgilari, yo‘nalish strelkalari, o‘chirish vositalari belgilar." },
+      { "q": "Elektr xonasi/server uchun nimalar kerak?", "a": "Yaqinda OU‑3/5, zaxira sifatida OP; tutun/harorat detektorlari, ogohlantirish; xonani toza saqlang, yong‘inga chidamli eshiklar." },
+      { "q": "Yong‘in shkaflariga qo‘yiladigan talablar?", "a": "Kirish qulayligi, belgilanishi, to‘liq jihozlangan (shalang, stvol, ventil), uzilish va chalg‘ishlar yo‘q; shalanglarni vaqti‑vaqti bilan bosim sinovidan o‘tkazish." },
+      { "q": "O‘qitish qancha tez‑tez o‘tkaziladi?", "a": "Ishga qabulda boshlang‘ich yo‘riqnoma va yiliga 1–2 marta evakuatsiya mashg‘ulotlari (mahalliy me’yorlarni tekshiring)." },
+      { "q": "Qaysi hujjatlar kerak bo‘ladi?", "a": "Muvofiqlik sertifikatlari, mahsulot pasportlari, servis jurnallari, qayta zaryad/sinov dalolatnomalari." },
+      { "q": "Mashinada o‘t o‘chirgich olib yurish mumkinmi?", "a": "Ha, avtomobil kronshteyn/remenlarini ishlating, dumalab ketmasligi uchun mahkamlang, harorat me’yorlariga va bosimga rioya qiling." }
+    ]
+  },
   "popularProductsBlock": {
     "title": "Mashhur mahsulotlar",
     "details": "Batafsil"
   },
+  "popularProducts": "Mashhur mahsulotlar",
   "items": {
     "showItems": "Mahsulotlarni ko'rsatish",
     "hideItems": "Mahsulotlarni yashirish"
@@ -24,6 +129,7 @@
   },
   "header": {
     "catalog": "Katalog",
+    "guide": "Gid",
     "promotions": "Aksiyalar",
     "hotOffers": "Aksiya takliflari",
     "about": "Biz haqimizda",
@@ -49,6 +155,49 @@
     "loading": "Kategoriyalar yuklanmoqda...",
     "empty": "Kategoriyalar topilmadi",
     "sectionAriaLabel": "Mahsulot kategoriyalari"
+  },
+  "lp": {
+    "cta": { "catalog": "Katalogga o'tish" },
+    "common": {
+      "order_now": "Hozir buyurtma berish",
+      "consult": "Konsultatsiya",
+      "request_cp": "Tijorat taklifini so'rash",
+      "get_price": "Price-listni olish",
+      "ask_question": "Savol berish",
+      "form": {
+        "title": "Ariza qoldiring",
+        "submit": "Tijorat taklifi va price-listni olish"
+      }
+    },
+    "ognetushiteli-tashkent": {
+      "hero": {
+        "title": "Toshkentda o‘t o‘chirgichlar — omborda va yetkazib berish bilan",
+        "subtitle": "Sertifikatlangan mahsulotlar, oshkora narxlar, servis va qayta zaryadlash. Tez yetkazib berish va qulay to‘lov.",
+        "note": "Bizda KP va price-list mavjud. Sertifikatlar va kafolat beriladi."
+      },
+      "why_us": "Nega aynan bizni tanlash kerak?"
+    },
+    "pozharnye-rukava-tashkent": {
+      "h1": "Toshkentda yong‘in shlanglari — omborda va buyurtma asosida",
+      "description": "Muftalar, stvollar, o‘tkazgichlar, yong‘in shkaflari. Sertifikatlar, kafolat, oshkora narxlar. Ob'ektingiz va me'yorlarga mos holda jamlaymiz."
+    },
+    "pozharnye-shkafy-tashkent": {
+      "h1": "Yong‘in shkaflari — Toshkent",
+      "description": "O‘rnatiladigan va ichiga o‘rnatiladigan shkaflar. Loyihaga ko‘ra tanlash, komplektatsiya, sertifikatlar va tez yetkazib berish."
+    },
+    "kronshtejny-ognetushiteley-tashkent": {
+      "h1": "O‘t o‘chirgichlar uchun kronshteyn va furnitura — Toshkent",
+      "description": "Devor va avtomobil kronshteynlari, belgilar, plombalar, aksessuarlar. Sizning o‘t o‘chirgich modelingizga mos kronshteynlarni tanlashda yordam beramiz.",
+      "cta": "Kronshteynlar katalogi"
+    },
+    "pozharnaia-bezopasnost": {
+      "h1": "Yong‘in xavfsizligi — O‘zbekiston bo‘ylab ta'minot va yetkazib berish",
+      "description": "Ob'ektlarni yong‘in xavfsizligi vositalari bilan jihozlash: o‘t o‘chirgichlar, shkaflar, belgilar, evakuatsiya rejalari. Ta'minot va yetkazib berishni tashkil etamiz. Sertifikatlar mavjud."
+    },
+    "siz-tashkent": {
+      "h1": "SHV va xavfsizlik belgilar — Toshkent",
+      "description": "Kompleks yetkazib berish: kaskalar, qo‘lqoplar, ko‘zoynaklar, jiletlar, belgilar. Sertifikatlar, tez muddatlar va halol narxlar."
+    }
   },
   "aboutus": {
     "title": "Kompaniya haqida",
@@ -111,7 +260,7 @@
     "description": "Agar sizda savollar bo'lsa yoki uskunalar bo'yicha maslahat kerak bo'lsa, bizga qulay bo'lgan har qanday usulda murojaat qilishingiz mumkin.",
     "address": {
       "title": "Manzil",
-      "value": "Toshkent shahri, Chilonzor tumani, 1-kvartal, 33-uy, BOLID do‘koni yashil devor bilan"
+      "value": "Toshkent shahri, Chilonzor tumani, 1-kvartal, 33-uy"
     },
     "phone": {
       "title": "Telefon"
@@ -358,6 +507,7 @@
   },
   "showLess": "Kamroq ko'rsatish",
   "tryDifferentSearch": "Boshqa so'rov yuborib ko'ring",
+  "showAll": "Barchasini ko'rsatish",
   "errors": {
     "loadingProducts": "Mahsulotlarni yuklashda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
     "somethingWentWrong": "Xatolik yuz berdi!",

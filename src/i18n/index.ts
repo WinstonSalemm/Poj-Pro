@@ -18,6 +18,10 @@ export const resources = {
         message: 'Мы используем cookie для хранения языка и содержимого корзины. Продолжая использовать сайт, вы соглашаетесь на их использование.',
         accept: 'Принять',
         close: 'Закрыть'
+      },
+      preOrderBanner: {
+        title: 'Товар по предзаказу',
+        body: 'Мы подготовим для вас выгодное коммерческое предложение и доставим товар быстро, качественно и по лучшей цене.',
       }
     },
     aboutus: (ruTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
@@ -29,6 +33,10 @@ export const resources = {
         message: 'We use cookies to store language and cart contents. By continuing to use the site, you agree to their use.',
         accept: 'Accept',
         close: 'Close'
+      },
+      preOrderBanner: {
+        title: 'Pre-order item',
+        body: 'We will prepare a favorable commercial offer for you and deliver the goods quickly, with quality, and at the best price.',
       }
     },
     aboutus: (engTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
@@ -41,6 +49,10 @@ export const resources = {
         message: 'We use cookies to store language and cart contents. By continuing to use the site, you agree to their use.',
         accept: 'Accept',
         close: 'Close'
+      },
+      preOrderBanner: {
+        title: 'Pre-order item',
+        body: 'We will prepare a favorable commercial offer for you and deliver the goods quickly, with quality, and at the best price.',
       }
     },
     aboutus: (engTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
@@ -52,6 +64,10 @@ export const resources = {
         message: 'Biz til va savat tarkibini saqlash uchun cookie-fayllardan foydalanamiz. Saytdan foydalanishda siz ularning ishlatilishiga rozilik bildirasiz.',
         accept: 'Qabul qilish',
         close: 'Yopish'
+      },
+      preOrderBanner: {
+        title: 'Oldindan buyurtma',
+        body: 'Siz uchun qulay tijorat taklifini tayyorlaymiz va tovarni tez, sifatli va eng yaxshi narxda yetkazib beramiz.',
       }
     },
     aboutus: (uzbTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},
@@ -64,6 +80,10 @@ export const resources = {
         message: 'Biz til va savat tarkibini saqlash uchun cookie-fayllardan foydalanamiz. Saytdan foydalanishda siz ularning ishlatilishiga rozilik bildirasiz.',
         accept: 'Qabul qilish',
         close: 'Yopish'
+      },
+      preOrderBanner: {
+        title: 'Oldindan buyurtma',
+        body: 'Siz uchun qulay tijorat taklifini tayyorlaymiz va tovarni tez, sifatli va eng yaxshi narxda yetkazib beramiz.',
       }
     },
     aboutus: (uzbTranslation as unknown as { aboutus?: AboutUsSection }).aboutus || {},

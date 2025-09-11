@@ -45,6 +45,18 @@ const uz = {
   popularProducts: {
     title: 'Ommabop mahsulotlar',
   },
+  lp: {
+    ognetushiteli: {
+      intro1:
+        "Toshkentda o‘t o‘chirgichlar kerakmi? POJ PRO’da mashhur modellardan topasiz: kukunli OP‑2/OP‑5/OP‑10 va CO₂ OU‑3/OU‑5. Ofis, do‘kon, ombor va avtomobil uchun mos yechimni tanlashda yordam beramiz.",
+      intro2:
+        "Sertifikatlar va kafolat. KP va narxlar roʻyxati soʻrov boʻyicha. Toshkent va butun Oʻzbekiston boʻylab yetkazib berish, olib ketish mavjud. Toʻlov — Payme/Click.",
+      links: {
+        buyLabel: "o‘t o‘chirgichlar toshkent sotib olish",
+        catalogLabel: "o‘t o‘chirgichlar katalogi",
+      },
+    },
+  },
   preOrderBanner: {
     title: 'Oldindan buyurtma berish',
     body: 'Siz uchun qulay tijorat taklifini tayyorlaymiz va tovarlarni tez, sifatli va eng yaxshi narxda yetkazib beramiz.',

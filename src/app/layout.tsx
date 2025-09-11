@@ -6,6 +6,7 @@ import { headers } from 'next/headers';
 import Script from 'next/script';
 import { isProd, GA_ID, YM_ID, GTM_ID } from '@/lib/analytics';
 import { I18nProvider } from '@/i18n/I18nProvider';
+import { NonceProvider } from '@/context/NonceContext';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { SessionProviderClient } from '@/components/auth/SessionProviderClient';
@@ -74,7 +75,34 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-        
+        {/* Early guard: fix wrongly injected CSS tags before other scripts run */}
+        <Script id="fix-css-tags-early" nonce={nonce} strategy="beforeInteractive">
+          {`
+            try {
+              // Replace any <script src="*.css"> with <link rel="stylesheet">
+              document.querySelectorAll('script[src$=".css" i]').forEach(function(s){
+                var href = s.getAttribute('src');
+                if (!href) return;
+                var l = document.createElement('link');
+                l.rel = 'stylesheet';
+                l.href = href;
+                document.head.appendChild(l);
+                s.parentNode && s.parentNode.removeChild(s);
+              });
+              // Fix <link rel="preload" as="script" href="*.css">
+              document.querySelectorAll('link[rel="preload"][as="script" i][href$=".css" i]').forEach(function(l){
+                l.setAttribute('as','style');
+                var href = l.getAttribute('href');
+                if (href) {
+                  var sheet = document.createElement('link');
+                  sheet.rel = 'stylesheet';
+                  sheet.href = href;
+                  document.head.appendChild(sheet);
+                }
+              });
+            } catch (e) { /* no-op */ }
+          `}
+        </Script>
 
         {/* Google Search Console verification (optional via env) */}
         {process.env.NEXT_PUBLIC_GSC_VERIFICATION ? (
@@ -178,19 +206,21 @@ export default async function RootLayout({
           </Script>
         ) : null}
 
-        <I18nProvider initialLocale={params.locale ?? 'ru'}>
-          <SessionProviderClient session={session}>
-            <CartProvider>
-              <Header />
-              <main id="main-content" className="flex-grow">{children}</main>
-              <Footer />
-              <CartAddToast />
-              <CookieConsentModal />
-              <ClientWrapper />
-              {isProd && <Analytics />}
-            </CartProvider>
-          </SessionProviderClient>
-        </I18nProvider>
+        <NonceProvider nonce={nonce}>
+          <I18nProvider initialLocale={params.locale ?? 'ru'}>
+            <SessionProviderClient session={session}>
+              <CartProvider>
+                <Header />
+                <main id="main-content" className="flex-grow">{children}</main>
+                <Footer />
+                <CartAddToast />
+                <CookieConsentModal />
+                <ClientWrapper />
+                {isProd && <Analytics />}
+              </CartProvider>
+            </SessionProviderClient>
+          </I18nProvider>
+        </NonceProvider>
       </body>
     </html>
   );

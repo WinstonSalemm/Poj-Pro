@@ -13,9 +13,21 @@ function parseGroupAndSize(p: Item) {
   const textFallback = norm(`${p.title ?? ""} ${p.name ?? ""}`);
   const text = textSlug || textId || textFallback;
 
-  // сначала ловим перезарядку (по slug не всегда видно) — проверим и fallback-текст
+  // сначала ловим перезарядку (по slug не всегда видно) — проверим и fallback‑текст
+  // поддержка разных языков/транслитераций: перезарядка / perezaryad(ka) / peresaryad(ka) / recharge / qayta zaryad / заправка / refill
   const rechargeText = (textSlug || textFallback);
-  if (rechargeText.includes("перезаряд")) {
+  const isRecharge = (
+    /перезаряд/i.test(rechargeText) ||
+    /perezaryad/i.test(rechargeText) ||
+    /perezaryadka/i.test(rechargeText) ||
+    /peresaryad/i.test(rechargeText) ||
+    /peresaryadka/i.test(rechargeText) ||
+    /recharge/i.test(rechargeText) ||
+    /qayta\s*zaryad/i.test(rechargeText) ||
+    /заправк/i.test(rechargeText) ||
+    /refill/i.test(rechargeText)
+  );
+  if (isRecharge) {
     return { group: "recharge" as const, size: NaN, key: textSlug || textId || rechargeText };
   }
 

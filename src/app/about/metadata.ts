@@ -5,11 +5,11 @@ import type { Metadata } from "next";
  */
 export const metadata: Metadata = {
   title: {
-    default: "About | POJ PRO",
+    default: "О компании | POJ PRO",
     template: "%s | POJ PRO",
   },
   description:
-    "POJ PRO — fire safety equipment supplier and installer. Learn about our mission, advantages, and contacts.",
+    "POJ PRO — поставщик и инсталлятор средств пожарной безопасности. Узнайте о нашей миссии, преимуществах и контактах.",
   robots: {
     index: true,
     follow: true,
@@ -28,18 +28,18 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://pojpro.uz/about",
     siteName: "POJ PRO",
-    title: "About | POJ PRO",
+    title: "О компании | POJ PRO",
     description:
-      "POJ PRO — fire safety equipment supplier and installer. Learn about our mission, advantages, and contacts.",
+      "POJ PRO — поставщик и инсталлятор средств пожарной безопасности. Узнайте о нашей миссии, преимуществах и контактах.",
     images: [
-      { url: "/og-image.jpg", width: 1200, height: 630, alt: "POJ PRO — About" },
+      { url: "/og-image.jpg", width: 1200, height: 630, alt: "POJ PRO — О компании" },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "About | POJ PRO",
+    title: "О компании | POJ PRO",
     description:
-      "POJ PRO — fire safety equipment supplier and installer. Learn about our mission, advantages, and contacts.",
+      "POJ PRO — поставщик и инсталлятор средств пожарной безопасности. Узнайте о нашей миссии, преимуществах и контактах.",
     images: ["/twitter-image.jpg"],
   },
   icons: {

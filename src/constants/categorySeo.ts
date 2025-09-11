@@ -6,7 +6,8 @@ export type FAQ = { question: string; answer: string };
 
 export type CategorySEO = {
   alias?: string[]; // alternate slugs that should map to this one
-  intro: string[]; // paragraphs of text shown under H1
+  intro?: string[]; // paragraphs of text shown under H1 (legacy, ru-only)
+  introByLang?: { ru?: string[]; en?: string[]; uz?: string[] }; // localized intros
   links?: { href: string; label: string }[]; // internal links to LP / category
   faqs?: FAQ[];
 };
@@ -19,8 +20,22 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'В нашем магазине вы можете купить огнетушители в Ташкенте с доставкой и официальными сертификатами. В наличии порошковые ОП‑2/ОП‑5/ОП‑10 и углекислотные ОУ‑3/ОУ‑5. Помогаем подобрать для офиса, магазина, склада и авто.',
       'Предоставляем сервис: перезарядка, плановое обслуживание и обучение персонала. Цены прозрачные — отправим КП и прайс. Быстрая доставка по Ташкенту и всей Республике Узбекистан.',
     ],
+    introByLang: {
+      ru: [
+        'Купить огнетушители в Ташкенте с доставкой и официальными сертификатами. В наличии порошковые ОП‑2/ОП‑5/ОП‑10 и углекислотные ОУ‑3/ОУ‑5.',
+        'Перезарядка и обслуживание. Отправим КП и прайс. Быстрая доставка по Узбекистану.',
+      ],
+      en: [
+        'Buy fire extinguishers in Tashkent with delivery and official certificates. In stock: powder OP‑2/OP‑5/OP‑10 and CO₂ OU‑3/OU‑5.',
+        'Recharge and maintenance. We will send a quote and price list. Fast delivery across Uzbekistan.',
+      ],
+      uz: [
+        'Toshkentda o‘t o‘chirgichlar — yetkazib berish va rasmiy sertifikatlar bilan. Omborda: kukunli OP‑2/OP‑5/OP‑10 va CO₂ OU‑3/OU‑5.',
+        'Qayta zaryadlash va servis. KP va price-list yuboramiz. Oʻzbekiston bo‘ylab tez yetkazib berish.',
+      ],
+    },
     links: [
-      { href: '/lp/ognetushiteli-tashkent', label: 'огнетушители ташкент купить' },
+      { href: '/catalog/ognetushiteli', label: 'огнетушители ташкент купить' },
       { href: '/catalog/ognetushiteli', label: 'каталог огнетушителей' },
     ],
     faqs: [
@@ -36,8 +51,22 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Пожарные рукава в наличии и под заказ: типоразмеры 51/66/77, напорные РПМ(В). Подберём совместимые головки, стволы и шкафы для внутреннего пожарного водопровода.',
       'Предоставляем сертификаты соответствия, сборку комплектов, быструю доставку по Ташкенту и Узбекистану. Поможем с выбором по нормам и условиям эксплуатации.',
     ],
+    introByLang: {
+      ru: [
+        'Пожарные рукава 51/66/77 в наличии и под заказ. Подберём головки, стволы и шкафы под внутренний пожарный водопровод.',
+        'Сертификаты, комплектация, быстрая доставка по Ташкенту и Узбекистану.',
+      ],
+      en: [
+        'Fire hoses 51/66/77 available in stock and on order. We will select couplings, nozzles and cabinets for indoor hydrant systems.',
+        'Certificates, kitting and fast delivery in Tashkent and across Uzbekistan.',
+      ],
+      uz: [
+        'Yong‘in shlanglari 51/66/77 — omborda va buyurtma asosida. Ichki yong‘in tarmog‘i uchun mufta, stvol va shkaflarni tanlab beramiz.',
+        'Sertifikatlar, komplektatsiya va tez yetkazib berish (Toshkent va Oʻzbekiston bo‘ylab).',
+      ],
+    },
     links: [
-      { href: '/lp/pozharnye-rukava-tashkent', label: 'пожарные рукава ташкент купить' },
+      { href: '/catalog/rukava_i_pozharnaya_armatura', label: 'пожарные рукава ташкент купить' },
       { href: '/catalog/rukava_i_pozharnaya_armatura', label: 'каталог пожарных рукавов' },
     ],
     faqs: [
@@ -53,6 +82,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Кронштейны и фурнитура для огнетушителей: настенные и автомобильные крепления, таблички, пломбы и другие аксессуары. Подберём совместимые крепления под нужную модель.',
       'В наличии и под заказ. Прозрачные цены и быстрая доставка по Ташкенту. Поможем укомплектовать объект под требования безопасности.',
     ],
+    introByLang: {
+      ru: [
+        'Кронштейны и фурнитура для огнетушителей: настенные и автомобильные крепления, таблички и пломбы.',
+        'Подбор под модель, прозрачные цены и быстрая доставка по Ташкенту.',
+      ],
+      en: [
+        'Brackets and fittings for fire extinguishers: wall and car mounts, signs and seals.',
+        'Model compatibility assistance, transparent pricing and fast delivery in Tashkent.',
+      ],
+      uz: [
+        'O‘t o‘chirgichlar uchun kronshteyn va furnitura: devor/avto kronshteynlari, belgilar va plombalar.',
+        'Moslikni tanlashda yordam, oshkora narxlar va tez yetkazib berish (Toshkent).',
+      ],
+    },
     links: [
       { href: '/catalog/furnitura_dlya_ognetushiteley', label: 'кронштейны для огнетушителей — каталог' },
     ],
@@ -68,6 +111,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Пожарные шкафы для внутреннего пожарного водопровода: ШП настенные/встраиваемые, с местом под рукав, ствол и кран. Металлические корпуса с порошковым покрытием.',
       'Подберём комплектацию под ваши рукава и арматуру. Сертификаты, быстрая доставка по Ташкенту, оптовые цены для организаций.',
     ],
+    introByLang: {
+      ru: [
+        'Пожарные шкафы: настенные и встраиваемые, для рукава, ствола и крана.',
+        'Комплектация под объект, сертификаты и быстрая доставка по Ташкенту.',
+      ],
+      en: [
+        'Fire cabinets: surface-mounted and recessed, with space for hose, nozzle and valve.',
+        'Kitting per project, certificates and fast delivery in Tashkent.',
+      ],
+      uz: [
+        'Yong‘in shkaflari: devorga o‘rnatiladigan va ichiga o‘rnatiladigan, shlang, stvol va kran uchun.',
+        'Loyihaga mos komplektatsiya, sertifikatlar va tez yetkazib berish (Toshkent).',
+      ],
+    },
     links: [
       { href: '/catalog/pozharnye_shkafy', label: 'пожарные шкафы — каталог' },
     ],
@@ -83,6 +140,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Системы пожарной сигнализации: адресные и неадресные панели, извещатели дыма/тепла, светозвуковые оповещатели.',
       'Комплектуем под объект, помогаем с выбором совместимых устройств, предоставляем сертификаты и документацию.',
     ],
+    introByLang: {
+      ru: [
+        'Системы пожарной сигнализации: адресные/неадресные панели, датчики дыма/тепла, оповещатели.',
+        'Подбор совместимых устройств и документация.',
+      ],
+      en: [
+        'Fire alarm systems: addressable/non-addressable panels, smoke/heat detectors, sounders/beacons.',
+        'Compatible device selection and documentation support.',
+      ],
+      uz: [
+        'Yong‘in signalizatsiyasi: adresli/adressiz panellar, tutun/issiqlik detektorlari, ogohlantirish qurilmalari.',
+        'Mos qurilmalarni tanlash va hujjatlar bilan yordam.',
+      ],
+    },
     links: [
       { href: '/catalog/pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva', label: 'каталог пожарной сигнализации' },
     ],
@@ -98,6 +169,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Пожарные гидранты и комплектующие. Подберём по давлению и диаметрам, поможем со стыковкой с существующей сетью.',
       'Поставляем сертифицированное оборудование, организуем поставку в сжатые сроки по Ташкенту и регионам.',
     ],
+    introByLang: {
+      ru: [
+        'Пожарные гидранты и комплектующие — подберём по давлению и диаметрам.',
+        'Сертифицированные решения и оперативная поставка по Узбекистану.',
+      ],
+      en: [
+        'Fire hydrants and accessories — selected by pressure and diameter.',
+        'Certified equipment with fast delivery across Uzbekistan.',
+      ],
+      uz: [
+        'Yong‘in gidrantlari va aksessuarlar — bosim va diametr bo‘yicha tanlab beramiz.',
+        'Sertifikatlangan jihozlar, Oʻzbekiston bo‘ylab tez yetkazib berish.',
+      ],
+    },
     links: [
       { href: '/catalog/fire-hydrants', label: 'каталог пожарных гидрантов' },
     ],
@@ -109,6 +194,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Дымовые и тепловые извещатели для раннего обнаружения пожара. Совместимость с адресными/неадресными системами.',
       'Поможем подобрать под условия эксплуатации и требования проекта.',
     ],
+    introByLang: {
+      ru: [
+        'Дымовые и тепловые извещатели для раннего обнаружения пожара.',
+        'Совместимы с адресными/неадресными системами. Поможем с подбором.',
+      ],
+      en: [
+        'Smoke and heat detectors for early fire detection.',
+        'Compatible with addressable/non-addressable systems. We will help you choose.',
+      ],
+      uz: [
+        'Yong‘inni erta aniqlash uchun tutun va issiqlik detektorlari.',
+        'Adresli/adressiz tizimlar bilan mos. Tanlashda yordam beramiz.',
+      ],
+    },
     links: [
       { href: '/catalog/smoke-detectors', label: 'каталог датчиков дыма' },
     ],
@@ -120,6 +219,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Противопожарные двери с различным классом огнестойкости. Возможны остеклённые варианты и технологические размеры.',
       'Сертификаты, поставка и консультации по выбору фурнитуры и доводчиков.',
     ],
+    introByLang: {
+      ru: [
+        'Противопожарные двери — разные классы огнестойкости, возможны остеклённые варианты.',
+        'Консультации по фурнитуре и доводчикам, поставка и документы.',
+      ],
+      en: [
+        'Fire doors — various fire resistance classes, glazed options available.',
+        'Consulting on hardware and closers, supply and documentation.',
+      ],
+      uz: [
+        'Yong‘inga chidamli eshiklar — turli yong‘inga chidamlilik sinflari, oynali variantlar.',
+        'Furnitura va yopqichlar bo‘yicha maslahat, ta’minot va hujjatlar.',
+      ],
+    },
     links: [
       { href: '/catalog/fire-doors', label: 'каталог противопожарных дверей' },
     ],
@@ -131,6 +244,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Комплексное оснащение объектов: шкафы, рукава, стволы, знаки, огнетушители и другое оборудование пожарной безопасности.',
       'Сформируем комплект под нормы и специфику вашего объекта. Документация и поставка.',
     ],
+    introByLang: {
+      ru: [
+        'Комплексное оснащение: шкафы, рукава, стволы, знаки, огнетушители.',
+        'Подбор под нормы объекта. Документация и поставка.',
+      ],
+      en: [
+        'Comprehensive supply for facilities: cabinets, hoses, nozzles, signs, extinguishers.',
+        'Selection per standards. Documentation and delivery.',
+      ],
+      uz: [
+        'Obʼektlar uchun kompleks jihozlash: shkaflar, shlanglar, stvollar, belgilar, o‘t o‘chirgichlar.',
+        'Meʼyorlarga mos tanlash. Hujjatlar va yetkazib berish.',
+      ],
+    },
     links: [
       { href: '/catalog/fire-safety-equipment', label: 'каталог оборудования' },
     ],
@@ -142,6 +269,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Системы пожаротушения: спринклерные и модульные решения. Поможем с подбором по площади, классу пожара и источнику воды.',
       'Совместим с существующими системами сигнализации и оповещения. Сертификаты и документация.',
     ],
+    introByLang: {
+      ru: [
+        'Системы пожаротушения: спринклерные и модульные решения под площадь и класс пожара.',
+        'Совместимость с системами безопасности, сертификаты и документация.',
+      ],
+      en: [
+        'Fire extinguishing systems: sprinkler and modular solutions for area and fire class.',
+        'Compatible with safety systems, with certificates and documentation.',
+      ],
+      uz: [
+        'Yong‘inni o‘chirish tizimlari: sprinkler va modulli yechimlar — maydon va yong‘in sinfiga ko‘ra.',
+        'Xavfsizlik tizimlari bilan mos, sertifikatlar va hujjatlar bilan.',
+      ],
+    },
     links: [
       { href: '/catalog/sistemy_pozharotusheniya_sprinkler', label: 'системы пожаротушения — каталог' },
     ],
@@ -153,6 +294,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Системы противопожарной защиты для комплексной безопасности объекта. Консультации по совместимости узлов и оборудования.',
       'Поставка, сопроводительная документация, помощь с выбором комплектующих.',
     ],
+    introByLang: {
+      ru: [
+        'Системы противопожарной защиты для комплексной безопасности объекта.',
+        'Подбор совместимых узлов, поставка и документация.',
+      ],
+      en: [
+        'Fire protection systems for comprehensive facility safety.',
+        'Selection of compatible components, delivery and documentation.',
+      ],
+      uz: [
+        'Obʼektning kompleks xavfsizligi uchun yong‘indan himoya tizimlari.',
+        'Mos tugunlarni tanlash, yetkazib berish va hujjatlar.',
+      ],
+    },
     links: [
       { href: '/catalog/fire-protection-systems', label: 'каталог систем ППЗ' },
     ],
@@ -164,6 +319,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Средства индивидуальной защиты: каски, очки, перчатки, респираторы, защитная одежда и комплекты.',
       'Поможем подобрать СИЗ под задачи, нормы и условия эксплуатации.',
     ],
+    introByLang: {
+      ru: [
+        'СИЗ: каски, очки, перчатки, респираторы, спецодежда и комплекты.',
+        'Подбор под задачи, нормы и условия эксплуатации.',
+      ],
+      en: [
+        'PPE: helmets, goggles, gloves, respirators, protective clothing and kits.',
+        'Selection for your tasks, standards and operating conditions.',
+      ],
+      uz: [
+        'SHV: kaska, ko‘zoynak, qo‘lqop, respirator, maxsus kiyim va to‘plamlar.',
+        'Vazifa va meʼyorlarga mos tanlab beramiz.',
+      ],
+    },
     links: [
       { href: '/catalog/siz', label: 'каталог СИЗ' },
     ],
@@ -175,6 +344,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Дыхательные аппараты и комплектующие для СИЗОД. Различные типы баллонов и масок.',
       'Подбор под специфику задач, консультируем по совместимости и обслуживанию.',
     ],
+    introByLang: {
+      ru: [
+        'Дыхательные аппараты и комплектующие для СИЗОД: баллоны, маски.',
+        'Подбор под задачи, рекомендации по обслуживанию.',
+      ],
+      en: [
+        'Breathing apparatus and components for respiratory protection: cylinders, masks.',
+        'Selection for your tasks, maintenance guidance.',
+      ],
+      uz: [
+        'Nafas olish apparatlari va SIZOD uchun qismlar: ballonlar, niqoblar.',
+        'Vazifaga mos tanlov va xizmat ko‘rsatish bo‘yicha maslahat.',
+      ],
+    },
     links: [
       { href: '/catalog/breathing-apparatus', label: 'каталог дыхательных аппаратов' },
     ],
@@ -186,6 +369,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Пожарные насосы и источники питания для систем пожаротушения и оповещения. Подберём по требованиям проекта и гидравлике.',
       'Поставляем сертифицированные решения с гарантией и поддержкой.',
     ],
+    introByLang: {
+      ru: [
+        'Пожарные насосы и источники питания для систем пожаротушения и оповещения.',
+        'Подбор по проекту и гидравлике. Сертификаты и поддержка.',
+      ],
+      en: [
+        'Fire pumps and power supplies for extinguishing and PA systems.',
+        'Selection per project and hydraulics. Certified with support.',
+      ],
+      uz: [
+        'Yong‘in nasoslari va ogohlantirish tizimlari uchun quvvat manbalari.',
+        'Loyiha va gidravlikaga ko‘ra tanlash. Sertifikatlar va qo‘llab-quvvatlash.',
+      ],
+    },
     links: [
       { href: '/catalog/fire-pumps', label: 'каталог пожарных насосов' },
     ],
@@ -197,6 +394,20 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
       'Системы оповещения и аудиооборудование: усилители, громкоговорители, микрофонные пульты. Совместимость с системами безопасности.',
       'Подбор под объект и нормативы, поставка по Ташкенту и Узбекистану.',
     ],
+    introByLang: {
+      ru: [
+        'Системы оповещения и аудиооборудование: усилители, акустика, пульты.',
+        'Подбор под нормы объекта. Поставка по Ташкенту и Узбекистану.',
+      ],
+      en: [
+        'Public address and audio equipment: amplifiers, speakers, paging consoles.',
+        'Selection per facility standards. Delivery in Tashkent and Uzbekistan.',
+      ],
+      uz: [
+        'Ovozli ogohlantirish va audio uskunalar: kuchaytirgichlar, karnaylar, pultlar.',
+        'Obʼekt meʼyorlariga mos tanlov. Toshkent va Oʻzbekistonga yetkazib berish.',
+      ],
+    },
     links: [
       { href: '/catalog/audiosistema_i_opoveschenie', label: 'аудиосистема и оповещение — каталог' },
     ],

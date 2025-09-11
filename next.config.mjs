@@ -10,17 +10,11 @@ const nextConfig = {
   compress: true,
   generateEtags: true,
   distDir: process.env.DIST_IN_NODE_MODULES ? 'node_modules/.cache/next' : '.next',
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
+  // Remove custom Turbopack rules; using Webpack loaders in Turbopack can break dev.
   experimental: {
     optimizePackageImports: ['@heroicons/react', 'react-icons', 'framer-motion', 'lucide-react'],
-    optimizeCss: true,
+    // Enable CSS optimization only in production; in dev it can break HMR/asset loading.
+    optimizeCss: process.env.NODE_ENV === 'production',
     webpackBuildWorker: true,
   },
   compiler: {
@@ -29,7 +23,8 @@ const nextConfig = {
     } : false,
   },
   webpack: (config, { isServer, dev }) => {
-    if (!isServer) {
+    // Avoid customizing client optimization in development — it can break HMR and asset loading.
+    if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
         minSize: 20000,
@@ -55,8 +50,6 @@ const nextConfig = {
           },
         },
       };
-    }
-    if (!dev && !isServer) {
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
     }
@@ -92,7 +85,8 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'geolocation=(), microphone=(), camera=()' },
         ],
       }] : []),
-      {
+      // Strong caching for static assets — PRODUCTION ONLY
+      ...(process.env.NODE_ENV === 'production' ? [{
         source: '/:path*(svg|jpg|jpeg|png|gif|ico|css|js)',
         headers: [
           {
@@ -100,7 +94,7 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
-      },
+      }] : []),
     ];
   },
   eslint: {
@@ -108,6 +102,15 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: false,
+  },
+  async redirects() {
+    return [
+      {
+        source: '/lp/:slug*',
+        destination: '/catalog',
+        permanent: true,
+      },
+    ];
   },
 };
 

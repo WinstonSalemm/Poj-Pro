@@ -133,7 +133,7 @@ export default function CategoryProductsClient({
         return null;
       })()}
       <main className="bg-[#F8F9FA] min-h-screen">
-        <section className="container-section section-y mt-[100px]">
+        <section className="container-section section-y mt-0 pt-4 sm:pt-6">
           <Breadcrumbs
             items={[
               { name: t('common.home', 'Home'), href: `/` },
@@ -174,44 +174,20 @@ export default function CategoryProductsClient({
           <div className="flex gap-8">
             {/* Desktop sidebar */}
             <div className="hidden md:block w-64 shrink-0">
-              <FiltersSidebar
-                total={sortedProducts.length}
-                filters={filters}
-                setFilters={setFilters}
-                sort={sort}
-                setSort={setSort}
-              />
+              <div className="sticky top-20 max-h-[calc(100vh-90px)] overflow-auto">
+                <FiltersSidebar
+                  total={sortedProducts.length}
+                  filters={filters}
+                  setFilters={setFilters}
+                  sort={sort}
+                  setSort={setSort}
+                />
+              </div>
             </div>
 
             {/* Content */}
             <div className="flex-1">
-              {/* SEO intro for category (text + internal links) */}
-              {(() => {
-                const key = resolveCategoryKey(rawCategory.replace(/_/g, '-'));
-                const cfg = key ? CATEGORY_SEO[key] : undefined;
-                if (!cfg) return null;
-                const paragraphs = cfg.intro || [];
-                const links = cfg.links || [];
-                if (!paragraphs.length && !links.length) return null;
-                return (
-                  <div className="mb-6 bg-white border border-gray-200 rounded-2xl p-4 text-gray-800">
-                    {paragraphs.map((p, i) => (
-                      <p key={i} className={i === paragraphs.length - 1 ? "mb-0" : "mb-2"}>{p}</p>
-                    ))}
-                    {!!links.length && (
-                      <p className="mt-2 mb-0">
-                        {links.map((l, idx) => (
-                          <>
-                            {idx > 0 ? ' ' : ''}
-                            <a key={l.href} href={l.href} className="underline hover:no-underline">{l.label}</a>
-                            {idx < links.length - 1 ? ' ' : ''}
-                          </>
-                        ))}
-                      </p>
-                    )}
-                  </div>
-                );
-              })()}
+              {/* SEO intro moved to SSR intro on category page */}
               {bootLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {Array.from({ length: 8 }).map((_, i) => (

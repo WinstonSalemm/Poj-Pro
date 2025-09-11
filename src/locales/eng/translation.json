@@ -3,6 +3,110 @@
     "title": "Search",
     "placeholder": "Search products..."
   },
+  "guide": {
+    "title": "Fire Safety Guide",
+    "intro": "Practical tips on where, how many and why to install fire safety equipment at home, in the office and at warehouses.",
+    "toc": { "title": "Contents" },
+    "quickLinks": { "title": "Quick links to catalog" },
+    "cta": {
+      "title": "Need help choosing?",
+      "subtitle": "We'll prepare a quote, consult you and suggest the optimal set.",
+      "requestQuote": "Request a Quote",
+      "consultation": "Consultation",
+      "priceList": "Get Price List"
+    },
+    "tablesTitle": "Minimum set (approx.)",
+    "tables": {
+      "headers": {
+        "type": "Type",
+        "qty": "Qty",
+        "mount": "Mount",
+        "notes": "Notes"
+      },
+      "apartment": [
+        { "type": "OP-5 / OP-10", "qty": "1–2", "mount": "Bracket ~1.5 m", "notes": "Near exit/kitchen" },
+        { "type": "OU-3 / OU-5", "qty": "1", "mount": "Bracket", "notes": "By electrical panel" },
+        { "type": "Smoke detector", "qty": "2–3", "mount": "Ceiling", "notes": "Hallway/bedrooms" }
+      ],
+      "office": [
+        { "type": "OP-5 / OP-10", "qty": "by norms", "mount": "Bracket", "notes": "Distribute across floor" },
+        { "type": "OU-5", "qty": "1+", "mount": "Bracket", "notes": "Electrical/server room" },
+        { "type": "Fire cabinet", "qty": "by design", "mount": "Wall-mounted", "notes": "Hose+nozzle+valve" }
+      ],
+      "warehouse": [
+        { "type": "OP-10 / OP-50", "qty": "uniform", "mount": "Bracket/trolley", "notes": "Coverage zones" },
+        { "type": "Powder module (MPP)", "qty": "by risks", "mount": "Fixings", "notes": "Local protection" },
+        { "type": "Hydrant/cabinet", "qty": "by design", "mount": "Fixed", "notes": "Accessibility" }
+      ]
+    },
+    "sections": {
+      "apartment": {
+        "title": "Apartment",
+        "recs": [
+          "OP-5/OP-10 near exit or in the kitchen; mounting ~1.5 m to handle, clear access.",
+          "OU-3/OU-5 near electrical panel or server nook — safe for electricity.",
+          "Smoke detectors in corridor/bedrooms, audible alert.",
+          "Fire blanket in the kitchen, heat-resistant gloves.",
+          "Keep evacuation paths clear; no clutter."
+        ]
+      },
+      "office": {
+        "title": "Office",
+        "recs": [
+          "Distribute OP-5/OP-10 across floor/levels per norms; near entrances and printer rooms.",
+          "OU-5 near electrical panels/server room; avoid using CO2 on Class A (paper/furniture).",
+          "Fire cabinets/hose reels per design, keep access free and marked.",
+          "Fire alarm and PA system; schedule regular checks.",
+          "Evacuation plan and staff training; first aid supplies."
+        ]
+      },
+      "warehouse": {
+        "title": "Warehouse",
+        "recs": [
+          "OP-10/OP-50 ensuring uniform coverage; OP-50 trolleys for racking aisles.",
+          "Powder suppression modules (MPP) for local high‑risk zones.",
+          "Hydrants/cabinets according to design; constant availability.",
+          "Safety signs, aisle markings, keep exits unobstructed.",
+          "Automatic alarm, PA, regular drills."
+        ]
+      },
+      "maintenance": {
+        "title": "Maintenance",
+        "recs": [
+          "Recharge after any activation and per service interval in the passport.",
+          "Check seal and pressure weekly (needle in green zone).",
+          "Store dry, protect from heat/frost; mount on a proper bracket.",
+          "Keep service logbook and attach reports.",
+          "Pressure‑test hoses periodically; watch for leaks."
+        ]
+      },
+      "signage": {
+        "title": "Signage and Evacuation",
+        "recs": [
+          "Place photoluminescent exit signs and directional arrows.",
+          "Mark locations of extinguishers, cabinets, call points/phones.",
+          "Evacuation plans at visible spots; update when layout changes.",
+          "Keep aisles clear; emergency doors unlocked during operation.",
+          "Conduct evacuation drills 1–2 times a year."
+        ]
+      }
+    },
+    "faqTitle": "Frequently Asked Questions",
+    "faq": [
+      { "q": "What’s the difference between OP and OU?", "a": "OP — powder, versatile for A/B/C/E classes, leaves residue. OU — CO2 for electrical equipment and liquids, no residue, hazardous in tight rooms (asphyxiation risk)." },
+      { "q": "How to choose extinguisher size?", "a": "Home: OP‑5/OP‑10. Office: OP‑5–10 by area/category norms. Warehouse: OP‑10/OP‑50 and trolleys. Consider fire classes and accessibility." },
+      { "q": "Can CO2 extinguish paper/wood?", "a": "CO2 is effective on electrical equipment and liquids; for Class A (paper/wood) prefer powder/water/foam. CO2 dissipates fast, reignition possible." },
+      { "q": "What are fire classes A/B/C/E?", "a": "A — solids (paper, wood), B — liquids, C — gases, E — electrical under voltage. Match extinguisher to class." },
+      { "q": "When to service/recharge?", "a": "After any use; by service interval in passport; if pressure is out of green zone; upon damage." },
+      { "q": "How to store an extinguisher?", "a": "Dry place, away from heat, accessible; mounted on bracket, intact seal, pressure in green zone." },
+      { "q": "Are signs and evac plans required?", "a": "For offices/warehouses — yes: plans, photoluminescent exit signs, arrows, equipment signs." },
+      { "q": "What to provide for electrical room/server room?", "a": "OU‑3/5 nearby, OP as backup; smoke/heat detectors, PA; keep room tidy, fire‑rated doors." },
+      { "q": "Requirements for fire cabinets?", "a": "Accessibility, labeling, completeness (hose, nozzle, valve), no twists/leaks; periodic hose pressure‑tests." },
+      { "q": "Training frequency?", "a": "Initial briefing at onboarding and evacuation drills 1–2 times a year (check local norms)." },
+      { "q": "Documents required?", "a": "Certificates of conformity, product passports, service logbooks, recharge/test reports." },
+      { "q": "Can I keep an extinguisher in a car?", "a": "Yes, use car brackets/straps, fix to avoid rolling, observe temperature limits and pressure." }
+    ]
+  },
   "popularProductsBlock": {
     "title": "Most Popular Products",
     "details": "Details"
@@ -81,6 +185,7 @@
   },
   "header": {
     "catalog": "Catalog",
+    "guide": "Guide",
     "promotions": "Promotions",
     "hotOffers": "Hot Offers",
     "about": "About Us",
@@ -139,9 +244,9 @@
       "emailValue": "info@pojpro.uz",
       "hours": {
         "title": "Working Hours",
-        "weekdays":"Mon-Fri: 09:00–18:00",
-        "saturday":"Sat: 10:00–15:00",
-        "sunday":"Sun: 12:00–17:00"
+        "weekdays": "Mon-Fri: 09:00–18:00",
+        "saturday": "Sat: 10:00–15:00",
+        "sunday": "Sun: 12:00–17:00"
       }
     },
     "reasons": {
@@ -221,6 +326,7 @@
     "ballony": "Balloon"
   },
   "popularProducts": "Popular Products",
+  "showAll": "Show all",
   "category": {
     "goto": "Go to category {{name}}",
     "image": "Category image {{name}}"
@@ -417,6 +523,49 @@
     "sectionAriaLabel": "Product categories",
     "catalog": "Catalog"
   },
+  "lp": {
+    "cta": { "catalog": "Go to catalog" },
+    "common": {
+      "order_now": "Order now",
+      "consult": "Consultation",
+      "request_cp": "Request a quote",
+      "get_price": "Get price list",
+      "ask_question": "Ask a question",
+      "form": {
+        "title": "Leave a request",
+        "submit": "Get a quote and price list"
+      }
+    },
+    "ognetushiteli-tashkent": {
+      "hero": {
+        "title": "Fire extinguishers in Tashkent — in stock with delivery",
+        "subtitle": "Certified products, transparent pricing, maintenance and recharge. Fast delivery and convenient payment.",
+        "note": "We have a commercial offer and price list. Certificates and warranty are provided."
+      },
+      "why_us": "Why choose us?"
+    },
+    "pozharnye-rukava-tashkent": {
+      "h1": "Fire hoses in Tashkent — in stock and on order",
+      "description": "Couplings, nozzles, adapters, fire cabinets. Certificates, warranty, transparent pricing. We will assemble according to your facility and standards."
+    },
+    "pozharnye-shkafy-tashkent": {
+      "h1": "Fire cabinets — Tashkent",
+      "description": "Surface-mounted and recessed cabinets. Selection per project, kitting, certificates and fast delivery."
+    },
+    "kronshtejny-ognetushiteley-tashkent": {
+      "h1": "Brackets and fittings for fire extinguishers — Tashkent",
+      "description": "Wall and car mounts, signs, seals, accessories. We will help select compatible mounts for your extinguisher model.",
+      "cta": "Brackets catalog"
+    },
+    "pozharnaia-bezopasnost": {
+      "h1": "Fire safety — supply and delivery across Uzbekistan",
+      "description": "Equipping facilities with fire safety products: extinguishers, cabinets, signs, evacuation plans. We arrange supply and delivery. Certificates available."
+    },
+    "siz-tashkent": {
+      "h1": "PPE and safety signs in Tashkent",
+      "description": "Comprehensive supplies: helmets, gloves, goggles, vests, signs. Certificates, fast terms and fair prices."
+    }
+  },
   "mapSection": {
     "ariaLabel": "Store location map",
     "title": "How to find us",
@@ -433,6 +582,25 @@
     "nextSlide": "Next slide",
     "previousSlide": "Previous slide",
     "goToSlide": "Go to slide {{index}}"
+  },
+  "contacts": {
+    "seo": {
+      "title": "Contacts",
+      "description": "Contact us — fire and security equipment in Tashkent. Quick support, consultation and delivery across Uzbekistan."
+    },
+    "title": "Contacts",
+    "description": "If you have any questions or need advice on equipment — contact us in any convenient way.",
+    "address": {
+      "title": "Address",
+      "value": "Tashkent city, Chilanzar district, 1st quarter, house 33 magazine BOLID with green wall"
+    },
+    "phone": { "title": "Phone" },
+    "hours": {
+      "title": "Working Hours",
+      "weekdays": "Mon–Fri: 09:00–18:00",
+      "saturday": "Sat: 10:00–15:00",
+      "sunday": "Sun: 12:00–17:00"
+    }
   },
   "auth": {
     "signIn": "Sign In",

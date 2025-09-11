@@ -2,7 +2,6 @@ import { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site';
 import { prisma } from '@/lib/prisma';
 import { getAllPostsAllLocales, getPostAlternates } from '@/lib/blog/loader';
-import { LP_PAGES } from '@/constants/lp';
 
 // Supported locales
  type Locale = 'ru' | 'uz' | 'en';
@@ -46,8 +45,7 @@ import { LP_PAGES } from '@/constants/lp';
      { path: '/supplies', priority: 0.7 },
      { path: '/blog', priority: 0.7 },
    ];
-   const lpRoutes = (LP_PAGES || []).map(({ slug }) => ({ path: `/lp/${slug}`, priority: 0.85 as const }));
-   const staticRoutes = [...baseRoutes, ...lpRoutes];
+   const staticRoutes = [...baseRoutes];
 
    const now = new Date().toISOString();
    const routesArr = Array.isArray(staticRoutes) ? staticRoutes : [];

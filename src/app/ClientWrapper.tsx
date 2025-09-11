@@ -38,6 +38,17 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
           document.head.appendChild(sheet);
         }
       });
+
+      // 3) In development, ensure no old Service Worker remains active (can corrupt dev asset loading)
+      if (process.env.NODE_ENV !== 'production' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations?.().then((regs) => {
+          regs.forEach((r) => r.unregister());
+        }).catch(() => {});
+        // Clear caches potentially created by a previous SW
+        if (typeof caches !== 'undefined') {
+          caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
+        }
+      }
     } catch {
       // no-op
     }

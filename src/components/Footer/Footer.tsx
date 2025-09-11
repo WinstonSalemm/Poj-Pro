@@ -53,7 +53,7 @@ export default function Footer() {
                             </li>
                             <li className="text-center">
                                 <Link
-                                    href="/lp/ognetushiteli-tashkent"
+                                    href="/catalog/ognetushiteli"
                                     title="Огнетушители Ташкент купить — спец‑предложение"
                                     className="hover:opacity-70 transition-opacity"
                                 >
@@ -62,7 +62,7 @@ export default function Footer() {
                             </li>
                             <li className="text-center">
                                 <Link
-                                    href="/lp/pozharnye-rukava-tashkent"
+                                    href="/catalog/rukava_i_pozharnaya_armatura"
                                     title="Пожарные рукава Ташкент купить"
                                     className="hover:opacity-70 transition-opacity"
                                 >
@@ -71,7 +71,7 @@ export default function Footer() {
                             </li>
                             <li className="text-center">
                                 <Link
-                                    href="/lp/kronshtejny-ognetushiteley-tashkent"
+                                    href="/catalog/furnitura_dlya_ognetushiteley"
                                     title="Кронштейны для огнетушителей Ташкент купить"
                                     className="hover:opacity-70 transition-opacity"
                                 >
@@ -80,7 +80,7 @@ export default function Footer() {
                             </li>
                             <li className="text-center">
                                 <Link
-                                    href="/lp/pozharnye-shkafy-tashkent"
+                                    href="/catalog/pozharnye_shkafy"
                                     title="Пожарные шкафы Ташкент купить"
                                     className="hover:opacity-70 transition-opacity"
                                 >

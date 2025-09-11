@@ -22,15 +22,13 @@ export default async function HomePage() {
         <h2 className="text-xl font-semibold !text-[#660000] mb-3">Популярные запросы в Ташкенте</h2>
         <nav aria-label="Популярные запросы" className="text-[#660000]">
           <ul className="flex flex-wrap gap-2">
-            <li><Link href="/lp/ognetushiteli-tashkent" className="underline hover:no-underline">огнетушители ташкент купить</Link></li>
-            <li><Link href="/lp/pozharnye-rukava-tashkent" className="underline hover:no-underline">пожарные рукава ташкент купить</Link></li>
-            <li><Link href="/lp/kronshtejny-ognetushiteley-tashkent" className="underline hover:no-underline">кронштейны огнетушителей ташкент купить</Link></li>
-            <li><Link href="/lp/pozharnye-shkafy-tashkent" className="underline hover:no-underline">пожарные шкафы ташкент купить</Link></li>
-            <li><Link href="/lp/pozharnaya-signalizatsiya-tashkent" className="underline hover:no-underline">пожарная сигнализация ташкент купить</Link></li>
-            <li><Link href="/lp/datchiki-dyma-tashkent" className="underline hover:no-underline">датчики дыма ташкент купить</Link></li>
-            <li><Link href="/lp/sprinkler-sistemy-tashkent" className="underline hover:no-underline">спринклерные системы ташкент</Link></li>
-            <li><Link href="/lp/pozharnye-gidranty-tashkent" className="underline hover:no-underline">пожарные гидранты ташкент</Link></li>
-            <li><Link href="/lp/siz-tashkent" className="underline hover:no-underline">средства индивидуальной защиты ташкент</Link></li>
+            <li><Link href="/catalog/ognetushiteli" className="underline hover:no-underline">огнетушители ташкент купить</Link></li>
+            <li><Link href="/catalog/rukava_i_pozharnaya_armatura" className="underline hover:no-underline">пожарные рукава ташкент купить</Link></li>
+            <li><Link href="/catalog/furnitura_dlya_ognetushiteley" className="underline hover:no-underline">кронштейны огнетушителей ташкент купить</Link></li>
+            <li><Link href="/catalog/pozharnye_shkafy" className="underline hover:no-underline">пожарные шкафы ташкент купить</Link></li>
+            <li><Link href="/catalog/pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva" className="underline hover:no-underline">пожарная сигнализация ташкент купить</Link></li>
+            <li><Link href="/catalog/sistemy_pozharotusheniya_sprinkler" className="underline hover:no-underline">спринклерные системы ташкент</Link></li>
+            <li><Link href="/catalog/siz" className="underline hover:no-underline">средства индивидуальной защиты ташкент</Link></li>
           </ul>
         </nav>
       </section>

@@ -45,6 +45,18 @@ const en = {
   popularProducts: {
     title: 'Popular Products',
   },
+  lp: {
+    ognetushiteli: {
+      intro1:
+        'Looking to buy fire extinguishers in Tashkent? At POJ PRO you will find popular models: powder OP‑2/OP‑5/OP‑10 and CO₂ OU‑3/OU‑5. We will help you choose a solution for office, retail, warehouse and car.',
+      intro2:
+        'Certificates and warranty. Quote and price list upon request. Delivery across Tashkent and all over Uzbekistan, pickup available. Payment — Payme/Click.',
+      links: {
+        buyLabel: 'buy fire extinguishers Tashkent',
+        catalogLabel: 'fire extinguishers catalog',
+      },
+    },
+  },
   preOrderBanner: {
     title: 'Pre-Order Item',
     body: 'We will prepare a favorable commercial offer for you and deliver the goods quickly, efficiently, and at the best price.',

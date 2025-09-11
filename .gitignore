@@ -18,3 +18,10 @@ out/
 .DS_Store
 coverage/
 dist/
+
+# Prevent shadowing App Router by static site leftovers in public/
+public/**/*.html
+public/**/*.js
+public/**/*.css
+!public/robots.txt
+!public/*.webmanifest

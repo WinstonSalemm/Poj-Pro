@@ -32,6 +32,7 @@ export default function Header() {
 
   const menuLeft: MenuItem[] = [
     { id: "catalog", href: "/catalog", translationKey: "header.catalog" },
+    { id: "guide", href: "/guide", translationKey: "header.guide" },
     { id: "about", href: "/about", translationKey: "header.about" },
     { id: "contacts", href: "/contacts", translationKey: "header.contacts" },
     { id: "documents", href: "/documents", translationKey: "header.documents" },
