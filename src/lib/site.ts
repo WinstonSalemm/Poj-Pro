@@ -1,11 +1,11 @@
 // Site configuration with SEO defaults
 
-// Prefer public URL for client, fall back to server-side SITE_URL, then localhost.
+// Prefer public URL for client, fall back to server-side SITE_URL, then default to canonical prod domain.
 // Ensure no trailing slash for consistent concatenation.
 const rawSiteUrl =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) ||
   (typeof process !== 'undefined' && process.env.SITE_URL) ||
-  'https://www.poj-pro.uz';
+  'https://poj-pro.uz';
 
 export const SITE_URL = rawSiteUrl.replace(/\/$/, '');
 export const SITE_NAME = 'POJ PRO';
