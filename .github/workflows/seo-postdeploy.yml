@@ -11,7 +11,7 @@ on:
       - 'public/**'
       - 'scripts/**'
       - 'package.json'
-      - 'pnpm-lock.yaml'
+      - 'package-lock.json'
 
 jobs:
   postdeploy-seo:
@@ -28,20 +28,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # Do not enable pnpm cache here because pnpm isn't installed yet
-          # If caching is needed, install pnpm first, or switch to npm cache
           cache: 'npm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install deps (no build needed)
-        run: pnpm install --frozen-lockfile
+      - name: Install deps (npm ci)
+        run: npm ci
 
       - name: Generate GSC URL list (with top products)
-        run: pnpm run seo:gsc:urls
+        run: npm run seo:gsc:urls
 
       - name: Upload URL list artifact
         uses: actions/upload-artifact@v4
@@ -51,4 +44,4 @@ jobs:
           if-no-files-found: error
 
       - name: Ping sitemaps (Google & Bing)
-        run: pnpm run seo:sitemap:ping
+        run: npm run seo:sitemap:ping
