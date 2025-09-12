@@ -2,7 +2,7 @@ import https from 'https';
 import { URL } from 'url';
 
 function getSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.poj-pro.uz';
+  const raw = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://poj-pro.uz';
   return raw.replace(/\/$/, '');
 }
 
@@ -38,6 +38,12 @@ async function main() {
     try {
       const r = await request(t);
       console.log(`Ping ${t} => ${r.status}`);
+      if (t.includes('google.com/ping') && r.status >= 400) {
+        console.log('Note: Google sitemap ping endpoint may be deprecated/ignored. Submission via Search Console and robots.txt sitemap is sufficient.');
+      }
+      if (t.includes('bing.com/ping') && r.status >= 400) {
+        console.log('Note: Bing may return 410 (Gone) for legacy ping endpoint. Consider IndexNow for Bing.');
+      }
     } catch (e) {
       console.error(`Ping ${t} failed`, e);
     }
