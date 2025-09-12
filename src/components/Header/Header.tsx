@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useSession, signOut } from 'next-auth/react';
 import { CartIcon } from "../Cart/CartIcon";
 import { AuthButton } from "../auth/AuthButton";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 type Lang = "ru" | "uzb" | "eng";
 
@@ -20,6 +20,7 @@ interface MenuItem {
 export default function Header() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -72,10 +73,16 @@ export default function Header() {
     setLangOpen(false);
   };
 
+  // Hide header on auth pages
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
   return (
+    <>
     <header
       ref={headerRef}
-      className={`sticky top-0 z-[999] w-full border-b border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 transition-shadow duration-200 ${
+      className={`fixed lg:sticky top-0 left-0 right-0 z-[999] w-full border-b border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 transition-shadow duration-200 ${
         isScrolled ? "shadow-sm" : "shadow-none"
       }`}
       // iOS: защитим от «ухода» под вырез и наложений
@@ -341,5 +348,8 @@ export default function Header() {
         </div>
       </nav>
     </header>
+    {/* Spacer to offset fixed header on mobile (not needed on lg+) */}
+    <div className="h-[68px] lg:hidden" aria-hidden />
+    </>
   );
 }

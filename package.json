@@ -46,6 +46,8 @@
     "seo:report:dev:mobile": "cross-env LHCI_BASE=http://localhost:3000 LHCI_FORM_FACTOR=mobile lhci autorun --config=.lighthouserc.cjs",
     "seo:report:prod:desktop": "cross-env LHCI_BASE=https://poj-pro.uz LHCI_FORM_FACTOR=desktop lhci autorun --config=.lighthouserc.prod.cjs",
     "seo:report:prod:mobile": "cross-env LHCI_BASE=https://poj-pro.uz LHCI_FORM_FACTOR=mobile lhci autorun --config=.lighthouserc.prod.cjs",
+    "seo:gsc:urls": "tsx scripts/gsc-generate-urls.ts --limit=200",
+    "seo:sitemap:ping": "tsx scripts/ping-sitemaps.ts",
     "content:links": "tsx scripts/generate-internal-links.ts --dir content/articles --locales ru,uz,en",
     "ci:seo": "pnpm test:unit:seo && pnpm test:e2e:seo && pnpm run check:sitemap && pnpm run check:links && pnpm build && pnpm run seo:report:dev:desktop && pnpm run seo:report:dev:mobile && pnpm run seo:report:prod:desktop && pnpm run seo:report:prod:mobile",
     "get-specs": "tsx scripts/get-specs.ts",

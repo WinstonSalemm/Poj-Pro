@@ -1,13 +1,16 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog/loader';
 import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = {
-  title: 'Blog',
-  description: 'Yong\'in xavfsizligi bo\'yicha maqolalar',
-};
+export const metadata: Metadata = buildPageMetadata({
+  defaultTitle: 'Blog',
+  defaultDescription: "Yong'in xavfsizligi bo'yicha maqolalar",
+  path: '/uz/blog',
+  lang: 'uzb',
+});
 
 export default async function BlogListing({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
   const { page: pageParam } = (await searchParams) || {};

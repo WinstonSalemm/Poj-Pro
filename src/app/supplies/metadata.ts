@@ -7,13 +7,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const cookie = h.get('cookie');
   const lang = langFromCookieHeader(cookie);
   return buildPageMetadata({
-    titleKey: 'header.catalog',
-    defaultDescription: 'Каталог оборудования для пожарной безопасности в Ташкенте.',
-    path: '/catalog',
+    titleKey: 'supplies.title',
+    descriptionKey: 'supplies.subtitle',
+    path: '/supplies',
     lang,
   });
-}
-
-export default function CatalogLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
 }

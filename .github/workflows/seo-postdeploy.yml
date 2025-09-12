@@ -1,0 +1,52 @@
+name: SEO Post-Deploy Automation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *" # every day 03:00 UTC
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+
+jobs:
+  postdeploy-seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEXT_PUBLIC_SITE_URL: https://poj-pro.uz
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install deps (no build needed)
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate GSC URL list (with top products)
+        run: pnpm run seo:gsc:urls
+
+      - name: Upload URL list artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gsc-submit-urls
+          path: seo/gsc-submit-urls-*.txt
+          if-no-files-found: error
+
+      - name: Ping sitemaps (Google & Bing)
+        run: pnpm run seo:sitemap:ping

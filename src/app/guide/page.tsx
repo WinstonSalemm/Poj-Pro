@@ -1,24 +1,22 @@
 import type { Metadata } from 'next';
-import { SITE_URL, SITE_NAME } from '@/lib/site';
+import { headers } from 'next/headers';
+import { SITE_URL } from '@/lib/site';
+import { buildPageMetadata, langFromCookieHeader } from '@/lib/metadata';
 import GuideClient from '@/components/guide/GuideClient';
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: 'Гид по пожарной безопасности — POJ PRO',
-  description:
-    'Практические советы по подбору и размещению противопожарного оборудования: где, сколько и почему ставить. Частые вопросы.',
-  alternates: {
-    canonical: `${SITE_URL}/guide`,
-  },
-  openGraph: {
-    url: `${SITE_URL}/guide`,
-    title: 'Гид по пожарной безопасности — POJ PRO',
-    description:
-      'Советы по размещению оборудования и ответы на частые вопросы.',
-    siteName: SITE_NAME,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const cookie = h.get('cookie');
+  const lang = langFromCookieHeader(cookie);
+  return buildPageMetadata({
+    titleKey: 'guide.title',
+    descriptionKey: 'guide.intro',
+    path: '/guide',
+    lang,
+  });
+}
 
 export default function GuidePage() {
   const breadcrumbLd = {

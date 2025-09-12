@@ -1,9 +1,23 @@
 import { fetchAPI } from "@/lib/api";
 import type { CertificateItem } from "@/lib/certificates";
+import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { buildPageMetadata, langFromCookieHeader } from "@/lib/metadata";
 
 export const revalidate = 60;
 
 type ApiResp = { certificates?: CertificateItem[]; items?: CertificateItem[] };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const cookie = h.get("cookie");
+  const lang = langFromCookieHeader(cookie);
+  return buildPageMetadata({
+    titleKey: "documents.certificatesPageTitle",
+    path: "/documents/certificates",
+    lang,
+  });
+}
 
 export default async function CertificatesPage() {
   const resp = await fetchAPI<ApiResp>("/api/certificates");

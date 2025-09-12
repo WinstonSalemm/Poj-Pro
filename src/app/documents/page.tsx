@@ -1,26 +1,19 @@
 import type { Metadata } from "next";
-import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { headers } from "next/headers";
+import { buildPageMetadata, langFromCookieHeader } from "@/lib/metadata";
 import DocumentsClient from "./DocumentsClient";
 
-export const metadata: Metadata = {
-  title: "Документы — POJ PRO",
-  description: "Ключевые нормы и регламенты по пожарной безопасности",
-  alternates: { canonical: `${SITE_URL}/documents` },
-  openGraph: {
-    title: "Документы — POJ PRO",
-    description: "Ключевые нормы и регламенты по пожарной безопасности",
-    url: `${SITE_URL}/documents`,
-    siteName: SITE_NAME,
-    type: "website",
-    images: [`${SITE_URL}/OtherPics/logo.png`],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Документы — POJ PRO",
-    description: "Ключевые нормы и регламенты по пожарной безопасности",
-    images: [`${SITE_URL}/OtherPics/logo.png`],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const cookie = h.get("cookie");
+  const lang = langFromCookieHeader(cookie);
+  return buildPageMetadata({
+    titleKey: "documents.title",
+    descriptionKey: "documents.meta_description",
+    path: "/documents",
+    lang,
+  });
+}
 
 export default function DocumentsPage() {
   return <DocumentsClient />;

@@ -256,6 +256,10 @@
     }
   },
   "contacts": {
+    "seo": {
+      "title": "Aloqa",
+      "description": "Biz bilan bog'laning — Toshkentda yong'in va xavfsizlik texnikasi. Tezkor yordam, maslahat va O'zbekiston bo'ylab yetkazib berish."
+    },
     "title": "Aloqa",
     "description": "Agar sizda savollar bo'lsa yoki uskunalar bo'yicha maslahat kerak bo'lsa, bizga qulay bo'lgan har qanday usulda murojaat qilishingiz mumkin.",
     "address": {
@@ -392,6 +396,7 @@
   "documents": {
     "title": "Hujjatlar",
     "subtitle": "Yong'inga qarshi uskunalar bo'yicha normalar, ko'rsatmalar va texnik xususiyatlar",
+    "meta_description": "Yong'in xavfsizligi uskunalari bo'yicha texnik hujjatlarni PDF formatda yuklab oling.",
     "loading": "Hujjatlar yuklanmoqda...",
     "type": "Turi",
     "error": {
