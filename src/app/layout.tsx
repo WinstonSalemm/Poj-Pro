@@ -17,7 +17,7 @@ import ClientWrapper from '@/app/ClientWrapper';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import Analytics from '@/components/Analytics';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, SITE_NAME } from '@/lib/site';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -40,6 +40,32 @@ export const viewport: Viewport = {
 // Base metadata (applies to pages that rely on app layout defaults)
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'POJ PRO — Огнетушители и пожарная безопасность в Ташкенте',
+    template: '%s | POJ PRO',
+  },
+  description:
+    'Продажа огнетушителей (ОП, ОУ), пожарных шкафов, рукавов и СИЗ в Ташкенте. Доставка, обслуживание, перезарядка. Официальные сертификаты.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'POJ PRO — Огнетушители и пожарная безопасность в Ташкенте',
+    description:
+      'Продажа огнетушителей (ОП, ОУ), пожарных шкафов, рукавов и СИЗ в Ташкенте. Доставка, обслуживание, перезарядка. Официальные сертификаты.',
+    url: '/',
+    siteName: SITE_NAME,
+    type: 'website',
+    locale: 'ru_RU',
+    images: ['/OtherPics/favicon-large.webp'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'POJ PRO — Огнетушители и пожарная безопасность в Ташкенте',
+    description:
+      'Продажа огнетушителей (ОП, ОУ), пожарных шкафов, рукавов и СИЗ в Ташкенте. Доставка, обслуживание, перезарядка. Официальные сертификаты.',
+    images: ['/OtherPics/favicon-large.webp'],
+  },
 };
 
 export default async function RootLayout({

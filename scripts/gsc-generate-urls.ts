@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 function getSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://poj-pro.uz';
+  const raw = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.poj-pro.uz';
   return raw.replace(/\/$/, '');
 }
 

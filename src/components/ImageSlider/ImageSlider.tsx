@@ -55,11 +55,11 @@ export default function ImageSlider() {
 
     return (
         <div
-            className="w-full max-w-[1200px] mt-20 mx-auto relative overflow-hidden border-none shadow-none"
+            className="w-full max-w-[1200px] mt-8 md:mt-10 mx-auto relative overflow-hidden border-none shadow-none"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            <div className="relative w-full h-[600px] max-[1024px]:h-[400px] max-[768px]:h-[300px] bg-transparent overflow-hidden">
+            <div className="relative w-full h-[420px] max-[1024px]:h-[360px] max-[768px]:h-[280px] bg-transparent overflow-hidden">
                 {IMAGES.map((img, index) => (
                     <div
                         key={index}
@@ -72,9 +72,7 @@ export default function ImageSlider() {
                             priority={index === 0}
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
                             className="object-contain bg-white p-5"
-                            quality={85}
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                            quality={75}
                         />
                         {/* Клик по слайду переводит к конкретному слайду (совместимость с прежним UX) */}
                         <button

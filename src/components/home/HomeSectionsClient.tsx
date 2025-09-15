@@ -5,8 +5,10 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
 const ImageSlider = dynamic(() => import("@/components/ImageSlider/ImageSlider"), {
-  ssr: true,
-  loading: () => <div className="h-[320px] md:h-[420px] w-full shimmer rounded-none" />,
+  ssr: false,
+  loading: () => (
+    <div className="w-full shimmer rounded-none h-[300px] md:h-[400px] lg:h-[600px]" />
+  ),
 });
 const SmallAboutUs = dynamic(() => import("@/components/SmallAboutUs/SmallAboutUs"), {
   loading: () => (

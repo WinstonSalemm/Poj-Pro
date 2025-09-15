@@ -8,9 +8,20 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const locale = await getLocale();
+  const h1Text =
+    locale === "en"
+      ? "Fire Extinguishers & Fire Safety in Tashkent"
+      : locale === "uz"
+      ? "O‘t o‘chirgichlar va yong‘in xavfsizligi Toshkentda"
+      : "Огнетушители и пожарная безопасность в Ташкенте"; // RU default
 
   return (
     <main>
+      <section className="container-section pt-4 md:pt-6">
+        <h1 className="mx-auto max-w-3xl text-center text-2xl md:text-3xl font-bold text-[#660000] leading-tight md:leading-snug mb-2 md:mb-3">
+          {h1Text}
+        </h1>
+      </section>
       <JsonLd data={generateOrganization()} type="Organization" keyOverride="org" />
       <JsonLd data={generateWebSite()} type="WebSite" keyOverride="website" />
       <HomeSectionsClient
@@ -36,4 +47,4 @@ export default async function HomePage() {
   );
 }
 
-export const revalidate = 60;
+export const revalidate = 3600;

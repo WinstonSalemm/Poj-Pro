@@ -107,6 +107,9 @@ We've set up a comprehensive SEO and performance checking utility using Lighthou
 
 - `npm run seo-check` - Run a full SEO and performance check on your local development server
 - `npm run seo:report` - View the latest SEO report in your browser
+- `npm run analyze` - Build with bundle analyzer enabled and open the bundle report
+- `npm run lh:desktop` - Run Lighthouse locally for desktop form factor (performance + SEO)
+- `npm run lh:mobile` - Run Lighthouse locally for mobile form factor (performance + SEO)
 
 #### How It Works
 
@@ -130,6 +133,29 @@ You can customize the SEO check settings in `.lighthouserc.js`. The default conf
 #### Viewing Reports
 
 After running the SEO check, you can find the reports in the `seo-reports` directory. The latest report is always available at `seo-reports/latest.html`.
+
+### Bundle Analyzer
+
+To inspect JS bundle size and vendor chunks:
+
+1. Build with analyzer:
+   ```bash
+   npm run analyze
+   ```
+2. A browser window will open with the report. Investigate large vendor chunks and consider point-imports and code splitting for below-the-fold widgets.
+
+### Local Lighthouse (Desktop/Mobile)
+
+1. Start the production server:
+   ```bash
+   npm run build && npm run start:win
+   ```
+2. In another terminal, run:
+   ```bash
+   npm run lh:desktop
+   npm run lh:mobile
+   ```
+3. Reports are saved to `seo-reports/lh-desktop.html` and `seo-reports/lh-mobile.html`.
 
 ### Running Tests
 

@@ -12,7 +12,7 @@ const nextConfig = {
   distDir: process.env.DIST_IN_NODE_MODULES ? 'node_modules/.cache/next' : '.next',
   // Remove custom Turbopack rules; using Webpack loaders in Turbopack can break dev.
   experimental: {
-    optimizePackageImports: ['@heroicons/react', 'react-icons', 'framer-motion', 'lucide-react'],
+    optimizePackageImports: ['@heroicons/react', 'react-icons', 'framer-motion', 'lucide-react', 'date-fns'],
     // Enable CSS optimization only in production; in dev it can break HMR/asset loading.
     optimizeCss: process.env.NODE_ENV === 'production',
     webpackBuildWorker: true,
@@ -93,6 +93,16 @@ const nextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
+        ],
+      }, {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      }, {
+        source: '/:path*(woff2|woff|ttf|eot|avif|webp)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       }] : []),
     ];
