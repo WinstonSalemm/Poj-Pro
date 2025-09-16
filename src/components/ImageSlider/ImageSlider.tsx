@@ -1,16 +1,21 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
+import { HERO_IMAGES } from "@/components/ImageSlider/images";
 
-const IMAGES: string[] = [
-    "/OtherPics/product1photo.png",
-    "/OtherPics/product2photo.jpg",
-    "/OtherPics/product3photo.png",
-    "/OtherPics/product5photo.png",
-    "/OtherPics/product6photo.png",
-];
+const IMAGES: string[] = HERO_IMAGES?.length
+  ? HERO_IMAGES
+  : [
+      "/OtherPics/product1photo.png",
+      "/OtherPics/product2photo.jpg",
+      "/OtherPics/product3photo.png",
+      "/OtherPics/product5photo.png",
+      "/OtherPics/product6photo.png",
+    ];
 
-export default function ImageSlider() {
+type SliderVariant = "default" | "overlay";
+
+export default function ImageSlider({ variant = "default" }: { variant?: SliderVariant }) {
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [isPaused, setIsPaused] = useState<boolean>(false);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -22,9 +27,12 @@ export default function ImageSlider() {
         }, 6000);
     }, []);
 
+    // Гарантированно запускаем таймер на маунте и правильно ставим/снимаем паузу
     useEffect(() => {
-        if (isPaused) return;
-        startTimer();
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (!isPaused) {
+            startTimer();
+        }
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
@@ -53,25 +61,33 @@ export default function ImageSlider() {
         resetTimer();
     }, [resetTimer]);
 
+    const rootClass = variant === "overlay"
+        ? "w-full h-full mx-auto relative overflow-hidden border-none shadow-none"
+        : "w-full max-w-[1200px] mt-8 md:mt-10 mx-auto relative overflow-hidden border-none shadow-none";
+
+    const frameClass = variant === "overlay"
+        ? "relative w-full h-full bg-white overflow-hidden"
+        : "relative w-full h-[420px] max-[1024px]:h-[360px] max-[768px]:h-[280px] bg-white overflow-hidden";
+
     return (
         <div
-            className="w-full max-w-[1200px] mt-8 md:mt-10 mx-auto relative overflow-hidden border-none shadow-none"
+            className={rootClass}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            <div className="relative w-full h-[420px] max-[1024px]:h-[360px] max-[768px]:h-[280px] bg-transparent overflow-hidden">
+            <div className={frameClass}>
                 {IMAGES.map((img, index) => (
                     <div
                         key={index}
-                        className={`absolute inset-0 opacity-0 transition-opacity duration-800 ease-in-out ${index === currentIndex ? "opacity-100 z-10 animate-fadeIn" : ""}`}
+                        className={`absolute inset-0 opacity-0 transition-opacity duration-700 ease-out will-change-opacity ${index === currentIndex ? "opacity-100 z-10" : ""}`}
                     >
                         <Image
                             src={img}
                             alt={`Hero slide ${index + 1}`}
                             fill
                             priority={index === 0}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
-                            className="object-contain bg-white p-5"
+                            sizes="100vw"
+                            className="object-contain"
                             quality={75}
                         />
                         {/* Клик по слайду переводит к конкретному слайду (совместимость с прежним UX) */}

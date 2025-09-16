@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/api";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { generateOrganization, generateWebSite } from "@/components/seo/snippets";
 import Link from "next/link";
+import HeroBanner from "@/components/Hero/HeroBanner";
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -22,6 +23,7 @@ export default async function HomePage() {
           {h1Text}
         </h1>
       </section>
+      <HeroBanner />
       <JsonLd data={generateOrganization()} type="Organization" keyOverride="org" />
       <JsonLd data={generateWebSite()} type="WebSite" keyOverride="website" />
       <HomeSectionsClient
