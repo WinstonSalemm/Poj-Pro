@@ -7,6 +7,8 @@ import { generateOrganization, generateWebSite } from "@/components/seo/snippets
 import Link from "next/link";
 import HeroBanner from "@/components/Hero/HeroBanner";
 import AutumnPromo from "@/components/Promo/AutumnPromo";
+import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
+import { SITE_URL } from "@/lib/site";
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -15,7 +17,7 @@ export default async function HomePage() {
       ? "Fire Extinguishers & Fire Safety in Tashkent"
       : locale === "uz"
         ? "O‘t o‘chirgichlar va yong‘in xavfsizligi Toshkentda"
-        : "Огнетушители и пожарная безопасность в Ташкенте"; // RU default
+        : "Огнетушители и противопожарное оборудование в Ташкенте — POJ PRO"; // RU default per SEO audit
 
   return (
     <main>
@@ -26,6 +28,22 @@ export default async function HomePage() {
       </section>
       <HeroBanner />
       <AutumnPromo locale={locale} />
+      <LocalBusinessJsonLd
+        name="POJ PRO"
+        url={SITE_URL}
+        telephone="+998 99 393 66 16"
+        image={[`${SITE_URL}/OtherPics/favicon-large.webp`]}
+        priceRange="₮₮"
+        address={{
+          streetAddress: "ул. Уста Ширин, 105",
+          addressLocality: "Ташкент",
+          addressRegion: "Toshkent",
+          postalCode: "100000",
+          addressCountry: "UZ",
+        }}
+        openingHours={["Mo-Fr 09:00-18:00", "Sa 10:00-16:00"]}
+        sameAs={["https://t.me/pojpro", "https://www.instagram.com/pojpro", "https://www.facebook.com/pojpro"]}
+      />
       <JsonLd data={generateOrganization()} type="Organization" keyOverride="org" />
       <JsonLd data={generateWebSite()} type="WebSite" keyOverride="website" />
       <HomeSectionsClient

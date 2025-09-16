@@ -100,6 +100,22 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Images CDN preconnects */}
+        <link rel="preconnect" href="https://cdn.poj-pro.uz" />
+        <link rel="preconnect" href="https://www.poj-pro.uz" />
+        <link rel="preconnect" href="https://poj-pro.uz" />
+        <link rel="preconnect" href="https://placehold.co" />
+
+        {/* Preload above-the-fold images (hero, promo) */}
+        <link rel="preload" as="image" href="/OtherPics/product1photo.avif" />
+        <link rel="preload" as="image" href="/ProductImages/Op-4.png" />
+
+        {/* Inline critical CSS: stabilize hero frame height to avoid CLS */}
+        <style>{`
+          .hero-lcp-frame{height:420px}
+          @media (max-width:1024px){.hero-lcp-frame{height:360px}}
+          @media (max-width:768px){.hero-lcp-frame{height:280px}}
+        `}</style>
 
         {/* Early guard: fix wrongly injected CSS tags before other scripts run */}
         <Script id="fix-css-tags-early" nonce={nonce} strategy="beforeInteractive">

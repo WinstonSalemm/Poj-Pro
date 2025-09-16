@@ -273,6 +273,9 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
         <h1 className="text-2xl font-semibold text-[#660000] mb-3">{h1Title}</h1>
 
         {/* Intro content (SSR) */}
+        <h2 className="text-xl font-semibold text-[#660000] mb-2">
+          Купить {categoryName.toLowerCase()} в Ташкенте — цены, доставка, сертификаты
+        </h2>
         {localizedIntro.length > 0 && (
           <section className="prose max-w-none mb-4 text-[#660000]">
             {localizedIntro.map((p, i) => (

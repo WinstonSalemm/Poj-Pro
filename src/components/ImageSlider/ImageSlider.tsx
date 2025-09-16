@@ -85,7 +85,8 @@ export default function ImageSlider({ variant = "default" }: { variant?: SliderV
                             src={img}
                             alt={`Hero slide ${index + 1}`}
                             fill
-                            priority={index === 0}
+                            priority={variant !== "overlay" && index === 0 ? true : undefined}
+                            fetchPriority={variant === "overlay" ? "low" : undefined}
                             sizes="100vw"
                             className="object-contain"
                             quality={75}

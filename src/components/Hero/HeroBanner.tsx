@@ -9,12 +9,13 @@ export default function HeroBanner() {
   // Keep height modest to avoid dominating LCP time
   return (
     <section className="container-section">
-      <div className="relative w-full h-[420px] max-[1024px]:h-[360px] max-[768px]:h-[280px] overflow-hidden bg-white">
+      <div className="hero-lcp-frame relative w-full h-[420px] max-[1024px]:h-[360px] max-[768px]:h-[280px] overflow-hidden bg-white">
         <Image
           src={src}
           alt={alt}
           fill
           priority
+          fetchPriority="high"
           sizes="100vw"
           className="object-contain"
           quality={60}
