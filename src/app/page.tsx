@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateOrganization, generateWebSite } from "@/components/seo/snippets";
 import Link from "next/link";
 import HeroBanner from "@/components/Hero/HeroBanner";
+import AutumnPromo from "@/components/Promo/AutumnPromo";
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -13,8 +14,8 @@ export default async function HomePage() {
     locale === "en"
       ? "Fire Extinguishers & Fire Safety in Tashkent"
       : locale === "uz"
-      ? "O‘t o‘chirgichlar va yong‘in xavfsizligi Toshkentda"
-      : "Огнетушители и пожарная безопасность в Ташкенте"; // RU default
+        ? "O‘t o‘chirgichlar va yong‘in xavfsizligi Toshkentda"
+        : "Огнетушители и пожарная безопасность в Ташкенте"; // RU default
 
   return (
     <main>
@@ -24,6 +25,7 @@ export default async function HomePage() {
         </h1>
       </section>
       <HeroBanner />
+      <AutumnPromo locale={locale} />
       <JsonLd data={generateOrganization()} type="Organization" keyOverride="org" />
       <JsonLd data={generateWebSite()} type="WebSite" keyOverride="website" />
       <HomeSectionsClient
