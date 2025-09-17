@@ -43,7 +43,7 @@ export default function ContactsPage() {
         }}
         openingHours={["Mo-Fr 09:00-18:00", "Sa 10:00-16:00"]}
         sameAs={[
-          "https://t.me/pojpro",
+          "https://t.me/pojsystema",
           "https://www.instagram.com/pojpro",
           "https://www.facebook.com/pojpro",
         ]}

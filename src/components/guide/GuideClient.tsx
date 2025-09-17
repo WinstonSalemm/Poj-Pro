@@ -380,7 +380,7 @@ export default function GuideClient() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/contacts?topic=quote" className="btn-primary w-full sm:w-auto text-center">{t("guide.cta.requestQuote")}</Link>
-          <Link href="https://t.me/Pro_security_uz" target="_blank" rel="noopener noreferrer" className="btn-ghost w-full sm:w-auto text-center">{t("guide.cta.consultation")}</Link>
+          <Link href="https://t.me/pojsystema" target="_blank" rel="noopener noreferrer" className="btn-ghost w-full sm:w-auto text-center">{t("guide.cta.consultation")}</Link>
         </div>
       </section>
     </div>

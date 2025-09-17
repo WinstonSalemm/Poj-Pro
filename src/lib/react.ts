@@ -14,10 +14,9 @@ export function getSafeKey(...candidates: Array<string | number | undefined | nu
   }
   // Fallback — stable enough for non-reordered lists; random if crypto unavailable
   try {
-    // @ts-ignore
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-      // @ts-ignore
-      return crypto.randomUUID();
+    const g = globalThis as unknown as { crypto?: { randomUUID?: () => string } };
+    if (typeof g.crypto?.randomUUID === 'function') {
+      return g.crypto.randomUUID();
     }
   } catch {}
   return Math.random().toString(36).slice(2);

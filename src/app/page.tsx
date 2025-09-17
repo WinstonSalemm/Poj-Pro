@@ -42,7 +42,7 @@ export default async function HomePage() {
           addressCountry: "UZ",
         }}
         openingHours={["Mo-Fr 09:00-18:00", "Sa 10:00-16:00"]}
-        sameAs={["https://t.me/pojpro", "https://www.instagram.com/pojpro", "https://www.facebook.com/pojpro"]}
+        sameAs={["https://t.me/pojsystema", "https://www.instagram.com/pojpro", "https://www.facebook.com/pojpro"]}
       />
       <JsonLd data={generateOrganization()} type="Organization" keyOverride="org" />
       <JsonLd data={generateWebSite()} type="WebSite" keyOverride="website" />

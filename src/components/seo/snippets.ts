@@ -21,7 +21,7 @@ export const generateOrganization = () => ({
   url: SITE_URL,
   logo: `${SITE_URL}/images/logo.png`,
   sameAs: [
-    'https://t.me/pojpro',
+    'https://t.me/pojsystema',
     'https://www.instagram.com/pojpro',
     'https://www.facebook.com/pojpro',
   ],

@@ -69,6 +69,7 @@ export default function ImageSlider({ variant = "default" }: { variant?: SliderV
         ? "relative w-full h-full bg-white overflow-hidden"
         : "relative w-full h-[420px] max-[1024px]:h-[360px] max-[768px]:h-[280px] bg-white overflow-hidden";
 
+    const isOverlay = variant === "overlay";
     return (
         <div
             className={rootClass}
@@ -76,30 +77,49 @@ export default function ImageSlider({ variant = "default" }: { variant?: SliderV
             onMouseLeave={() => setIsPaused(false)}
         >
             <div className={frameClass}>
-                {IMAGES.map((img, index) => (
-                    <div
-                        key={index}
-                        className={`absolute inset-0 opacity-0 transition-opacity duration-700 ease-out will-change-opacity ${index === currentIndex ? "opacity-100 z-10" : ""}`}
-                    >
+                {isOverlay ? (
+                    // In overlay, render only the current slide to reduce DOM and work
+                    <div className="absolute inset-0 opacity-100 z-10">
                         <Image
-                            src={img}
-                            alt={`Hero slide ${index + 1}`}
+                            src={IMAGES[currentIndex]}
+                            alt={`Hero slide ${currentIndex + 1}`}
                             fill
-                            priority={variant !== "overlay" && index === 0 ? true : undefined}
-                            fetchPriority={variant === "overlay" ? "low" : undefined}
+                            fetchPriority="low"
                             sizes="100vw"
                             className="object-contain"
-                            quality={75}
+                            quality={60}
                         />
-                        {/* Клик по слайду переводит к конкретному слайду (совместимость с прежним UX) */}
                         <button
                             type="button"
-                            onClick={() => goToSlide(index)}
-                            aria-label={`Go to slide ${index + 1}`}
+                            onClick={() => goToSlide(currentIndex)}
+                            aria-label={`Go to slide ${currentIndex + 1}`}
                             className="absolute inset-0 cursor-pointer"
                         />
                     </div>
-                ))}
+                ) : (
+                    IMAGES.map((img, index) => (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 opacity-0 transition-opacity duration-700 ease-out will-change-opacity ${index === currentIndex ? "opacity-100 z-10" : ""}`}
+                        >
+                            <Image
+                                src={img}
+                                alt={`Hero slide ${index + 1}`}
+                                fill
+                                priority={index === 0 ? true : undefined}
+                                sizes="100vw"
+                                className="object-contain"
+                                quality={75}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => goToSlide(index)}
+                                aria-label={`Go to slide ${index + 1}`}
+                                className="absolute inset-0 cursor-pointer"
+                            />
+                        </div>
+                    ))
+                )}
 
                 {/* Prev Arrow */}
                 <button

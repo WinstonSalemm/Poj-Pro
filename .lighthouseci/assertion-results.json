@@ -2,17 +2,33 @@
   {
     "name": "minScore",
     "expected": 0.85,
-    "actual": 0.6,
+    "actual": 0.82,
     "values": [
-      0.6,
-      0.6,
-      0.59
+      0.78,
+      0.82,
+      0.79
     ],
     "operator": ">=",
     "passed": false,
     "auditProperty": "performance",
     "auditId": "categories",
     "level": "error",
-    "url": "https://www.poj-pro.uz/"
+    "url": "http://localhost:3000/"
+  },
+  {
+    "name": "minScore",
+    "expected": 0.9,
+    "actual": 0.88,
+    "values": [
+      0.88,
+      0.88,
+      0.88
+    ],
+    "operator": ">=",
+    "passed": false,
+    "auditProperty": "seo",
+    "auditId": "categories",
+    "level": "error",
+    "url": "http://localhost:3000/"
   }
 ]

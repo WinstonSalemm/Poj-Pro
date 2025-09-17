@@ -117,34 +117,36 @@ export default async function RootLayout({
           @media (max-width:768px){.hero-lcp-frame{height:280px}}
         `}</style>
 
-        {/* Early guard: fix wrongly injected CSS tags before other scripts run */}
-        <Script id="fix-css-tags-early" nonce={nonce} strategy="beforeInteractive">
-          {`
-            try {
-              // Replace any <script src="*.css"> with <link rel="stylesheet">
-              document.querySelectorAll('script[src$=".css" i]').forEach(function(s){
-                var href = s.getAttribute('src');
-                if (!href) return;
-                var l = document.createElement('link');
-                l.rel = 'stylesheet';
-                l.href = href;
-                document.head.appendChild(l);
-                s.parentNode && s.parentNode.removeChild(s);
-              });
-              // Fix <link rel="preload" as="script" href="*.css">
-              document.querySelectorAll('link[rel="preload"][as="script" i][href$=".css" i]').forEach(function(l){
-                l.setAttribute('as','style');
-                var href = l.getAttribute('href');
-                if (href) {
-                  var sheet = document.createElement('link');
-                  sheet.rel = 'stylesheet';
-                  sheet.href = href;
-                  document.head.appendChild(sheet);
-                }
-              });
-            } catch (e) { /* no-op */ }
-          `}
-        </Script>
+        {/* Early guard: fix wrongly injected CSS tags. Run only in production to avoid dev hydration mismatch warnings. */}
+        {isProd && (
+          <Script id="fix-css-tags-early" nonce={nonce} strategy="beforeInteractive">
+            {`
+              try {
+                // Replace any <script src="*.css"> with <link rel="stylesheet">
+                document.querySelectorAll('script[src$=".css" i]').forEach(function(s){
+                  var href = s.getAttribute('src');
+                  if (!href) return;
+                  var l = document.createElement('link');
+                  l.rel = 'stylesheet';
+                  l.href = href;
+                  document.head.appendChild(l);
+                  s.parentNode && s.parentNode.removeChild(s);
+                });
+                // Fix <link rel="preload" as="script" href="*.css">
+                document.querySelectorAll('link[rel="preload"][as="script" i][href$=".css" i]').forEach(function(l){
+                  l.setAttribute('as','style');
+                  var href = l.getAttribute('href');
+                  if (href) {
+                    var sheet = document.createElement('link');
+                    sheet.rel = 'stylesheet';
+                    sheet.href = href;
+                    document.head.appendChild(sheet);
+                  }
+                });
+              } catch (e) { /* no-op */ }
+            `}
+          </Script>
+        )}
 
         {/* Google Search Console verification (optional via env) */}
         {process.env.NEXT_PUBLIC_GSC_VERIFICATION ? (

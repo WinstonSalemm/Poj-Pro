@@ -135,7 +135,10 @@ export default function CartPage() {
 
   // ШТОРКА загрузки (как на других страницах)
   const [bootLoading, setBootLoading] = useState(true);
+  // Render the overlay only after the component is mounted to avoid SSR blocking clicks if hydration fails
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    setMounted(true);
     const tm = setTimeout(() => setBootLoading(false), 800);
     return () => clearTimeout(tm);
   }, []);
@@ -209,7 +212,7 @@ export default function CartPage() {
     return (
       <main className="container-section mt-[100px] py-12 text-center relative">
         {/* ШТОРКА */}
-        {bootLoading && (
+        {mounted && bootLoading && (
           <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
             <div className="text-2xl font-semibold tracking-wide mb-6">...</div>
             <div className="w-[240px] h-[6px] rounded-full bg-black/10 overflow-hidden">
@@ -246,7 +249,7 @@ export default function CartPage() {
   return (
     <main className="container-section py-8 relative">
       {/* ШТОРКА (белая) */}
-      {bootLoading && (
+      {mounted && bootLoading && (
         <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">
           <div className="text-2xl font-semibold tracking-wide mb-6">...</div>
           <div className="w-[240px] h-[6px] rounded-full bg-black/10 overflow-hidden">
@@ -255,11 +258,11 @@ export default function CartPage() {
         </div>
       )}
 
-      <h1 className={`text-3xl font-bold text-brand mb-8 transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <h1 className={`text-3xl font-bold text-brand mb-8 transition-opacity duration-500 ${mounted && bootLoading ? 'opacity-0' : 'opacity-100'}`}>
         {t('cart.title') || 'Your Cart'}
       </h1>
 
-      <div className={`flex flex-col mt-[100px] lg:flex-row gap-8 transition-opacity duration-500 ${bootLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`flex flex-col mt-[100px] lg:flex-row gap-8 transition-opacity duration-500 ${mounted && bootLoading ? 'opacity-0' : 'opacity-100'}`}>
         {/* Cart Items */}
         <div className="lg:w-2/3">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -444,7 +447,7 @@ export default function CartPage() {
 
                 <div className="pt-2">
                   <a
-                    href="https://t.me/Pro_security_uz"
+                    href="https://t.me/pojsystema"
                     target="_blank"
                     rel="noopener noreferrer"
                     title={t("footer.social.telegramTitle")}

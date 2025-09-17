@@ -137,7 +137,7 @@ export function generateOrganizationStructuredData() {
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo.png`,
     sameAs: [
-      'https://t.me/pojpro_uz',
+      'https://t.me/pojsystema',
       'https://www.instagram.com/poj_pro_uz/',
       'https://www.facebook.com/pojpro.uz/',
     ],

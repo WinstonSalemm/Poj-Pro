@@ -23,9 +23,25 @@ export interface EcomItem {
   quantity?: number;
 }
 
+export function evSelectItem(p: SelectItemPayload): void {
+  const items = p.items?.map(i => ({
+    item_id: String(i.id), item_name: i.name, price: i.price, quantity: i.quantity, item_category: i.category,
+  })) || [];
+  dlPush("select_item", {
+    items,
+    list_id: p.list_id,
+    list_name: p.list_name,
+    // Google Ads dynamic remarketing
+    ecomm_prodid: items.map(i => i.item_id),
+    ecomm_pagetype: "category",
+    ecomm_totalvalue: undefined,
+  });
+}
+
 // Event payloads
 export interface ViewItemPayload { item_id: string | number; item_name?: string; price?: number; currency?: string }
 export interface ViewItemListPayload { items: EcomItem[]; list_id?: string; list_name?: string }
+export interface SelectItemPayload { items: EcomItem[]; list_id?: string; list_name?: string }
 export interface AddToCartPayload { item_id: string | number; item_name?: string; price?: number; quantity?: number; currency?: string }
 export interface RemoveFromCartPayload { item_id: string | number; item_name?: string; price?: number; quantity?: number; currency?: string }
 export interface BeginCheckoutPayload { value?: number; currency?: string; items?: EcomItem[] }

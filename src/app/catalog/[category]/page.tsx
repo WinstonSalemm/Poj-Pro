@@ -3,11 +3,13 @@ import { SITE_URL, SITE_NAME } from '@/lib/site';
 import { cookies } from 'next/headers';
 import { getLocale, fetchAPI } from '@/lib/api';
 import { getDictionary } from '@/i18n/server';
-import { CATEGORY_NAMES, getCategoryMeta } from '@/constants/categories';
+import { CATEGORY_NAMES, getCategoryMeta, CATEGORY_IMAGE_MAP } from '@/constants/categories';
 import { CATEGORY_NAME_OVERRIDES } from '@/constants/categoryNameOverrides';
 import { CATEGORY_SEO, resolveCategoryKey } from '@/constants/categorySeo';
+import type { CategorySEO } from '@/constants/categorySeo';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbJsonLd, faqJsonLd, itemListJsonLd } from '@/lib/seo/jsonld';
+import { buildCategoryLongContent } from '@/lib/categoryLongContent';
 
 // Helper to safely access nested properties without requiring index signature
 function getNestedValue(obj: unknown, path: string): string | undefined {
@@ -63,27 +65,29 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const fromDictDesc = getNestedValue(dict, 'catalog.meta.description')?.replace('{{category}}', categoryName).replace('{{city}}', 'Ташкенту');
 
   const title = meta.title || fromDictTitle || `${categoryName} - Купить в Ташкенте | POJ-PRO.UZ`;
-  const description = meta.description || fromDictDesc || `Купить ${categoryName} и другое оборудование для пожарной безопасности. Доставка по Ташкенту.`;
+  const description =
+    meta.description ||
+    fromDictDesc ||
+    // 150–160 chars optimized fallback
+    `Купить ${categoryName} в Ташкенте по выгодным ценам. Сертификаты, консультации, быстрая доставка по Узбекистану. POJ PRO — пожарная безопасность.`;
+  const seoKey = resolveCategoryKey(normalizedSlug);
+  const ogImageFile = seoKey ? CATEGORY_IMAGE_MAP[seoKey] : CATEGORY_IMAGE_MAP[normalizedSlug];
+  const ogImage = ogImageFile ? `${SITE_URL}/CatalogImage/${ogImageFile}` : undefined;
   const canonical = `${SITE_URL}/catalog/${normalizedSlug}`;
   const hasFilters = Object.keys(sp).length > 0;
 
   return {
     title,
     description,
-    alternates: {
-      canonical,
-      languages: {
-        'ru-RU': canonical,
-        'uz-UZ': canonical,
-        'en-US': canonical,
-      },
-    },
+    alternates: { canonical },
     openGraph: {
       url: canonical,
       title,
       description,
       siteName: SITE_NAME,
+      images: ogImage ? [{ url: ogImage }] : undefined,
     },
+    twitter: ogImage ? { images: [ogImage] } : undefined,
     robots: hasFilters ? { index: false, follow: true } : { index: true, follow: true },
   };
 }
@@ -158,8 +162,7 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
 
   // Pull SEO intro/FAQ content for this category, if present
   const seoKey = resolveCategoryKey(categorySlug.replace(/_/g, '-'));
-  const seo = seoKey ? CATEGORY_SEO[seoKey] : undefined;
-  const introParagraphs = (seo?.introByLang && seo?.introByLang[lang]) || seo?.intro || [];
+  const seo: CategorySEO | undefined = seoKey ? CATEGORY_SEO[seoKey] : undefined;
   const faqs = seo?.faqs || [];
 
   // Compute localized category display name (same logic as in generateMetadata)
@@ -197,7 +200,17 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
     getNestedValueLocal(dict, `categories.${altSlug}`);
   const categoryName = override?.[lang] || constName || dictName || fallbackName(rawCategory);
 
-  const canonical = `${SITE_URL}/catalog/${categorySlug}`;
+  const categoryPathHyphen = categorySlug.replace(/_/g, '-');
+  const canonical = `${SITE_URL}/catalog/${categoryPathHyphen}`;
+
+  // Default FAQ generator when not configured in CATEGORY_SEO
+  function defaultFaqs(name: string): { question: string; answer: string }[] {
+    return [
+      { question: `Как выбрать ${name.toLowerCase()}?`, answer: `Ориентируйтесь на условия эксплуатации и требования норм. Мы поможем подобрать ${name.toLowerCase()} под ваш объект и бюджет.` },
+      { question: 'Есть ли доставка по Ташкенту и регионам?', answer: 'Да, доставляем по Ташкенту и всей Республике Узбекистан. Возможны самовывоз и экспресс‑варианты.' },
+      { question: 'Предоставляете ли сертификаты и гарантию?', answer: 'Да, по каждой позиции предоставляем необходимые документы и гарантию. По запросу вышлем КП и прайс.' },
+    ];
+  }
 
   // Localized H1 for all categories
   const h1Title = (() => {
@@ -230,11 +243,21 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
     ];
   }
 
-  // Prefer configured SEO intro, else fallback to generated intro
+  // Prefer configured SEO intro strictly by language; avoid RU fallback for EN/UZ
   const localizedIntro: string[] = (() => {
-    const base = introParagraphs && introParagraphs.length ? introParagraphs : [];
-    if (base.length) return base; // keep existing configured content
+    const byLang = (seo?.introByLang && seo.introByLang[lang]) || [];
+    if (Array.isArray(byLang) && byLang.length) return byLang;
+    if (lang === 'ru' && Array.isArray(seo?.intro) && seo!.intro.length) return seo!.intro;
     return generateIntro(lang);
+  })();
+
+  // Long content is centrally generated via buildCategoryLongContent()
+  const longContentHTML = (() => {
+    // Prefer exact language long content from CATEGORY_SEO, else build consistent content via centralized builder
+    const longByLang = seo?.longByLang as (undefined | { ru?: string; en?: string; uz?: string });
+    const fromExact = longByLang?.[lang];
+    if (fromExact && fromExact.length > 300) return fromExact;
+    return buildCategoryLongContent({ lang, categoryKey: seoKey || undefined, categoryName });
   })();
 
   return (
@@ -255,38 +278,78 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
           urlBase: canonical,
           items: products.slice(0, 12).map((p) => ({
             name: p.title || p.name || p.slug,
-            url: `${SITE_URL}/catalog/${categorySlug}/${p.slug}`,
+            url: `${SITE_URL}/catalog/${categoryPathHyphen}/${p.slug}`,
             image: p.image || undefined,
           })),
         })}
         type="CollectionPage"
         keyOverride="itemlist"
       />
-      {faqs.length > 0 && (
-        <JsonLd data={faqJsonLd(faqs)} type="FAQPage" keyOverride="faq" />
-      )}
+      <JsonLd data={faqJsonLd((faqs && faqs.length ? faqs : defaultFaqs(categoryName)))} type="FAQPage" keyOverride="faq" />
 
       {showBanner && <PreOrderBanner />}
 
       <div className="container-section section-y">
-        {/* H1 */}
+        {/* H1 only; move descriptive text below grid */}
         <h1 className="text-2xl font-semibold text-[#660000] mb-3">{h1Title}</h1>
-
-        {/* Intro content (SSR) */}
-        <h2 className="text-xl font-semibold text-[#660000] mb-2">
-          Купить {categoryName.toLowerCase()} в Ташкенте — цены, доставка, сертификаты
-        </h2>
-        {localizedIntro.length > 0 && (
-          <section className="prose max-w-none mb-4 text-[#660000]">
-            {localizedIntro.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </section>
-        )}
+        {(() => {
+          const text = (localizedIntro && localizedIntro.length ? localizedIntro[0] : '').toString();
+          const plain = text.replace(/<[^>]+>/g, '');
+          const short = plain.length > 200 ? plain.slice(0, 200).trim() + '…' : plain;
+          const moreLabel = lang === 'en' ? 'Read more' : (lang === 'uz' ? 'Batafsil' : 'Подробнее');
+          if (!short) return null;
+          const policy = (
+            lang === 'en'
+              ? 'POJ PRO: supplier — we sell and consult, no installation. Turnkey delivery on prepayment. Free in Tashkent from 5,000,000 UZS.'
+              : (lang === 'uz'
+                ? "POJ PRO: ta’minotchi — sotamiz va maslahat beramiz, montaj qilmaymiz. Oldindan to‘lov bilan yetkazib berish. Toshkent bo‘yicha 5 000 000 so‘mdan bepul."
+                : 'POJ PRO: поставщик — продаём и консультируем, без монтажа. Доставка под ключ по предоплате. По Ташкенту бесплатно от 5 000 000 сум.')
+          );
+          return (
+            <div className="mb-4">
+              <div className="rounded-xl border border-neutral-200 bg-white p-3 md:p-4 flex items-start justify-between gap-3">
+                <p className="m-0 text-[15px] text-[#660000] leading-snug">
+                  {short}
+                  <span className="block text-xs text-gray-600 mt-1">{policy}</span>
+                </p>
+                <a href="#category-description" className="shrink-0 btn-ghost whitespace-nowrap">{moreLabel}</a>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Products grid */}
       <CategoryProductsClient products={products} rawCategory={rawCategory} lang={locale} />
+
+      {/* Collapsible SEO/intro content below the grid */}
+      {(() => {
+        const summaryLabel = lang === 'en' ? 'Category description' : (lang === 'uz' ? 'Kategoriya tavsifi' : 'Описание категории');
+        const hasAny = localizedIntro.length > 0 || Boolean(longContentHTML);
+        if (!hasAny) return null;
+        return (
+          <section id="category-description" className="container-section section-y pt-2">
+            <details open className="group rounded-2xl border border-neutral-200 bg-white p-4 md:p-6">
+              <summary className="cursor-pointer list-none text-lg font-semibold text-[#660000] flex items-center justify-between">
+                <span>{summaryLabel}</span>
+                <span className="transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div className="mt-3 prose max-w-none text-[#660000]">
+                {localizedIntro.length > 0 && (
+                  <div>
+                    {localizedIntro.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                )}
+                {longContentHTML && (
+                  <div className="mt-3" dangerouslySetInnerHTML={{ __html: longContentHTML }} />
+                )}
+              </div>
+            </details>
+          </section>
+        );
+      })()}
 
       {/* FAQ UI removed per request; keeping FAQ JSON-LD above for SEO */}
     </>

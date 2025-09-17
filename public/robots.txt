@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-Host: www.poj-pro.uz
-Sitemap: https://www.poj-pro.uz/sitemap.xml

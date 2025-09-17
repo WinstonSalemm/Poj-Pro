@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
 import { SITE_URL, SITE_NAME } from '@/lib/site';
+import { CATEGORY_IMAGE_MAP } from '@/constants/categories';
 import { cookies } from 'next/headers';
 import { getLocale, fetchAPI } from '@/lib/api';
 import { JsonLd } from '@/components/seo/JsonLd';
+import Link from 'next/link';
 import { getDictionary } from '@/i18n/server';
 import { breadcrumbJsonLd, faqJsonLd, itemListJsonLd } from '@/lib/seo/jsonld';
 import CategoryProductsClient from '@/components/catalog/CategoryProductsClient';
 import type { Product } from '@/types/product';
 import { sortProductsAsc } from '@/lib/sortProducts';
+import { buildCategoryLongContent } from '@/lib/categoryLongContent';
 
 const CANONICAL_PATH = '/catalog/ognetushiteli';
 
@@ -36,6 +39,19 @@ async function getProducts(locale: 'ru' | 'en' | 'uz') {
   return sortProductsAsc(formatted);
 }
 
+// Safe nested string getter (avoids any-casts)
+function getNestedString(obj: unknown, path: string): string | undefined {
+  let cur: unknown = obj;
+  for (const key of path.split('.')) {
+    if (cur && typeof cur === 'object' && key in (cur as Record<string, unknown>)) {
+      cur = (cur as Record<string, unknown>)[key];
+    } else {
+      return undefined;
+    }
+  }
+  return typeof cur === 'string' ? cur : undefined;
+}
+
 export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
   const sp = await searchParams;
   const hasFilters = sp && Object.keys(sp).length > 0;
@@ -47,17 +63,13 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   // Стратегия для query-фильтров: noindex,follow, чтобы избежать дублей.
   const robots = hasFilters ? { index: false, follow: true } : { index: true, follow: true };
 
+  const ogImageFile = CATEGORY_IMAGE_MAP['fire-extinguishers'];
+  const ogImage = ogImageFile ? `${SITE_URL}/CatalogImage/${ogImageFile}` : undefined;
+
   return {
     title,
     description,
-    alternates: {
-      canonical,
-      languages: {
-        'ru-RU': canonical,
-        'uz-UZ': canonical,
-        'en-US': canonical,
-      },
-    },
+    alternates: { canonical },
     robots,
     openGraph: {
       url: canonical,
@@ -65,12 +77,9 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
       description,
       siteName: SITE_NAME,
       type: 'website',
+      images: ogImage ? [{ url: ogImage }] : undefined,
     },
-    twitter: {
-      card: 'summary',
-      title,
-      description,
-    },
+    twitter: ogImage ? { images: [ogImage] } : undefined,
   };
 }
 
@@ -96,7 +105,7 @@ export default async function FireExtinguishersCategoryPage() {
     en: 'Looking to buy fire extinguishers in Tashkent? At POJ PRO you will find popular models: powder OP‑2/OP‑5/OP‑10 and CO₂ OU‑3/OU‑5. We will help you choose a solution for office, retail, warehouse and car.',
     uz: "Toshkentda o‘t o‘chirgichlar kerakmi? POJ PRO’da mashhur modellardan topasiz: kukunli OP‑2/OP‑5/OP‑10 va CO₂ OU‑3/OU‑5. Ofis, do‘kon, ombor va avtomobil uchun mos yechimni tanlashda yordam beramiz.",
   };
-  const p1 = (dict?.lp as any)?.ognetushiteli?.intro1 || P1_BY_LANG[locale] || P1_BY_LANG.ru;
+  const p1 = getNestedString(dict, 'lp.ognetushiteli.intro1') || P1_BY_LANG[locale] || P1_BY_LANG.ru;
 
   const P2_BY_LANG: Record<'ru' | 'en' | 'uz', string> = {
     ru: 'Сертификаты и гарантия. КП и прайс по запросу. Доставка по Ташкенту и всей Республике Узбекистан, есть самовывоз. Оплата — Payme/Click.',
@@ -113,9 +122,9 @@ export default async function FireExtinguishersCategoryPage() {
     en: 'fire extinguishers catalog',
     uz: "o‘t o‘chirgichlar katalogi",
   };
-  const p2 = (dict?.lp as any)?.ognetushiteli?.intro2 || P2_BY_LANG[locale] || P2_BY_LANG.ru;
-  const linkBuy = (dict?.lp as any)?.ognetushiteli?.links?.buyLabel || LINK_BUY_BY_LANG[locale] || LINK_BUY_BY_LANG.ru;
-  const linkCatalog = (dict?.lp as any)?.ognetushiteli?.links?.catalogLabel || LINK_CAT_BY_LANG[locale] || LINK_CAT_BY_LANG.ru;
+  const p2 = getNestedString(dict, 'lp.ognetushiteli.intro2') || P2_BY_LANG[locale] || P2_BY_LANG.ru;
+  const linkBuy = getNestedString(dict, 'lp.ognetushiteli.links.buyLabel') || LINK_BUY_BY_LANG[locale] || LINK_BUY_BY_LANG.ru;
+  const linkCatalog = getNestedString(dict, 'lp.ognetushiteli.links.catalogLabel') || LINK_CAT_BY_LANG[locale] || LINK_CAT_BY_LANG.ru;
 
   const breadcrumb = breadcrumbJsonLd([
     { name: 'Главная', item: `${SITE_URL}/` },
@@ -134,13 +143,23 @@ export default async function FireExtinguishersCategoryPage() {
   });
 
   const faq = faqJsonLd(faqs);
-
+  // Localized H1 and consistent long description via centralized builder
   const TITLE_BY_LANG: Record<'ru' | 'en' | 'uz', string> = {
     ru: 'Огнетушители в Ташкенте',
     en: 'Fire extinguishers in Tashkent',
-    uz: "Toshkentda o‘t o‘chirgichlar",
+    uz: 'Toshkentda o‘t o‘chirgichlar',
+  };
+  const NAME_BY_LANG: Record<'ru' | 'en' | 'uz', string> = {
+    ru: 'Огнетушители',
+    en: 'Fire extinguishers',
+    uz: 'O‘t o‘chirgichlar',
   };
   const h1Title = TITLE_BY_LANG[locale] || TITLE_BY_LANG.ru;
+  const longContentHTML = buildCategoryLongContent({
+    lang: locale,
+    categoryKey: 'fire-extinguishers',
+    categoryName: NAME_BY_LANG[locale] || NAME_BY_LANG.ru,
+  });
 
   return (
     <main className="container-section section-y">
@@ -152,22 +171,69 @@ export default async function FireExtinguishersCategoryPage() {
       {/* H1 */}
       <h1 className="text-2xl font-semibold text-[#660000] mb-3">{h1Title}</h1>
 
-      {/* Intro content (SSR) */}
-      <section className="prose max-w-none mb-4 text-[#660000]">
-        <p>{p1}</p>
-        <p>
-          {p2}
-          {" "}
-          <a href="/catalog/ognetushiteli" className="underline hover:no-underline">{linkBuy}</a>
-          {" "}
-          <a href="/catalog/ognetushiteli" className="underline hover:no-underline">{linkCatalog}</a>
-        </p>
-      </section>
-
-      
+      {(() => {
+        const text = (p1 || '').toString();
+        const plain = text.replace(/<[^>]+>/g, '');
+        const short = plain.length > 200 ? plain.slice(0, 200).trim() + '…' : plain;
+        const moreLabel: Record<'ru'|'en'|'uz', string> = {
+          ru: 'Подробнее',
+          en: 'Read more',
+          uz: 'Batafsil',
+        };
+        if (!short) return null;
+        return (
+          <div className="mb-4">
+            <div className="rounded-xl border border-neutral-200 bg-white p-3 md:p-4 flex items-start justify-between gap-3">
+              <p className="m-0 text-[15px] text-[#660000] leading-snug">
+                {short}
+                <span className="block text-xs text-gray-600 mt-1">
+                  {locale === 'en'
+                    ? 'POJ PRO: supplier — we sell and consult, no installation. Turnkey delivery on prepayment. Free in Tashkent from 5,000,000 UZS.'
+                    : locale === 'uz'
+                      ? "POJ PRO: ta’minotchi — sotamiz va maslahat beramiz, montaj qilmaymiz. Oldindan to‘lov bilan yetkazib berish. Toshkent bo‘yicha 5 000 000 so‘mdan bepul."
+                      : 'POJ PRO: поставщик — продаём и консультируем, без монтажа. Доставка под ключ по предоплате. По Ташкенту бесплатно от 5 000 000 сум.'}
+                </span>
+              </p>
+              <a href="#category-description" className="shrink-0 btn-ghost whitespace-nowrap">{moreLabel[locale]}</a>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Products grid (CSR client for filters, but rendered in page) */}
       <CategoryProductsClient products={products} rawCategory={'ognetushiteli'} lang={locale} />
+
+      {/* Collapsible SEO/intro content below grid */}
+      {(() => {
+        const summaryLabel: Record<'ru'|'en'|'uz', string> = {
+          ru: 'Описание категории',
+          en: 'Category description',
+          uz: 'Kategoriya tavsifi',
+        };
+        return (
+          <section id="category-description" className="mt-4">
+            <details open className="group rounded-2xl border border-neutral-200 bg-white p-4 md:p-6">
+              <summary className="cursor-pointer list-none text-lg font-semibold text-[#660000] flex items-center justify-between">
+                <span>{summaryLabel[locale]}</span>
+                <span className="transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div className="mt-3 prose max-w-none text-[#660000]">
+                <p>{p1}</p>
+                <p>
+                  {p2}
+                  {' '}
+                  <Link href="/catalog/ognetushiteli" className="underline hover:no-underline">{linkBuy}</Link>
+                  {' '}
+                  <Link href="/catalog/ognetushiteli" className="underline hover:no-underline">{linkCatalog}</Link>
+                </p>
+                {longContentHTML && (
+                  <div className="mt-3" dangerouslySetInnerHTML={{ __html: longContentHTML }} />
+                )}
+              </div>
+            </details>
+          </section>
+        );
+      })()}
 
       {/* FAQ UI removed per request; FAQ JSON-LD is kept above */}
     </main>

@@ -8,9 +8,12 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import type { Product } from "@/types/product";
 import FiltersSidebar, { type FiltersState, type SortKey } from "./FiltersSidebar";
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
-import { CATEGORY_NAMES } from "@/constants/categories";
-import FaqJsonLd from "@/components/seo/FaqJsonLd";
+import Link from "next/link";
+import Image from "next/image";
+import { CATEGORY_NAMES, CATEGORY_IMAGE_MAP } from "@/constants/categories";
 import { CATEGORY_SEO, resolveCategoryKey } from "@/constants/categorySeo";
+import FAQAccordion from "@/components/seo/FAQAccordion";
+import ProductJsonLd from "@/components/seo/ProductJsonLd";
 import { CATEGORY_NAME_OVERRIDES, type Lang } from "@/constants/categoryNameOverrides";
 
 function fallbackName(key: string): string {
@@ -123,15 +126,10 @@ export default function CategoryProductsClient({
 
   return (
     <>
-      {/* SEO: Category-specific FAQ JSON-LD */}
-      {(() => {
-        const key = resolveCategoryKey(rawCategory.replace(/_/g, '-'));
-        const cfg = key ? CATEGORY_SEO[key] : undefined;
-        if (cfg?.faqs && cfg.faqs.length) {
-          return <FaqJsonLd faqs={cfg.faqs} />;
-        }
-        return null;
-      })()}
+      {/* SEO: Emit Product JSON-LD for products on the page */}
+      {sortedProducts.map((p, i) => (
+        <ProductJsonLd key={`pjsonld-${p.id}-${i}`} product={p} categorySlug={rawCategory} />
+      ))}
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="container-section section-y mt-0 pt-4 sm:pt-6">
           <Breadcrumbs
@@ -189,7 +187,7 @@ export default function CategoryProductsClient({
             <div className="flex-1">
               {/* SEO intro moved to SSR intro on category page */}
               {bootLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="bg-white rounded-2xl p-4 border border-gray-200">
                       <div className="rounded-xl bg-gray-200 aspect-square animate-pulse" />
@@ -214,9 +212,15 @@ export default function CategoryProductsClient({
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {sortedProducts.map((product) => (
-                    <ProductCard key={`${product.id}-${lang}`} product={product} />
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                  {sortedProducts.map((product, i) => (
+                    <ProductCard
+                      key={`${product.id}-${lang}`}
+                      product={product}
+                      listId={rawCategory}
+                      listName={categoryTitle}
+                      priority={i < 4}
+                    />
                   ))}
                 </div>
               )}
@@ -232,6 +236,67 @@ export default function CategoryProductsClient({
             sort={sort}
             setSort={setSort}
           />
+
+          {/* FAQ Section (visible) — JSON-LD is already injected on server */}
+          {(() => {
+            const key = resolveCategoryKey(rawCategory.replace(/_/g, '-'));
+            const cfg = key ? CATEGORY_SEO[key] : undefined;
+            const fallback = [
+              { q: `Как выбрать ${categoryTitle.toLowerCase()}?`, a: `Подскажем оптимальные модели с учётом норм и условий эксплуатации. Обратитесь за консультацией — поможем подобрать ${categoryTitle.toLowerCase()}.` },
+              { q: 'Есть ли доставка по Ташкенту и регионам?', a: 'Да, доставим по Ташкенту и всей Республике Узбекистан. Возможен самовывоз.' },
+              { q: 'Предоставляете ли сертификаты и гарантию?', a: 'Да, выдаём необходимые сертификаты и гарантию. По запросу вышлем КП и прайс.' },
+            ];
+            const items = (cfg?.faqs && cfg.faqs.length)
+              ? cfg.faqs.map(f => ({ q: f.question, a: f.answer }))
+              : fallback;
+            return (
+              <section className="mt-10">
+                <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">Часто задаваемые вопросы</h2>
+                <FAQAccordion items={items} jsonLd={false} />
+              </section>
+            );
+          })()}
+
+          {/* Related categories */}
+          {(() => {
+            const key = resolveCategoryKey(rawCategory.replace(/_/g, '-')) || rawCategory.replace(/_/g, '-');
+            const keys = Object.keys(CATEGORY_NAMES).filter((k) => k !== key);
+            const related = keys.slice(0, 6);
+            if (related.length === 0) return null;
+            return (
+              <section className="mt-10">
+                <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">Смотрите также</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                  {related.map((k) => {
+                    const label = CATEGORY_NAMES[k]?.[lang] || fallbackName(k);
+                    const img = CATEGORY_IMAGE_MAP[k] ? `/CatalogImage/${CATEGORY_IMAGE_MAP[k]}` : "/OtherPics/logo.png";
+                    const preferred = (CATEGORY_SEO as Record<string, { alias?: string[] }>)[k]?.alias?.[0];
+                    const hrefSlug = preferred || k;
+                    const href = `/catalog/${hrefSlug}`;
+                    return (
+                      <Link key={k} href={href} className="block group border border-gray-200 rounded-xl bg-white hover:shadow transition">
+                        <div className="aspect-square rounded-t-xl overflow-hidden bg-gray-100 relative">
+                          {/* Next/Image unoptimized for category tiles to keep CDN behavior and satisfy lint */}
+                          <Image
+                            src={img}
+                            alt={label}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+                            className="object-contain"
+                            unoptimized
+                            priority={false}
+                          />
+                        </div>
+                        <div className="p-2 text-center text-sm text-[#660000] group-hover:underline">
+                          {label}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })()}
         </section>
       </main>
     </>
