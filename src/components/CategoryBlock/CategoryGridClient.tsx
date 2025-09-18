@@ -13,11 +13,12 @@ const fallbackName = (key: string) =>
     .trim();
 
 type CategoryBlockDictionary = {
-  categoryBlock: {
-    title: string;
-    description: string;
+  categoryBlock?: {
+    title?: string;
+    catalog?: string;
+    description?: string;
   };
-};
+} & Record<string, unknown>;
 
 type Props = {
   dictionary: CategoryBlockDictionary;
@@ -30,14 +31,17 @@ export default function CategoryGridClient({ dictionary, labels, imageMap, categ
   const list = categories ?? Object.keys(labels);
   const [fallbackSrc, setFallbackSrc] = useState<Record<string, string>>({});
 
+  const title = dictionary?.categoryBlock?.title || dictionary?.categoryBlock?.catalog || 'Catalog';
+  const description = dictionary?.categoryBlock?.description || '';
+
   return (
     <section className="w-full flex items-center justify-center bg-[#f8f9fa]">
       <div className="w-full max-w-[1200px] box-border flex flex-col items-center py-12">
         <h2 className="text-3xl md:text-4xl text-[#660000] text-center mb-4 px-4">
-          {dictionary.categoryBlock.title}
+          {title}
         </h2>
         <p className="text-center text-gray-600 max-w-3xl mx-auto mb-8 px-4">
-          {dictionary.categoryBlock.description}
+          {description}
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 p-4 sm:p-5 w-full max-w-[1200px] mx-auto">

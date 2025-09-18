@@ -2,12 +2,17 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { getDictionary, type Locale } from '@/i18n/server';
 import { CATEGORIES, CATEGORY_NAMES, CATEGORY_IMAGE_MAP } from '@/constants/categories';
-import { CATEGORY_NAME_OVERRIDES, type Lang } from '@/constants/categoryNameOverrides';
+import { CATEGORY_NAME_OVERRIDES } from '@/constants/categoryNameOverrides';
 import CategoryGridClient from './CategoryGridClient';
 
 type Dictionary = {
   categories?: Record<string, string>;
-  [key: string]: any;
+  categoryBlock?: {
+    title?: string;
+    catalog?: string;
+    description?: string;
+  };
+  [key: string]: unknown;
 };
 
 type CanonLang = 'ru' | 'en' | 'uz';
@@ -25,13 +30,14 @@ function normalizeLang(input: string | undefined): CanonLang {
 }
 
 /** Takes a value by language with key synonyms ('en'|'eng', 'uz'|'uzb') */
-function pickByLang<T extends Record<string, any> | undefined>(
-  dict: T,
+function pickByLang(
+  dict: Partial<Record<string, string>> | undefined,
   lang: CanonLang
-): any | undefined {
+): string | undefined {
   if (!dict) return undefined;
   for (const k of LANG_SYNONYMS[lang]) {
-    if (k in dict && dict[k] != null) return (dict as any)[k];
+    const v = dict[k];
+    if (v != null) return v;
   }
   return undefined;
 }
@@ -55,7 +61,7 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
     // 1) Try manual overrides first (check both formats)
     const override = pickByLang(CATEGORY_NAME_OVERRIDES[slug] || 
                               CATEGORY_NAME_OVERRIDES[normalizedSlug] || 
-                              CATEGORY_NAME_OVERRIDES[altSlug] as Partial<Record<Lang, string>>, lang);
+                              CATEGORY_NAME_OVERRIDES[altSlug] as Partial<Record<string, string>>, lang);
     if (override) {
       labels[slug] = override;
       continue;
@@ -86,7 +92,6 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
   }
 
   if (process.env.NODE_ENV !== 'production' && missingLabels.length > 0) {
-    // eslint-disable-next-line no-console
     console.warn('[CategoryBlock] missing labels for slugs:', missingLabels);
   }
 
