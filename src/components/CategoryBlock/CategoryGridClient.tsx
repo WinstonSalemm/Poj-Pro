@@ -12,8 +12,15 @@ const fallbackName = (key: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+type CategoryBlockDictionary = {
+  categoryBlock: {
+    title: string;
+    description: string;
+  };
+};
+
 type Props = {
-  dictionary: any;
+  dictionary: CategoryBlockDictionary;
   labels: Record<string, string>;
   imageMap: Record<string, string>;
   categories?: string[];

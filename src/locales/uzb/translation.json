@@ -333,6 +333,8 @@
     "categoriesTitle": "Katalog kategoriyalari",
     "backToCategories": "Kategoriyalarga qaytish"
   },
+  "catalog.faqTitle": "Ko‘p so‘raladigan savollar",
+  "catalog.relatedTitle": "Shuningdek qarang",
   "filters": {
     "open": "Filtr",
     "total": "Barchasi",

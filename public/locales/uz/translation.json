@@ -17,5 +17,9 @@
       "gt2m": "> 2 000 000",
       "all": "Barchasi"
     }
+  },
+  "catalog": {
+    "faqTitle": "Ko‘p so‘raladigan savollar",
+    "relatedTitle": "Shuningdek qarang"
   }
 }

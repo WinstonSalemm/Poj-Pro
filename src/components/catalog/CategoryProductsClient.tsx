@@ -33,7 +33,7 @@ export default function CategoryProductsClient({
   rawCategory: string;
   lang: "ru" | "en" | "uz";
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('translation');
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<FiltersState>({});
@@ -241,17 +241,66 @@ export default function CategoryProductsClient({
           {(() => {
             const key = resolveCategoryKey(rawCategory.replace(/_/g, '-'));
             const cfg = key ? CATEGORY_SEO[key] : undefined;
-            const fallback = [
-              { q: `Как выбрать ${categoryTitle.toLowerCase()}?`, a: `Подскажем оптимальные модели с учётом норм и условий эксплуатации. Обратитесь за консультацией — поможем подобрать ${categoryTitle.toLowerCase()}.` },
-              { q: 'Есть ли доставка по Ташкенту и регионам?', a: 'Да, доставим по Ташкенту и всей Республике Узбекистан. Возможен самовывоз.' },
-              { q: 'Предоставляете ли сертификаты и гарантию?', a: 'Да, выдаём необходимые сертификаты и гарантию. По запросу вышлем КП и прайс.' },
-            ];
-            const items = (cfg?.faqs && cfg.faqs.length)
-              ? cfg.faqs.map(f => ({ q: f.question, a: f.answer }))
-              : fallback;
+            const categoryTitleLower = categoryTitle.toLowerCase();
+            const fallback = (() => {
+              const q1 = {
+                ru: `Как выбрать ${categoryTitleLower}?`,
+                en: `How to choose ${categoryTitleLower}?`,
+                uz: `${categoryTitleLower}ni qanday tanlash mumkin?`,
+              } as const;
+              const a1 = {
+                ru: `Подскажем оптимальные модели с учётом норм и условий эксплуатации. Обратитесь за консультацией — поможем подобрать ${categoryTitleLower}.`,
+                en: `We will suggest optimal models considering standards and operating conditions. Contact us — we will help you choose ${categoryTitleLower}.`,
+                uz: `Meʼyorlar va ishlatish sharoitlarini inobatga olib eng mos modellarni tavsiya qilamiz. Maslahat uchun murojaat qiling — ${categoryTitleLower} tanlashda yordam beramiz.`,
+              } as const;
+              const q2 = {
+                ru: 'Есть ли доставка по Ташкенту и регионам?',
+                en: 'Do you deliver in Tashkent and regions?',
+                uz: 'Toshkent va mintaqalarga yetkazib berasizmi?',
+              } as const;
+              const a2 = {
+                ru: 'Да, доставим по Ташкенту и всей Республике Узбекистан. Возможен самовывоз.',
+                en: 'Yes, we deliver across Tashkent and all of Uzbekistan. Pickup is also available.',
+                uz: 'Ha, Toshkent bo‘ylab va butun O‘zbekiston bo‘yicha yetkazib beramiz. Olib ketish ham mumkin.',
+              } as const;
+              const q3 = {
+                ru: 'Предоставляете ли сертификаты и гарантию?',
+                en: 'Do you provide certificates and warranty?',
+                uz: 'Sertifikatlar va kafolat berasizmi?',
+              } as const;
+              const a3 = {
+                ru: 'Да, выдаём необходимые сертификаты и гарантию. По запросу вышлем КП и прайс.',
+                en: 'Yes, we provide all necessary certificates and warranty. On request, we will send a quote and price list.',
+                uz: 'Ha, barcha kerakli sertifikatlar va kafolatni taqdim etamiz. So‘rov bo‘yicha KP va prays yuboramiz.',
+              } as const;
+              const l = lang || 'ru';
+              return [
+                { q: q1[l], a: a1[l] },
+                { q: q2[l], a: a2[l] },
+                { q: q3[l], a: a3[l] },
+              ];
+            })();
+            // Prefer localized FAQs if available, then fallback chain
+            const items = (() => {
+              const l = lang;
+              const byLang = (cfg as unknown as { faqsByLang?: Partial<Record<Lang, { question: string; answer: string }[]>> })?.faqsByLang;
+              const localized = byLang?.[l];
+              if (localized && localized.length) {
+                return localized.map(f => ({ q: f.question, a: f.answer }));
+              }
+              // For non-RU languages without localized FAQs, prefer generic localized fallback
+              if (l !== 'ru') {
+                return fallback;
+              }
+              // For RU, use category-specific RU FAQs when available
+              if (cfg?.faqs && cfg.faqs.length) {
+                return cfg.faqs.map(f => ({ q: f.question, a: f.answer }));
+              }
+              return fallback;
+            })();
             return (
               <section className="mt-10">
-                <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">Часто задаваемые вопросы</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">{t('catalog.faqTitle', 'Часто задаваемые вопросы')}</h2>
                 <FAQAccordion items={items} jsonLd={false} />
               </section>
             );
@@ -265,7 +314,7 @@ export default function CategoryProductsClient({
             if (related.length === 0) return null;
             return (
               <section className="mt-10">
-                <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">Смотрите также</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">{t('catalog.relatedTitle', 'Смотрите также')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                   {related.map((k) => {
                     const label = CATEGORY_NAMES[k]?.[lang] || fallbackName(k);

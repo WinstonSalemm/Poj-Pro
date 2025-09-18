@@ -205,8 +205,24 @@
   },
   "catalog": {
     "categoriesTitle": "Catalog Categories",
-    "backToCategories": "Back to Categories"
+    "backToCategories": "Back to Categories",
+    "faq": {
+      "fallbackQ1": "How to choose {{category}}?",
+      "fallbackA1": "We will suggest optimal models considering standards and operating conditions. Contact us — we will help you choose {{category}}.",
+      "fallbackQ2": "Do you deliver in Tashkent and regions?",
+      "fallbackA2": "Yes, we deliver across Tashkent and all of Uzbekistan. Pickup is also available.",
+      "fallbackQ3": "Do you provide certificates and warranty?",
+      "fallbackA3": "Yes, we provide all necessary certificates and warranty. On request, we will send a quote and price list."
+    }
   },
+  "catalog.faqTitle": "Frequently Asked Questions",
+  "catalog.relatedTitle": "See also",
+  "catalog.faq.fallbackQ1": "How to choose {{category}}?",
+  "catalog.faq.fallbackA1": "We will suggest optimal models considering standards and operating conditions. Contact us — we will help you choose {{category}}.",
+  "catalog.faq.fallbackQ2": "Do you deliver in Tashkent and regions?",
+  "catalog.faq.fallbackA2": "Yes, we deliver across Tashkent and all of Uzbekistan. Pickup is also available.",
+  "catalog.faq.fallbackQ3": "Do you provide certificates and warranty?",
+  "catalog.faq.fallbackA3": "Yes, we provide all necessary certificates and warranty. On request, we will send a quote and price list.",
   "items": {
     "showItems": "Show items",
     "hideItems": "Hide items"

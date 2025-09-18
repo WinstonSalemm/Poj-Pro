@@ -12,6 +12,8 @@ export type CategorySEO = {
   faqs?: FAQ[];
   // Optional long-form localized HTML content (rendered with dangerouslySetInnerHTML)
   longByLang?: { ru?: string; en?: string; uz?: string };
+  // Localized FAQs (preferred over 'faqs' when present)
+  faqsByLang?: { ru?: FAQ[]; en?: FAQ[]; uz?: FAQ[] };
 };
 
 export const CATEGORY_SEO: Record<string, CategorySEO> = {
@@ -57,6 +59,23 @@ export const CATEGORY_SEO: Record<string, CategorySEO> = {
         `<h3>Почему POJ PRO</h3>`,
         `<p>Мы специализируемся на пожарной безопасности и понимаем, как важно соблюсти нормы и сроки. Помогаем подобрать совместимые крепления, шкафы, знаки и дополнительные аксессуары. Гарантируем прозрачные цены и своевременную поддержку — от консультации до поставки и рекомендаций по обслуживанию. Обращайтесь — подберём оптимальные огнетушители под ваш объект, бюджет и требования регламентов.</p>`
       ].join(''),
+    },
+    faqsByLang: {
+      ru: [
+        { question: 'Какие огнетушители подходят для офиса?', answer: 'Для офисов чаще всего используют порошковые ОП‑4/ОП‑5 и углекислотные ОУ‑3/ОУ‑5 для электрооборудования.' },
+        { question: 'Где купить огнетушители в Ташкенте?', answer: 'В POJ PRO: продажа, доставка по Ташкенту и Узбекистану, сертификаты, гарантия, обслуживание и перезарядка.' },
+        { question: 'Доставляете по Ташкенту и регионам?', answer: 'Да, доставка по Ташкенту и всей Республике Узбекистан. Сроки зависят от наличия и объёма заказа.' },
+      ],
+      en: [
+        { question: 'Which fire extinguishers are suitable for an office?', answer: 'For offices, powder OP‑4/OP‑5 and CO₂ OU‑3/OU‑5 are most common, especially for electrical equipment.' },
+        { question: 'Where to buy fire extinguishers in Tashkent?', answer: 'At POJ PRO: sales, delivery across Tashkent and Uzbekistan, certificates, warranty, service and recharge.' },
+        { question: 'Do you deliver in Tashkent and to regions?', answer: 'Yes, delivery across Tashkent and all of Uzbekistan. Lead times depend on stock and order volume.' },
+      ],
+      uz: [
+        { question: "Ofis uchun qaysi o‘t o‘chirgichlar mos?", answer: "Ofislar uchun ko‘pincha OP‑4/OP‑5 kukunli va elektr uskunalari uchun OU‑3/OU‑5 CO₂ o‘t o‘chirgichlar qo‘llaniladi." },
+        { question: "Toshkentda o‘t o‘chirgichlarni qayerdan sotib olish mumkin?", answer: "POJ PRO’da: savdo, Toshkent va butun O‘zbekistonga yetkazib berish, sertifikatlar, kafolat, servis va qayta zaryad." },
+        { question: "Toshkent bo‘yicha va mintaqalarga yetkazib berasizmi?", answer: "Ha, Toshkent bo‘ylab va butun O‘zbekiston bo‘yicha yetkazib beramiz. Muddatlar mavjudlik va buyurtma hajmiga bog‘liq." },
+      ],
     },
     faqs: [
       { question: 'Какие огнетушители подходят для офиса?', answer: 'Для офисов чаще всего используют порошковые ОП‑4/ОП‑5 и углекислотные ОУ‑3/ОУ‑5 для электрооборудования.' },

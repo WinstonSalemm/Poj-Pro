@@ -17,5 +17,9 @@
       "gt2m": "> 2,000,000",
       "all": "All"
     }
+  },
+  "catalog": {
+    "faqTitle": "Frequently Asked Questions",
+    "relatedTitle": "See also"
   }
 }
