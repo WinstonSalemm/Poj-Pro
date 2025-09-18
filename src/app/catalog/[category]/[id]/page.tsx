@@ -23,6 +23,8 @@ export const revalidate = 60;
 
 // Normalize image URLs to prevent 404s and ensure correct prefixes.
 const PLACEHOLDER_IMG = '/OtherPics/product2photo.jpg';
+const BLUR_DATA =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjZWVlZWVlJy8+PC9zdmc+";
 function normalizeImageUrl(u?: string): string {
   if (!u) return PLACEHOLDER_IMG;
   let s = String(u).trim();
@@ -65,7 +67,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: `${title} - купить в Ташкенте | POJ-PRO.UZ`,
     description,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: {
+        ru: canonical,
+        en: canonical,
+        uz: canonical,
+        'x-default': canonical,
+      },
+    },
     openGraph: {
       url: canonical,
       title: `${title} | POJ-PRO.UZ`,
@@ -202,6 +212,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                   className="object-contain"
+                  placeholder="blur"
+                  blurDataURL={BLUR_DATA}
                 />
               </div>
               <div className="mt-4 flex flex-col sm:flex-row gap-4">

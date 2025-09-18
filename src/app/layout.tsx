@@ -6,6 +6,7 @@ import { headers } from 'next/headers';
 import Script from 'next/script';
 import { isProd, GA_ID, YM_ID, GTM_ID } from '@/lib/analytics';
 import { I18nProvider } from '@/i18n/I18nProvider';
+import { getLocale } from '@/lib/api';
 import { NonceProvider } from '@/context/NonceContext';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
@@ -69,8 +70,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({
-  children,
-  params,
+  children
 }: {
   children: React.ReactNode;
   params: { locale?: string };
@@ -78,10 +78,12 @@ export default async function RootLayout({
   const hdrs = await headers();
   const nonce = hdrs.get('x-nonce') || undefined;
   const session = await getServerSession(authOptions);
+  // Read persisted locale from cookies for SSR (falls back to 'ru')
+  const locale = await getLocale();
 
   return (
     <html
-      lang={params.locale ?? 'ru'}
+      lang={locale}
       dir="ltr"
       className="scroll-smooth"
       suppressHydrationWarning
@@ -251,7 +253,7 @@ export default async function RootLayout({
         ) : null}
 
         <NonceProvider nonce={nonce}>
-          <I18nProvider initialLocale={params.locale ?? 'ru'}>
+          <I18nProvider initialLocale={locale}>
             <SessionProviderClient session={session}>
               <CartProvider>
                 <Header />

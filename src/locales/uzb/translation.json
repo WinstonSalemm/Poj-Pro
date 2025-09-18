@@ -111,6 +111,42 @@
     "title": "Mashhur mahsulotlar",
     "details": "Batafsil"
   },
+  "filters": {
+    "open": "Filtr",
+    "total": "Jami",
+    "type": {
+      "title": "Turi",
+      "aria": "O‘t o‘chirgich turi",
+      "op": "OP (kukunli)",
+      "ou": "OU (CO₂)",
+      "mpp": "MPP (modul)",
+      "recharge": "Qayta zaryad (peresaryadka)",
+      "all": "Barchasi"
+    },
+    "sort": {
+      "title": "Saralash",
+      "relevance": "Moslik bo‘yicha",
+      "priceAsc": "Narx: o‘sish tartibida",
+      "priceDesc": "Narx: kamayish tartibida",
+      "nameAsc": "Nom: A–Z",
+      "nameDesc": "Nom: Z–A"
+    },
+    "price": {
+      "title": "Narx",
+      "all": "Barchasi",
+      "lt500k": "< 500 000",
+      "between500k2m": "500 000 – 2 000 000",
+      "gt2m": "> 2 000 000"
+    },
+    "volume": { "title": "Hajm/vazn" },
+    "fireclass": { "title": "Yong‘in sinfi" },
+    "availability": {
+      "title": "Mavjudligi",
+      "in": "Omborda",
+      "out": "Buyurtma asosida",
+      "all": "Barchasi"
+    }
+  },
   "popularProducts": "Mashhur mahsulotlar",
   "items": {
     "showItems": "Mahsulotlarni ko'rsatish",
@@ -335,25 +371,6 @@
   },
   "catalog.faqTitle": "Ko‘p so‘raladigan savollar",
   "catalog.relatedTitle": "Shuningdek qarang",
-  "filters": {
-    "open": "Filtr",
-    "total": "Barchasi",
-    "sort": {
-      "title": "Tartiblash",
-      "relevance": "Relevansiya",
-      "priceAsc": "Narx: o'sish",
-      "priceDesc": "Narx: kamayish",
-      "nameAsc": "Nomi: A-Z",
-      "nameDesc": "Nomi: Z-A"
-    },
-    "price": {
-      "title": "Narx",
-      "lt500k": "< 500 000",
-      "between500k2m": "500 000 – 2 000 000",
-      "gt2m": "> 2 000 000",
-      "all": "Barchasi"
-    }
-  },
   "categories": {
     "ognetushiteli": "O'chirgichlar",
     "pozharnye_shkafy": "Yong'in shkaflari",

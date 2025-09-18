@@ -1,12 +1,15 @@
 "use client";
 
 import { useMemo, useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
 import { useTranslation } from "react-i18next";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import { evViewItemList } from "@/lib/analytics/dataLayer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import type { Product } from "@/types/product";
 import FiltersSidebar, { type FiltersState, type SortKey } from "./FiltersSidebar";
+
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,15 +31,20 @@ export default function CategoryProductsClient({
   products,
   rawCategory,
   lang,
+  initialFilters,
 }: {
   products: Product[];
   rawCategory: string;
   lang: "ru" | "en" | "uz";
+  initialFilters?: FiltersState;
 }) {
   const { t } = useTranslation('translation');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState<FiltersState>({});
+  const [filters, setFilters] = useState<FiltersState>(initialFilters ?? {});
   const [sort, setSort] = useState<SortKey>("relevance");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [bootLoading, setBootLoading] = useState(true);
@@ -44,6 +52,19 @@ export default function CategoryProductsClient({
   useEffect(() => {
     const t = setTimeout(() => setBootLoading(false), 500);
     return () => clearTimeout(t);
+  }, []);
+
+  // Initialize filters from URL (path segment or query) once if not provided from props
+  useEffect(() => {
+    if (filters.type || initialFilters?.type) return; // don't override provided filter
+    const seg = (pathname || '').split('/').filter(Boolean).pop();
+    const fromPath = (rawCategory === 'ognetushiteli' && (seg === 'op' || seg === 'ou' || seg === 'mpp' || seg === 'recharge')) ? seg : undefined;
+    const qType = searchParams?.get('type') || undefined;
+    const val = (fromPath || qType) as FiltersState['type'];
+    if (val === 'op' || val === 'ou' || val === 'mpp' || val === 'recharge') {
+      setFilters((prev) => ({ ...prev, type: val }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const categoryTitle = useMemo(() => {
@@ -80,9 +101,32 @@ export default function CategoryProductsClient({
       const price = typeof p.price === 'number' ? p.price : Number(p.price) || 0;
       if (filters.minPrice != null && price < filters.minPrice) return false;
       if (filters.maxPrice != null && price > filters.maxPrice) return false;
+      // availability filter
+      if (filters.availability === 'in' && !(price > 0)) return false;
+      if (filters.availability === 'out' && (price > 0)) return false;
       return true;
     });
-    return withPrice;
+    const byType = withPrice.filter((p) => {
+      if (!filters.type) return true;
+      const text = `${p.slug} ${p.title || ''} ${p.name || ''} ${p.description || ''}`.toLowerCase();
+      if (filters.type === 'op') return /(\bop[-_\s]?|\bоп[-_\s]?)/i.test(text) || /\bpowder|порошков/i.test(text);
+      if (filters.type === 'ou') return /(\bou[-_\s]?|\bоу[-_\s]?)/i.test(text) || /co2|углекислот/i.test(text);
+      if (filters.type === 'mpp') return /\bmpp|мпп|module|модул/i.test(text);
+      if (filters.type === 'recharge') return /(перезаряд|перезаряж|заправк)/i.test(text) || /(recharg|refill)/i.test(text) || /(qayta\s*zaryad|to['’`]?ldir)/i.test(text);
+      return true;
+    });
+    // Placeholder for volumes/classes filtering (best-effort parsing)
+    const byVolume = byType.filter((p) => {
+      if (!filters.volumes || filters.volumes.length === 0) return true;
+      const text = `${p.slug} ${p.title || ''} ${p.name || ''}`.toLowerCase();
+      return filters.volumes.some((v) => new RegExp(`\\b${v}\\b`).test(text));
+    });
+    const byClasses = byVolume.filter((p) => {
+      if (!filters.classes || filters.classes.length === 0) return true;
+      const text = `${p.description || ''}`.toUpperCase();
+      return filters.classes.every((c) => text.includes(c));
+    });
+    return byClasses;
   }, [products, searchQuery, filters]);
 
   const sortedProducts = useMemo(() => {
@@ -123,6 +167,50 @@ export default function CategoryProductsClient({
     },
     []
   );
+
+  // Sync URL with filters
+  useEffect(() => {
+    const onlyType = !!filters.type && !filters.minPrice && !filters.maxPrice && !filters.availability && (!filters.volumes || filters.volumes.length === 0) && (!filters.classes || filters.classes.length === 0) && !searchQuery && sort === 'relevance';
+    const isOnTypeRoute = pathname?.startsWith('/catalog/ognetushiteli/type/');
+    const current = pathname + ((searchParams && searchParams.toString()) ? `?${searchParams.toString()}` : '');
+    if (rawCategory === 'ognetushiteli' && onlyType) {
+      const target = `/catalog/ognetushiteli/type/${filters.type}`;
+      if (current !== target) {
+        router.replace(target);
+      }
+      // If already at the target, skip query param sync to avoid bouncing back to base path
+      return;
+    } else if (rawCategory === 'ognetushiteli' && isOnTypeRoute) {
+      // if user adds filters or clears type while on /type/:type, go back to base category path
+      const base = `/catalog/${encodeURIComponent(rawCategory)}`;
+      const paramsBack = new URLSearchParams();
+      if (filters.type) paramsBack.set('type', filters.type);
+      if (filters.minPrice != null) paramsBack.set('min', String(filters.minPrice));
+      if (filters.maxPrice != null) paramsBack.set('max', String(filters.maxPrice));
+      if (filters.availability) paramsBack.set('avail', filters.availability);
+      if (searchQuery) paramsBack.set('q', searchQuery);
+      const hrefBack = paramsBack.toString() ? `${base}?${paramsBack.toString()}` : base;
+      if (current !== hrefBack) {
+        router.replace(hrefBack);
+        return;
+      }
+    }
+
+    // Reflect filters in query params for all categories (including ognetushiteli when not only-type)
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    // write minimal params
+    if (filters.type) params.set('type', filters.type);
+    else params.delete('type');
+    if (filters.minPrice != null) params.set('min', String(filters.minPrice)); else params.delete('min');
+    if (filters.maxPrice != null) params.set('max', String(filters.maxPrice)); else params.delete('max');
+    if (filters.availability) params.set('avail', filters.availability); else params.delete('avail');
+    if (searchQuery) params.set('q', searchQuery); else params.delete('q');
+    const q = params.toString();
+    const base = `/catalog/${encodeURIComponent(rawCategory)}`;
+    const href = q ? `${base}?${q}` : base;
+    if (current !== href) router.replace(href);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, searchQuery, sort, rawCategory, pathname]);
 
   return (
     <>

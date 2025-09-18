@@ -45,6 +45,44 @@ const ru = {
   popularProducts: {
     title: 'Популярные товары',
   },
+  filters: {
+    total: 'Всего',
+    type: {
+      title: 'Тип',
+      aria: 'Тип огнетушителя',
+      op: 'ОП (порошковый)',
+      ou: 'ОУ (углекислотный)',
+      mpp: 'МПП (модульный)',
+      all: 'Все',
+    },
+    sort: {
+      title: 'Сортировка',
+      relevance: 'По релевантности',
+      priceAsc: 'Цена: по возрастанию',
+      priceDesc: 'Цена: по убыванию',
+      nameAsc: 'Название: A–Z',
+      nameDesc: 'Название: Z–A',
+    },
+    price: {
+      title: 'Цена',
+      all: 'Все',
+      lt500k: '< 500 000',
+      between500k2m: '500 000 – 2 000 000',
+      gt2m: '> 2 000 000',
+    },
+    volume: {
+      title: 'Объём/вес',
+    },
+    fireclass: {
+      title: 'Класс пожара',
+    },
+    availability: {
+      title: 'Наличие',
+      in: 'В наличии',
+      out: 'Под заказ',
+      all: 'Все',
+    },
+  },
   lp: {
     ognetushiteli: {
       intro1:

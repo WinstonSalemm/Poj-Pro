@@ -115,8 +115,8 @@ import { getAllPostsAllLocales, getPostAlternates } from '@/lib/blog/loader';
        return {
          url: `${SITE_URL}${path}`,
          lastModified: now,
-         changeFrequency: 'daily',
-         priority: 0.9,
+         changeFrequency: 'weekly',
+         priority: 0.8,
        } satisfies SitemapEntry;
      });
    } catch (error) {

@@ -111,6 +111,42 @@
     "title": "Most Popular Products",
     "details": "Details"
   },
+  "filters": {
+    "open": "Filter",
+    "total": "Total",
+    "type": {
+      "title": "Type",
+      "aria": "Extinguisher type",
+      "op": "OP (powder)",
+      "ou": "OU (CO₂)",
+      "mpp": "MPP (module)",
+      "recharge": "Recharge",
+      "all": "All"
+    },
+    "sort": {
+      "title": "Sort",
+      "relevance": "Relevance",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low",
+      "nameAsc": "Name: A–Z",
+      "nameDesc": "Name: Z–A"
+    },
+    "price": {
+      "title": "Price",
+      "all": "All",
+      "lt500k": "< 500,000",
+      "between500k2m": "500,000 – 2,000,000",
+      "gt2m": "> 2,000,000"
+    },
+    "volume": { "title": "Volume/weight" },
+    "fireclass": { "title": "Fire class" },
+    "availability": {
+      "title": "Availability",
+      "in": "In stock",
+      "out": "On order",
+      "all": "All"
+    }
+  },
   "common": {
     "tryAgain": "Try again",
     "backToHome": "Back to home",
@@ -292,25 +328,7 @@
       }
     }
   },
-  "filters": {
-    "open": "Filter",
-    "total": "Total",
-    "sort": {
-      "title": "Sort",
-      "relevance": "Relevance",
-      "priceAsc": "Price: ascending",
-      "priceDesc": "Price: descending",
-      "nameAsc": "Name: A–Z",
-      "nameDesc": "Name: Z–A"
-    },
-    "price": {
-      "title": "Price",
-      "lt500k": "< 500 000",
-      "between500k2m": "500 000 – 2 000 000",
-      "gt2m": "> 2 000 000",
-      "all": "All"
-    }
-  },
+  
   "categories": {
     "ognetushiteli": "Fire Extinguishers",
     "pozharnye_shkafy": "Fire Cabinets",

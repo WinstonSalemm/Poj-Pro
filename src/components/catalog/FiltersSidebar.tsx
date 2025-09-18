@@ -3,9 +3,16 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
+export type ExtinguisherType = 'op' | 'ou' | 'mpp' | 'recharge';
+export type FireClass = 'A' | 'B' | 'C' | 'E';
+
 export type FiltersState = {
   minPrice?: number;
   maxPrice?: number;
+  type?: ExtinguisherType;
+  volumes?: string[]; // e.g. ['2','3','5','10','25']
+  classes?: FireClass[];
+  availability?: 'in' | 'out';
 };
 
 export type SortKey = "relevance" | "priceAsc" | "priceDesc" | "nameAsc" | "nameDesc";
@@ -44,6 +51,41 @@ export default function FiltersSidebar({
         </div>
 
         <div className="space-y-4">
+          {/* Type */}
+          <div>
+            <div className="font-medium text-gray-800 mb-2">{t('filters.type.title', 'Тип')}</div>
+            <div className="space-y-2" role="group" aria-label={t('filters.type.aria', 'Тип огнетушителя')}>
+              {([
+                { key: 'op', label: t('filters.type.op', 'ОП (порошковый)') },
+                { key: 'ou', label: t('filters.type.ou', 'ОУ (углекислотный)') },
+                { key: 'mpp', label: t('filters.type.mpp', 'МПП (модульный)') },
+                { key: 'recharge', label: t('filters.type.recharge', 'Перезарядка') },
+              ] as { key: ExtinguisherType; label: string }[]).map((opt) => (
+                <label key={opt.key} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="extinguisher-type"
+                    value={opt.key}
+                    checked={filters.type === opt.key}
+                    onChange={() => setFilters({ ...filters, type: opt.key })}
+                    className="h-4 w-4 text-brand focus:ring-brand/30 border-gray-300"
+                  />
+                  <span className="text-gray-700">{opt.label}</span>
+                </label>
+              ))}
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="radio"
+                  name="extinguisher-type"
+                  checked={!filters.type}
+                  onChange={() => setFilters({ ...filters, type: undefined })}
+                  className="h-4 w-4 text-brand focus:ring-brand/30 border-gray-300"
+                />
+                <span className="text-gray-700">{t('filters.type.all', 'Все')}</span>
+              </label>
+            </div>
+          </div>
+
           <div>
             <div className="font-medium text-gray-800 mb-2">{t("filters.sort.title", "Сортировка")}</div>
             <div className="space-y-2">
@@ -82,7 +124,7 @@ export default function FiltersSidebar({
                       type="radio"
                       name="price"
                       checked={!!checked}
-                      onChange={() => setFilters({ minPrice: r.from, maxPrice: r.to })}
+                      onChange={() => setFilters({ ...filters, minPrice: r.from, maxPrice: r.to })}
                       className="h-4 w-4 text-brand focus:ring-brand/30 border-gray-300"
                     />
                     <span className="text-gray-700">{r.label}</span>
@@ -94,13 +136,41 @@ export default function FiltersSidebar({
                   type="radio"
                   name="price"
                   checked={!filters.minPrice && !filters.maxPrice}
-                  onChange={() => setFilters({})}
+                  onChange={() => setFilters({ ...filters, minPrice: undefined, maxPrice: undefined })}
                   className="h-4 w-4 text-brand focus:ring-brand/30 border-gray-300"
                 />
                 <span className="text-gray-700">{t("filters.price.all", "Все")}</span>
               </label>
             </div>
           </div>
+
+          {/* Fire classes */}
+          <div>
+            <div className="font-medium text-gray-800 mb-2">{t('filters.fireclass.title', 'Класс пожара')}</div>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Класс пожара">
+              {(['A', 'B', 'C', 'E'] as const).map((c) => {
+                const checked = Array.isArray(filters.classes) && filters.classes.includes(c);
+                return (
+                  <label key={c} className="inline-flex items-center gap-1 text-sm cursor-pointer border border-gray-300 rounded-full px-2 py-1">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) => {
+                        const next = new Set(filters.classes || []);
+                        if (e.target.checked) next.add(c); else next.delete(c);
+                        setFilters({ ...filters, classes: Array.from(next) as FireClass[] });
+                      }}
+                      className="h-4 w-4 text-brand focus:ring-brand/30 border-gray-300"
+                      aria-label={`Класс ${c}`}
+                    />
+                    <span className="text-gray-700">{c}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          
         </div>
       </div>
     </aside>

@@ -30,7 +30,7 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const dict = await getDictionary(locale);
   const { category } = await params;
   const rawCategory = decodeURIComponent(category || '');
-  const sp = (await (searchParams || Promise.resolve({}))) || {};
+  const sp: Record<string, string | string[] | undefined> = (await (searchParams || Promise.resolve({} as Record<string, string | string[] | undefined>))) || {};
 
   function fallbackName(key: string): string {
     return key
@@ -74,12 +74,20 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const ogImageFile = seoKey ? CATEGORY_IMAGE_MAP[seoKey] : CATEGORY_IMAGE_MAP[normalizedSlug];
   const ogImage = ogImageFile ? `${SITE_URL}/CatalogImage/${ogImageFile}` : undefined;
   const canonical = `${SITE_URL}/catalog/${normalizedSlug}`;
-  const hasFilters = Object.keys(sp).length > 0;
+  const filterKeys = Object.keys(sp || {}).filter((k) => sp[k] != null);
 
   return {
     title,
     description,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: {
+        ru: canonical,
+        en: canonical,
+        uz: canonical,
+        'x-default': canonical,
+      },
+    },
     openGraph: {
       url: canonical,
       title,
@@ -88,7 +96,7 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
       images: ogImage ? [{ url: ogImage }] : undefined,
     },
     twitter: ogImage ? { images: [ogImage] } : undefined,
-    robots: hasFilters ? { index: false, follow: true } : { index: true, follow: true },
+    robots: filterKeys.length > 1 ? { index: false, follow: true } : { index: true, follow: true },
   };
 }
 import type { Product } from '@/types/product';

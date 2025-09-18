@@ -27,6 +27,8 @@ function parsePriceUZS(price: string | number | undefined): number {
 }
 
 const PLACEHOLDER_IMG = "/OtherPics/product2photo.jpg";
+const BLUR_DATA =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPScjZWVlZWVlJy8+PC9zdmc+";
 
 // Normalize image URLs: prefix bare filenames with /ProductImages/ and ensure leading slash.
 function normalizeImageUrl(u?: string): string {
@@ -123,10 +125,11 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   const dec = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => Math.max(1, q - 1)); };
   const inc = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => q + 1); };
 
+  const highlightCls = popularVariant ? 'ring-1 ring-[#660000]/20' : '';
   return (
     <div
       onClick={() => onClick?.(product)}
-      className="group relative bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-all duration-300"
+      className={`group relative bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-all duration-300 ${highlightCls}`}
     >
       {/* изображение */}
       <div className="relative w-full overflow-hidden rounded-xl bg-gray-100 aspect-square">
@@ -138,6 +141,8 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
           sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-300 transform-gpu group-hover:scale-105"
           loading={priority ? undefined : "lazy"}
+          placeholder="blur"
+          blurDataURL={BLUR_DATA}
           quality={60}
         />
         {/* Быстрое действие: в корзину */}
@@ -152,7 +157,10 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
       </div>
 
       {/* заголовок */}
-      <h3 className="mt-2 font-semibold text-[#660000] line-clamp-2 min-h-[3rem] text-[0.92rem] md:text-[0.95rem]">
+      <h3
+        className="mt-2 font-semibold text-[#660000] line-clamp-3 min-h-[3.6rem] text-[0.9rem] md:text-[0.95rem] leading-tight break-words"
+        title={titleText}
+      >
         {titleText}
       </h3>
 
