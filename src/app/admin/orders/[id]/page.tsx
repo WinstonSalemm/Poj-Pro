@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, SessionProvider } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -33,7 +33,7 @@ type Order = {
   };
 };
 
-export default function OrderDetails() {
+function OrderDetailsInner() {
   const { id } = useParams();
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -231,5 +231,13 @@ export default function OrderDetails() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OrderDetails() {
+  return (
+    <SessionProvider>
+      <OrderDetailsInner />
+    </SessionProvider>
   );
 }

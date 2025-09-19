@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession, SessionProvider } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -172,5 +172,15 @@ export function AuthButton() {
         {isTiny ? tr('auth.registerShort', 'Рег.') : tr('auth.register', 'Регистрация')}
       </Link>
     </div>
+  );
+}
+
+// Default export wrapper to provide SessionProvider locally,
+// allowing us to avoid a global provider in the root layout.
+export default function AuthButtonWithProvider() {
+  return (
+    <SessionProvider>
+      <AuthButton />
+    </SessionProvider>
   );
 }

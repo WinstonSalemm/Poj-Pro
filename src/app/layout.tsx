@@ -4,24 +4,17 @@ import { Inter } from 'next/font/google';
 import type { Viewport, Metadata } from 'next';
 import { headers } from 'next/headers';
 import Script from 'next/script';
-import dynamic from 'next/dynamic';
+import ClientWidgets from '@/app/ClientWidgets';
 import { isProd, GA_ID, YM_ID, GTM_ID } from '@/lib/analytics';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { getLocale } from '@/lib/api';
 import { NonceProvider } from '@/context/NonceContext';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/authOptions';
-import { SessionProviderClient } from '@/components/auth/SessionProviderClient';
 import { CartProvider } from '@/context/CartContext';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import { SITE_URL, SITE_NAME } from '@/lib/site';
 
-// Defer non-critical client widgets to reduce initial JS and TBT
-const AnalyticsLazy = dynamic(() => import('@/components/Analytics'), { ssr: false });
-const CookieConsentModalLazy = dynamic(() => import('@/components/CookieConsentModal/CookieConsentModal'), { ssr: false });
-const ClientWrapperLazy = dynamic(() => import('@/app/ClientWrapper'), { ssr: false });
-const CartAddToastLazy = dynamic(() => import('@/components/Cart/CartAddToast'), { ssr: false });
+// Client-only widgets are rendered via ClientWidgets (client component)
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -80,7 +73,6 @@ export default async function RootLayout({
 }) {
   const hdrs = await headers();
   const nonce = hdrs.get('x-nonce') || undefined;
-  const session = await getServerSession(authOptions);
   // Read persisted locale from cookies for SSR (falls back to 'ru')
   const locale = await getLocale();
 
@@ -255,17 +247,12 @@ export default async function RootLayout({
 
         <NonceProvider nonce={nonce}>
           <I18nProvider initialLocale={locale}>
-            <SessionProviderClient session={session}>
-              <CartProvider>
-                <Header />
-                <main id="main-content" className="flex-grow">{children}</main>
-                <Footer />
-                <CartAddToastLazy />
-                <CookieConsentModalLazy />
-                <ClientWrapperLazy />
-                {isProd && <AnalyticsLazy />}
-              </CartProvider>
-            </SessionProviderClient>
+            <CartProvider>
+              <Header />
+              <main id="main-content" className="flex-grow">{children}</main>
+              <Footer />
+              <ClientWidgets />
+            </CartProvider>
           </I18nProvider>
         </NonceProvider>
       </body>

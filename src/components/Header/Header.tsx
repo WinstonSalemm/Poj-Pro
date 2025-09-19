@@ -11,7 +11,7 @@ const CartIcon = dynamic(() => import("../Cart/CartIcon"), {
   loading: () => <span className="inline-block w-6 h-6" aria-hidden="true" />,
 });
 
-const AuthButton = dynamic(() => import("../auth/AuthButton").then(m => ({ default: m.AuthButton })), {
+const AuthButton = dynamic(() => import("../auth/AuthButton"), {
   ssr: false,
   loading: () => null,
 });

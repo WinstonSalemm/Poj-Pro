@@ -3,9 +3,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 export default function Footer() {
-    const { t, i18n } = useTranslation();
-    const lang = (i18n.language as 'ru' | 'uzb' | 'eng') || 'ru';
-    const routeLocale = lang === 'uzb' ? 'uz' : lang === 'eng' ? 'en' : 'ru';
+    const { t } = useTranslation();
 
     return (
         <footer

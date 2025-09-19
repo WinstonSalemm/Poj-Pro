@@ -3,9 +3,10 @@
 import { useTranslation } from '@/i18n/useTranslation';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { trackBeginCheckout } from '@/components/analytics/events';
 import { evRemoveFromCart } from '@/lib/analytics/dataLayer';
 
@@ -37,7 +38,7 @@ const normalizeImageUrl = (u?: string): string => {
 
 const PLACEHOLDER_IMG = '/OtherPics/product2photo.jpg';
 
-export default function CartPage() {
+function CartPageContent() {
   const { t, i18n } = useTranslation();
   const { status } = useSession();
   const router = useRouter();
@@ -117,6 +118,7 @@ export default function CartPage() {
                 },
               ] as const;
             }
+
           })
         );
         const map: Record<string | number, { name: string; image: string }> = {};
@@ -295,7 +297,8 @@ export default function CartPage() {
             ) : (
               <div className="divide-y divide-gray-200">
                 {items.map((item, idx) => {
-
+                  const imgSrc = normalizeImageUrl(localized[item.id]?.image || item.image || PLACEHOLDER_IMG);
+                  const altText = localized[item.id]?.name || item.name || (t('cart.product') || 'Product');
                   return (
                     <div
                       key={item.id}
@@ -314,23 +317,19 @@ export default function CartPage() {
                           </button>
 
                           <div className="relative h-20 w-20 rounded-md overflow-hidden bg-gray-100">
-                            {normalizeImageUrl(localized[item.id]?.image || item.image) ? (
-                              <img
-                                src={normalizeImageUrl(localized[item.id]?.image || item.image)}
-                                alt={localized[item.id]?.name || item.name || (t('cart.product') || 'Product')}
-                                className="absolute inset-0 w-full h-full object-contain p-1"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs text-center p-2">
-                                {t('cart.noImage') || 'No Image'}
-                              </div>
-                            )}
+                            <Image
+                              src={imgSrc}
+                              alt={altText}
+                              fill
+                              sizes="80px"
+                              className="object-contain p-1"
+                              loading="lazy"
+                              quality={60}
+                            />
                           </div>
 
                           <div>
-                            <h3 className="font-medium text-gray-900 text-sm sm:text-base">{localized[item.id]?.name || item.name || (t('cart.product') || 'Product')}</h3>
-                            {/* Removed description as it's not in CartItem type */}
+                            <h3 className="font-medium text-gray-900 text-sm sm:text-base">{altText}</h3>
                           </div>
                         </div>
 
@@ -577,3 +576,11 @@ const keyframesCss = `
   100% { background-position: 0 0 }
 }
 `;
+
+export default function CartPage() {
+  return (
+    <SessionProvider>
+      <CartPageContent />
+    </SessionProvider>
+  );
+}

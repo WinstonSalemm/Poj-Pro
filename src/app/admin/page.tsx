@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, SessionProvider } from 'next-auth/react';
 
 type User = {
   id: string;
@@ -24,7 +24,7 @@ type User = {
   }>;
 };
 
-export default function AdminDashboard() {
+function AdminDashboardInner() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (status === 'authenticated' && !session.user?.isAdmin) {
+    if (status === 'authenticated' && !session?.user?.isAdmin) {
       router.push('/');
       return;
     }
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
       }
     };
 
-    if (status === 'authenticated' && session.user?.isAdmin) {
+    if (status === 'authenticated' && session?.user?.isAdmin) {
       fetchUsers();
     }
   }, [status, session, router]);
@@ -168,5 +168,13 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <SessionProvider>
+      <AdminDashboardInner />
+    </SessionProvider>
   );
 }
