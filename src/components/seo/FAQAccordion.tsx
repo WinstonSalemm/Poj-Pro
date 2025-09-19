@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FAQItem } from '@/i18n/seo.types';
 
 interface FAQAccordionProps {
@@ -116,9 +116,9 @@ const FAQAccordion: React.FC<FAQAccordionProps> = ({
               {item.q}
             </span>
             {openIndex === index ? (
-              <FaChevronUp className="text-gray-500" />
+              <ChevronUp className="text-gray-500" />
             ) : (
-              <FaChevronDown className="text-gray-500" />
+              <ChevronDown className="text-gray-500" />
             )}
           </button>
           <div 

@@ -3,10 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useTranslation } from "@/i18n/useTranslation";
-import { useSession, signOut } from 'next-auth/react';
-import { CartIcon } from "../Cart/CartIcon";
-import { AuthButton } from "../auth/AuthButton";
+// Defer non-critical header widgets to reduce initial JS and TBT
+const CartIcon = dynamic(() => import("../Cart/CartIcon"), {
+  ssr: false,
+  loading: () => <span className="inline-block w-6 h-6" aria-hidden="true" />,
+});
+
+const AuthButton = dynamic(() => import("../auth/AuthButton").then(m => ({ default: m.AuthButton })), {
+  ssr: false,
+  loading: () => null,
+});
 import { useRouter, usePathname } from "next/navigation";
 
 type Lang = "ru" | "uzb" | "eng";
@@ -21,7 +29,6 @@ export default function Header() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -169,7 +176,6 @@ export default function Header() {
                 object-contain transition-transform duration-200 hover:scale-[1.05]
                 w-[140px] xs:w-[150px] sm:w-[170px] md:w-[180px] lg:w-[190px] xl:w-[200px]
                 max-[377px]:w-[128px]"
-              priority
             />
           </Link>
         </div>
@@ -310,41 +316,9 @@ export default function Header() {
             {t(item.translationKey)}
           </Link>
         ))}
-        {/* Auth actions inside burger with slightly different style */}
+        {/* Auth actions inside burger (deferred) */}
         <div className="px-4 py-3 flex items-center gap-2">
-          {session ? (
-            <button
-              type="button"
-              onClick={async () => {
-                await signOut({ redirect: false });
-                setMobileOpen(false);
-                router.push('/');
-              }}
-              className="flex-1 text-center btn-primary"
-            >
-              {t('auth.signOut')}
-            </button>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  try { (async () => { (await import("next-auth/react")).signIn(); })(); } catch {}
-                  setMobileOpen(false);
-                }}
-                className="flex-1 btn-ghost"
-              >
-                {t('auth.signIn')}
-              </button>
-              <Link
-                href="/register"
-                onClick={() => setMobileOpen(false)}
-                className="flex-1 text-center btn-primary"
-              >
-                {t('auth.register')}
-              </Link>
-            </>
-          )}
+          <AuthButton />
         </div>
       </nav>
     </header>

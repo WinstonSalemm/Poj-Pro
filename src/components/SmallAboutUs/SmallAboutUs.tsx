@@ -3,20 +3,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import { FaTruck, FaBoxOpen, FaHandshake, FaPhoneAlt, FaChartLine } from "react-icons/fa";
-import { BsCartCheck } from "react-icons/bs";
+import { Truck, Box, Handshake, Phone, LineChart, ShoppingCart } from "lucide-react";
 
 export default function SmallAboutUs() {
   // Use default namespace typing; keys are fully-qualified (e.g., 'aboutus.*')
   const { t } = useTranslation();
 
   const reasons = [
-    { Icon: BsCartCheck, title: t("aboutus.reasons.first.title"), text: t("aboutus.reasons.first.text") },
-    { Icon: FaTruck, title: t("aboutus.reasons.delivery.title"), text: t("aboutus.reasons.delivery.text") },
-    { Icon: FaBoxOpen, title: t("aboutus.reasons.stock.title"), text: t("aboutus.reasons.stock.text") },
-    { Icon: FaHandshake, title: t("aboutus.reasons.honest.title"), text: t("aboutus.reasons.honest.text") },
-    { Icon: FaPhoneAlt, title: t("aboutus.reasons.support.title"), text: t("aboutus.reasons.support.text") },
-    { Icon: FaChartLine, title: t("aboutus.reasons.stability.title"), text: t("aboutus.reasons.stability.text") },
+    { Icon: ShoppingCart, title: t("aboutus.reasons.first.title"), text: t("aboutus.reasons.first.text") },
+    { Icon: Truck, title: t("aboutus.reasons.delivery.title"), text: t("aboutus.reasons.delivery.text") },
+    { Icon: Box, title: t("aboutus.reasons.stock.title"), text: t("aboutus.reasons.stock.text") },
+    { Icon: Handshake, title: t("aboutus.reasons.honest.title"), text: t("aboutus.reasons.honest.text") },
+    { Icon: Phone, title: t("aboutus.reasons.support.title"), text: t("aboutus.reasons.support.text") },
+    { Icon: LineChart, title: t("aboutus.reasons.stability.title"), text: t("aboutus.reasons.stability.text") },
   ];
 
   return (
@@ -66,7 +65,8 @@ export default function SmallAboutUs() {
                 width={640}
                 height={180}
                 className="h-32 md:h-36 w-auto object-contain"
-                priority
+                loading="lazy"
+                fetchPriority="low"
                 sizes="(max-width: 768px) 256px, 600px"
               />
               <div className="text-center">

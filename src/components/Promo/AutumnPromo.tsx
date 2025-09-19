@@ -1,32 +1,41 @@
 import Image from "next/image";
 import Link from "next/link";
 
+type Dict = {
+  badge: string;
+  title: string;
+  desc: string;
+  cta1: string;
+  cta2: string;
+};
+
+const DICTS: Record<'ru' | 'uz' | 'en', Readonly<Dict>> = {
+  ru: {
+    badge: "Осенняя акция",
+    title: "Оптовая цена на огнетушитель ОП-4 — 85 000 сум",
+    desc: "Сертификат. Сервис. Бесплатная доставка по Ташкенту при заказе от 5 000 000 сум.",
+    cta1: "Заказать",
+    cta2: "Каталог огнетушителей",
+  },
+  uz: {
+    badge: "Kuzgi aksiya",
+    title: "OP-4 o‘t o‘chirgich uchun ulgurji narx — 85 000 so‘m",
+    desc: "Sertifikat. Servis. Toshkent bo‘ylab yetkazib berish. 5 000 000 so‘m dan buyuk buyurtmalarga yetkazib berish.",
+    cta1: "Buyurtma berish",
+    cta2: "O‘t o‘chirgichlar katalogi",
+  },
+  en: {
+    badge: "Autumn promotion",
+    title: "Wholesale price for OP-4 extinguisher — 85,000 UZS",
+    desc: "Certified. Service. Delivery in Tashkent. Orders over 5 000 000 UZS are delivered.",
+    cta1: "Order now",
+    cta2: "Extinguishers catalog",
+  },
+} as const;
+
 export default function AutumnPromo({ locale }: { locale: string }) {
-  const t = (key: string) => {
-    const ru = {
-      badge: "Осенняя акция",
-      title: "Оптовая цена на огнетушитель ОП-4 — 85 000 сум",
-      desc: "Сертификат. Сервис. Бесплатная доставка по Ташкенту при заказе от 5 000 000 сум.",
-      cta1: "Заказать",
-      cta2: "Каталог огнетушителей",
-    } as const;
-    const uz = {
-      badge: "Kuzgi aksiya",
-      title: "OP-4 o‘t o‘chirgich uchun ulgurji narx — 85 000 so‘m",
-      desc: "Sertifikat. Servis. Toshkent bo‘ylab yetkazib berish. 5 000 000 so‘m dan buyuk buyurtmalarga yetkazib berish.",
-      cta1: "Buyurtma berish",
-      cta2: "O‘t o‘chirgichlar katalogi",
-    } as const;
-    const en = {
-      badge: "Autumn promotion",
-      title: "Wholesale price for OP-4 extinguisher — 85,000 UZS",
-      desc: "Certified. Service. Delivery in Tashkent. Orders over 5 000 000 UZS are delivered.",
-      cta1: "Order now",
-      cta2: "Extinguishers catalog",
-    } as const;
-    const dict = locale === "uz" ? uz : locale === "en" ? en : ru;
-    return (dict as any)[key];
-  };
+  const norm = (l: string): 'ru' | 'uz' | 'en' => (l === 'uz' ? 'uz' : l === 'en' ? 'en' : 'ru');
+  const t = (key: keyof Dict): string => DICTS[norm(locale)][key];
 
   return (
     <section aria-label={t("badge")} className="container-section mt-[100px]">
@@ -84,8 +93,9 @@ export default function AutumnPromo({ locale }: { locale: string }) {
               fill
               sizes="(max-width: 768px) 140px, (max-width: 1024px) 180px, 200px"
               className="object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.35)]"
-              priority
-              quality={80}
+              loading="lazy"
+              fetchPriority="low"
+              quality={70}
             />
           </div>
         </div>

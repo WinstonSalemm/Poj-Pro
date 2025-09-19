@@ -21,7 +21,9 @@ export default function Footer() {
                     height={54}
                     className="object-contain transition-transform duration-200 hover:scale-[1.05]"
                     style={{ width: '160px', height: '54px' }}
-                    priority
+                    loading="lazy"
+                    fetchPriority="low"
+                    sizes="160px"
                 />
             </div>
 
