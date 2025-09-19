@@ -141,6 +141,7 @@
     "catalog_aria": "Поиск по каталогу"
   },
   "filters": {
+    "open": "Фильтр",
     "total": "Всего",
     "type": {
       "title": "Тип",
@@ -173,7 +174,43 @@
       "in": "В наличии",
       "out": "Под заказ",
       "all": "Все"
-    }
+    },
+    "hoses": {
+      "title": "Рукава",
+      "diameter": { "title": "Диаметр" },
+      "length": { "title": "Длина" }
+    },
+    "cabinets": {
+      "title": "Шкафы",
+      "mount": {
+        "title": "Тип установки",
+        "surface": "Настенный",
+        "recessed": "Встраиваемый"
+      },
+      "sections": {
+        "title": "Отсеков",
+        "one": "1 отсек",
+        "two": "2 отсека"
+      },
+      "window": { "with": "С окошком" }
+    },
+    "ppe": {
+      "title": "СИЗ",
+      "helmet": "Каски",
+      "goggles": "Очки/Щитки",
+      "respirator": "Респираторы",
+      "gloves": "Перчатки",
+      "clothing": "Одежда",
+      "kit": "Комплекты"
+    },
+    "alarm": {
+      "title": "Сигнализация",
+      "panel": "Панели",
+      "detector": "Извещатели",
+      "sounder": "Оповещатели",
+      "beacon": "Маяки/Световые"
+    },
+    "apply": "Показать {{count}}"
   },
   "catalog": {
     "categoriesTitle": "Категории каталога",

@@ -145,7 +145,43 @@
       "in": "Omborda",
       "out": "Buyurtma asosida",
       "all": "Barchasi"
-    }
+    },
+    "hoses": {
+      "title": "Shlanglar",
+      "diameter": { "title": "Diametr" },
+      "length": { "title": "Uzunlik" }
+    },
+    "cabinets": {
+      "title": "Shkaflar",
+      "mount": {
+        "title": "O‘rnatish turi",
+        "surface": "Devoriy",
+        "recessed": "Ichiga o‘rnatiladigan"
+      },
+      "sections": {
+        "title": "Bo‘limlar",
+        "one": "1 bo‘lim",
+        "two": "2 bo‘lim"
+      },
+      "window": { "with": "Oynali" }
+    },
+    "ppe": {
+      "title": "SHV",
+      "helmet": "Kaskalar",
+      "goggles": "Ko‘zoynaklar/Yuz niqoblari",
+      "respirator": "Respiratorlar",
+      "gloves": "Qo‘lqoplar",
+      "clothing": "Kiyim",
+      "kit": "To‘plamlar"
+    },
+    "alarm": {
+      "title": "Signalizatsiya",
+      "panel": "Panellar",
+      "detector": "Detektorlar",
+      "sounder": "Ovozli ogohlantirgichlar",
+      "beacon": "Mayoq/Strob"
+    },
+    "apply": "Ko‘rsatish {{count}}"
   },
   "popularProducts": "Mashhur mahsulotlar",
   "items": {

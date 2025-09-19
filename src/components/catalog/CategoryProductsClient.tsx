@@ -86,6 +86,20 @@ export default function CategoryProductsClient({
     return override?.[l] || constName || dictName || fallbackName(rawCategory);
   }, [t, rawCategory, lang]);
 
+  // Show/enable extinguishers-specific "type" filtering only on the extinguishers category
+  const showExtinguisherType = useMemo(() => {
+    const norm = (rawCategory || '').replace(/_/g, '-');
+    const key = resolveCategoryKey(norm);
+    return key === 'fire-extinguishers' || norm === 'ognetushiteli';
+  }, [rawCategory]);
+
+  // Other category flags for dedicated filters
+  const categoryKey = useMemo(() => resolveCategoryKey((rawCategory || '').replace(/_/g, '-')) || (rawCategory || '').replace(/_/g, '-'), [rawCategory]);
+  const showHoses = categoryKey === 'fire-hoses';
+  const showCabinets = categoryKey === 'fire-cabinets';
+  const showPPE = categoryKey === 'ppe';
+  const showAlarms = categoryKey === 'fire-alarms';
+
   const filteredProducts = useMemo(() => {
     const list = !searchQuery
       ? products
@@ -107,7 +121,8 @@ export default function CategoryProductsClient({
       return true;
     });
     const byType = withPrice.filter((p) => {
-      if (!filters.type) return true;
+      // Ignore type filter outside of extinguishers category
+      if (!filters.type || !showExtinguisherType) return true;
       const text = `${p.slug} ${p.title || ''} ${p.name || ''} ${p.description || ''}`.toLowerCase();
       if (filters.type === 'op') return /(\bop[-_\s]?|\bоп[-_\s]?)/i.test(text) || /\bpowder|порошков/i.test(text);
       if (filters.type === 'ou') return /(\bou[-_\s]?|\bоу[-_\s]?)/i.test(text) || /co2|углекислот/i.test(text);
@@ -126,8 +141,84 @@ export default function CategoryProductsClient({
       const text = `${p.description || ''}`.toUpperCase();
       return filters.classes.every((c) => text.includes(c));
     });
-    return byClasses;
-  }, [products, searchQuery, filters]);
+
+    // Category-specific filters
+    const textOf = (p: Product) => `${p.slug} ${p.title || ''} ${p.name || ''} ${p.description || ''}`.toLowerCase();
+    let byCat = byClasses;
+    if (showHoses) {
+      byCat = byCat.filter((p) => {
+        const t = textOf(p);
+        // diameters
+        if (filters.diameters && filters.diameters.length > 0) {
+          const ok = filters.diameters.some((d) => new RegExp(`(?:\\b|[^0-9])${d}(?:\\b|[^0-9])`).test(t));
+          if (!ok) return false;
+        }
+        // lengths (10/20/30 m)
+        if (filters.lengths && filters.lengths.length > 0) {
+          const ok = filters.lengths.some((l) => new RegExp(`(?:\\b|[^0-9])${l}(?:\\s?(?:m|м))?`).test(t));
+          if (!ok) return false;
+        }
+        return true;
+      });
+    }
+    if (showCabinets) {
+      byCat = byCat.filter((p) => {
+        const t = textOf(p);
+        // mount type
+        if (filters.mounts && filters.mounts.length > 0) {
+          const needSurface = filters.mounts.includes('surface');
+          const needRecessed = filters.mounts.includes('recessed');
+          const hasSurface = /(настенн|наклад|surface)/i.test(t);
+          const hasRecessed = /(встраив|врезн|recessed|внутрен)/i.test(t);
+          const ok = (!needSurface || hasSurface) && (!needRecessed || hasRecessed);
+          if (!ok) return false;
+        }
+        // sections
+        if (filters.sections && filters.sections.length > 0) {
+          const needOne = filters.sections.includes('one');
+          const needTwo = filters.sections.includes('two');
+          const hasOne = /(1[ -]?(?:секц|отсек)|односекц|single)/i.test(t);
+          const hasTwo = /(2[ -]?(?:секц|отсек)|двухсекц|double)/i.test(t);
+          const ok = (!needOne || hasOne) && (!needTwo || hasTwo);
+          if (!ok) return false;
+        }
+        // window
+        if (filters.window) {
+          const hasWindow = /(окошк|окно|стекл|glass|витрин)/i.test(t);
+          if (!hasWindow) return false;
+        }
+        return true;
+      });
+    }
+    if (showPPE && filters.ppeKinds && filters.ppeKinds.length > 0) {
+      byCat = byCat.filter((p) => {
+        const t = textOf(p);
+        const map: Record<string, RegExp> = {
+          helmet: /(каск|helmet|шлем)/i,
+          goggles: /(очк|щитк|goggl|face\s*shield)/i,
+          respirator: /(респиратор|respirat|маск)/i,
+          gloves: /(перчат|glove)/i,
+          clothing: /(одежд|костюм|жилет|clothing|suit|vest)/i,
+          kit: /(комплект|kit|set)/i,
+        };
+        return filters.ppeKinds!.some((k) => map[k]?.test(t));
+      });
+    }
+    if (showAlarms && filters.alarmKinds && filters.alarmKinds.length > 0) {
+      byCat = byCat.filter((p) => {
+        const t = textOf(p);
+        const map: Record<string, RegExp> = {
+          panel: /(панел|приемно|контрольн|panel|pku|pke)/i,
+          detector: /(извещател|датчик|detector|sensor)/i,
+          sounder: /(оповещател|сирен|звуков|sounder|buzzer)/i,
+          beacon: /(маяк|светов|beacon|strobe|flash)/i,
+        };
+        return filters.alarmKinds!.some((k) => map[k]?.test(t));
+      });
+    }
+
+    return byCat;
+  }, [products, searchQuery, filters, showExtinguisherType, showHoses, showCabinets, showPPE, showAlarms]);
 
   const sortedProducts = useMemo(() => {
     const arr = [...filteredProducts];
@@ -196,21 +287,48 @@ export default function CategoryProductsClient({
       }
     }
 
-    // Reflect filters in query params for all categories (including ognetushiteli when not only-type)
+    // Reflect filters in query params for all categories
     const params = new URLSearchParams(searchParams?.toString() || '');
     // write minimal params
-    if (filters.type) params.set('type', filters.type);
+    if (showExtinguisherType && filters.type) params.set('type', filters.type);
     else params.delete('type');
     if (filters.minPrice != null) params.set('min', String(filters.minPrice)); else params.delete('min');
     if (filters.maxPrice != null) params.set('max', String(filters.maxPrice)); else params.delete('max');
     if (filters.availability) params.set('avail', filters.availability); else params.delete('avail');
     if (searchQuery) params.set('q', searchQuery); else params.delete('q');
+    // Per-category params
+    if (showHoses) {
+      if (filters.diameters && filters.diameters.length > 0) params.set('dia', filters.diameters.join(',')); else params.delete('dia');
+      if (filters.lengths && filters.lengths.length > 0) params.set('len', filters.lengths.join(',')); else params.delete('len');
+    } else {
+      params.delete('dia');
+      params.delete('len');
+    }
+    if (showCabinets) {
+      if (filters.mounts && filters.mounts.length > 0) params.set('mount', filters.mounts.join(',')); else params.delete('mount');
+      if (filters.sections && filters.sections.length > 0) params.set('sec', filters.sections.join(',')); else params.delete('sec');
+      if (filters.window) params.set('win', '1'); else params.delete('win');
+    } else {
+      params.delete('mount');
+      params.delete('sec');
+      params.delete('win');
+    }
+    if (showPPE) {
+      if (filters.ppeKinds && filters.ppeKinds.length > 0) params.set('ppe', filters.ppeKinds.join(',')); else params.delete('ppe');
+    } else {
+      params.delete('ppe');
+    }
+    if (showAlarms) {
+      if (filters.alarmKinds && filters.alarmKinds.length > 0) params.set('alarm', filters.alarmKinds.join(',')); else params.delete('alarm');
+    } else {
+      params.delete('alarm');
+    }
     const q = params.toString();
     const base = `/catalog/${encodeURIComponent(rawCategory)}`;
     const href = q ? `${base}?${q}` : base;
     if (current !== href) router.replace(href);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, searchQuery, sort, rawCategory, pathname]);
+  }, [filters, searchQuery, sort, rawCategory, pathname, showExtinguisherType]);
 
   return (
     <>
@@ -267,6 +385,7 @@ export default function CategoryProductsClient({
                   setFilters={setFilters}
                   sort={sort}
                   setSort={setSort}
+                  rawCategory={rawCategory}
                 />
               </div>
             </div>
@@ -323,6 +442,7 @@ export default function CategoryProductsClient({
             setFilters={setFilters}
             sort={sort}
             setSort={setSort}
+            rawCategory={rawCategory}
           />
 
           {/* FAQ Section (visible) — JSON-LD is already injected on server */}

@@ -145,7 +145,43 @@
       "in": "In stock",
       "out": "On order",
       "all": "All"
-    }
+    },
+    "hoses": {
+      "title": "Hoses",
+      "diameter": { "title": "Diameter" },
+      "length": { "title": "Length" }
+    },
+    "cabinets": {
+      "title": "Cabinets",
+      "mount": {
+        "title": "Mount type",
+        "surface": "Wall-mounted",
+        "recessed": "Recessed"
+      },
+      "sections": {
+        "title": "Sections",
+        "one": "1 section",
+        "two": "2 sections"
+      },
+      "window": { "with": "With window" }
+    },
+    "ppe": {
+      "title": "PPE",
+      "helmet": "Helmets",
+      "goggles": "Goggles/Face shields",
+      "respirator": "Respirators",
+      "gloves": "Gloves",
+      "clothing": "Clothing",
+      "kit": "Kits"
+    },
+    "alarm": {
+      "title": "Fire alarm",
+      "panel": "Panels",
+      "detector": "Detectors",
+      "sounder": "Sounders",
+      "beacon": "Beacons/Strobes"
+    },
+    "apply": "Show {{count}}"
   },
   "common": {
     "tryAgain": "Try again",
