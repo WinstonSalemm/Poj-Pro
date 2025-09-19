@@ -63,7 +63,6 @@ export default function CategoryGridClient({ dictionary, labels, imageMap, categ
                       fill
                       sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 200px"
                       loading="lazy"
-                      unoptimized
                       className="object-contain transition-transform duration-300 group-hover:scale-[1.05]"
                       onError={() => {
                         setFallbackSrc((prev) => ({ ...prev, [cat]: "/OtherPics/logo.png" }));

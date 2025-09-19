@@ -104,6 +104,12 @@ const nextConfig = {
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
+      }, {
+        // Cache HTML responses of catalog and product pages at CDN for 60s with SWR for a day
+        source: '/catalog/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=86400' },
+        ],
       }] : []),
     ];
   },

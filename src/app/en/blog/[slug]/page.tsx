@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { loadPost, getAllPostSlugs, getPostAlternates, getRelatedPosts } from '@/lib/blog/loader';
@@ -73,8 +74,18 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         </aside>
       )}
       {post.frontmatter.cover ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.frontmatter.cover} alt="cover" className="rounded my-4" />
+        <div className="relative w-full aspect-[16/9] rounded my-4 overflow-hidden bg-gray-50">
+          <Image
+            src={post.frontmatter.cover}
+            alt={post.frontmatter.title || 'cover'}
+            fill
+            sizes="(max-width: 768px) 100vw, 768px"
+            priority={false}
+            loading="lazy"
+            className="object-cover"
+            quality={70}
+          />
+        </div>
       ) : null}
       <div dangerouslySetInnerHTML={{ __html: post.html || '' }} />
 

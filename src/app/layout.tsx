@@ -108,9 +108,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://poj-pro.uz" />
         <link rel="preconnect" href="https://placehold.co" />
 
-        {/* Preload above-the-fold images (hero, promo) */}
-        <link rel="preload" as="image" href="/OtherPics/product1photo.avif" />
-        <link rel="preload" as="image" href="/ProductImages/Op-4.png" />
+        {/* Rely on next/image priority to preload hero; avoid manual image preloads to reduce blocking */}
 
         {/* Inline critical CSS: stabilize hero frame height to avoid CLS */}
         <style>{`
@@ -119,9 +117,9 @@ export default async function RootLayout({
           @media (max-width:768px){.hero-lcp-frame{height:280px}}
         `}</style>
 
-        {/* Early guard: fix wrongly injected CSS tags. Run only in production to avoid dev hydration mismatch warnings. */}
+        {/* Fix wrongly injected CSS tags — defer until afterInteractive to avoid blocking */}
         {isProd && (
-          <Script id="fix-css-tags-early" nonce={nonce} strategy="beforeInteractive">
+          <Script id="fix-css-tags-early" nonce={nonce} strategy="afterInteractive">
             {`
               try {
                 // Replace any <script src="*.css"> with <link rel="stylesheet">
@@ -158,9 +156,9 @@ export default async function RootLayout({
           />
         ) : null}
 
-        {/* GTM + Consent (prod) */}
+        {/* GTM + Consent (prod) — load afterInteractive to avoid render‑blocking */}
         {isProd && GTM_ID ? (
-          <Script id="gtm-init" nonce={nonce} strategy="beforeInteractive">
+          <Script id="gtm-init" nonce={nonce} strategy="afterInteractive">
             {`
               (function(){
                 window.dataLayer = window.dataLayer || [];

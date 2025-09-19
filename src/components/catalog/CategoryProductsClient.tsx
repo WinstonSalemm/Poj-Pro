@@ -533,14 +533,13 @@ export default function CategoryProductsClient({
                     return (
                       <Link key={k} href={href} className="block group border border-gray-200 rounded-xl bg-white hover:shadow transition">
                         <div className="aspect-square rounded-t-xl overflow-hidden bg-gray-100 relative">
-                          {/* Next/Image unoptimized for category tiles to keep CDN behavior and satisfy lint */}
                           <Image
                             src={img}
                             alt={label}
                             fill
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
                             className="object-contain"
-                            unoptimized
+                            loading="lazy"
                             priority={false}
                           />
                         </div>
