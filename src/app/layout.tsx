@@ -103,6 +103,21 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://poj-pro.uz" />
         <link rel="preconnect" href="https://placehold.co" />
 
+        {/* Google Ads / GA4 tag for G-90DRJPRBL5 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-90DRJPRBL5"
+          strategy="afterInteractive"
+          nonce={nonce}
+        />
+        <Script id="gtag-init" nonce={nonce} strategy="afterInteractive">
+          {`
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-90DRJPRBL5');
+          `}
+        </Script>
+
         {/* Rely on next/image priority to preload hero; avoid manual image preloads to reduce blocking */}
 
         {/* Inline critical CSS: stabilize hero frame height to avoid CLS */}
@@ -183,8 +198,8 @@ export default async function RootLayout({
           </Script>
         ) : null}
 
-        {/* GA4 (prod) */}
-        {isProd && GA_ID ? (
+        {/* GA4 (prod) — load gtag.js only if GA_ID differs from Ads tag to avoid duplicate loader */}
+        {isProd && GA_ID && GA_ID !== 'G-90DRJPRBL5' ? (
           <Script
             id="ga-loader"
             nonce={nonce}
