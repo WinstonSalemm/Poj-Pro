@@ -219,7 +219,7 @@ function OrderDetailsInner() {
                 </td>
               </tr>
               <tr className="border-t border-gray-200">
-                <td colSpan={3} className="px-6 py-4 text-right text-base font-medium text-gray-900">
+                <td colSpan={3} className="px-6 py-4 text-right text-base font-medium !text-gray-900">
                   Total
                 </td>
                 <td className="px-6 py-4 text-right text-base font-bold text-gray-900">
