@@ -17,6 +17,15 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isProd = process.env.NODE_ENV === 'production';
 
+  // Canonicalize bare domain to www
+  const hostname = req.nextUrl.hostname;
+  if (hostname === 'poj-pro.uz') {
+    const redirectUrl = new URL(req.nextUrl.href);
+    redirectUrl.protocol = 'https:';
+    redirectUrl.hostname = 'www.poj-pro.uz';
+    return NextResponse.redirect(redirectUrl, 301);
+  }
+
   // 1) Обработка статических ассетов с кешированием (только в ПРОДАКШЕНЕ)
   if (
     isProd && (
