@@ -124,15 +124,12 @@ export function middleware(req: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
 
   const res = NextResponse.next({ request: { headers: requestHeaders } });
-  // CSP выставляем всегда здесь, чтобы прокинуть nonce для инлайн-скриптов
   res.headers.set('Content-Security-Policy', csp);
 
   return setCsrfCookie(req, res);
 }
 
-// Запускаем middleware для всего, КРОМЕ api/_next/статических файлов
+// Отключаем src middleware: корневой middleware.js является единственным активным
 export const config = {
-  matcher: [
-    '/((?!api|_next|static|images|favicon.ico|icon|apple-touch-icon|.*\\..*).*)',
-  ],
+  matcher: [],
 };
