@@ -26,7 +26,7 @@ async function fetchCategories(_locale: Locale) {
 
 export async function getSitemapUrls() {
   const locales: Locale[] = [...LOCALES];
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://poj-pro.uz';
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '') || 'https://www.poj-pro.uz';
   const now = new Date().toISOString();
 
   // Static pages that don't change often

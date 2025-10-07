@@ -4,6 +4,16 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+// Security headers applied to all routes
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: 'upgrade-insecure-requests' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  // Enable after HTTPS is fully stable across all subdomains:
+  // { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -57,7 +67,6 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'poj-pro.uz' },
       { protocol: 'https', hostname: 'www.poj-pro.uz' },
       { protocol: 'https', hostname: 'cdn.poj-pro.uz' },
       { protocol: 'https', hostname: 'placehold.co' },
@@ -75,24 +84,15 @@ const nextConfig = {
   },
   async headers() {
     return [
-      ...(process.env.NODE_ENV === 'production' ? [{
+      {
         source: '/(.*)',
-        headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'geolocation=(), microphone=(), camera=()' },
-        ],
-      }] : []),
+        headers: securityHeaders,
+      },
       // Strong caching for static assets — PRODUCTION ONLY
       ...(process.env.NODE_ENV === 'production' ? [{
         source: '/:path*(svg|jpg|jpeg|png|gif|ico|css|js)',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       }, {
         source: '/_next/static/:path*',
