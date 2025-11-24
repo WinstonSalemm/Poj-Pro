@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { cacheGet, cacheSet, cacheDel } from './redis';
 
 export interface CacheOptions {
@@ -8,8 +8,8 @@ export interface CacheOptions {
 }
 
 export function withApiCache(options: CacheOptions = {}) {
-  return function (handler: (req: NextRequest) => Promise<NextResponse>) {
-    return async function (req: NextRequest): Promise<NextResponse> {
+  return function (handler: (req: NextRequest) => Promise<Response>) {
+    return async function (req: NextRequest): Promise<Response> {
       const {
         ttl = 3600,
         keyGenerator = (req) => `api:${req.url}`,
@@ -27,8 +27,8 @@ export function withApiCache(options: CacheOptions = {}) {
         // Try to get from cache
         const cached = await cacheGet(cacheKey);
         if (cached !== null) {
-          // cached is a JSON string; return as-is without double-stringifying
-          return new NextResponse(cached, {
+          // cached is a serialized body; return as Response without re-parsing JSON
+          return new Response(cached, {
             status: 200,
             headers: {
               'Content-Type': 'application/json',
@@ -42,17 +42,19 @@ export function withApiCache(options: CacheOptions = {}) {
         const response = await handler(req);
         
         // Cache successful responses
-        if (response.status === 200) {
-          const responseData = await response.json();
-          await cacheSet(cacheKey, JSON.stringify(responseData), ttl);
+        if (response.ok) {
+          const contentType = response.headers.get('content-type') ?? 'application/json';
+          const body = await response.text();
+          await cacheSet(cacheKey, body, ttl);
           
-          return new NextResponse(JSON.stringify(responseData), {
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Cache': 'MISS',
-              'Cache-Control': `public, max-age=${ttl}`,
-            },
+          const headers = new Headers(response.headers);
+          headers.set('Content-Type', contentType);
+          headers.set('X-Cache', 'MISS');
+          headers.set('Cache-Control', `public, max-age=${ttl}`);
+
+          return new Response(body, {
+            status: response.status,
+            headers,
           });
         }
 

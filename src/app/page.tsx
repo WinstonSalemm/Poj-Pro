@@ -6,7 +6,6 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { generateOrganization, generateWebSite } from "@/components/seo/snippets";
 import Link from "next/link";
 import HeroBanner from "@/components/Hero/HeroBanner";
-import AutumnPromo from "@/components/Promo/AutumnPromo";
 import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
 import { SITE_URL } from "@/lib/site";
 
@@ -27,7 +26,6 @@ export default async function HomePage() {
         </h1>
       </section>
       <HeroBanner />
-      <AutumnPromo locale={locale} />
       <LocalBusinessJsonLd
         name="POJ PRO"
         url={SITE_URL}
