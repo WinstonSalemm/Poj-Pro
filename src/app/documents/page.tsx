@@ -12,6 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     descriptionKey: "documents.meta_description",
     path: "/documents",
     lang,
+    keywords: ['документы', 'сертификаты', 'лицензии', 'POJ PRO', 'пожарная безопасность'],
   });
 }
 

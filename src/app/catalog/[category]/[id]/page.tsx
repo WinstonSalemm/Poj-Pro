@@ -43,9 +43,13 @@ function normalizeImageUrl(u?: string): string {
 export async function generateMetadata({ params }: { params: Promise<{ id: string; category: string }> }): Promise<Metadata> {
   const locale = await getLocale();
   const { id, category } = await params;
+
+  // Нормализуем локаль для запроса к базе данных (en -> eng, uz -> uzb)
+  const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
+
   const dbProduct = await prisma.product.findUnique({
     where: { slug: id },
-    include: { i18n: { where: { locale }, select: { title: true, summary: true } } },
+    include: { i18n: { where: { locale: dbLocale }, select: { title: true, summary: true } } },
   });
 
   if (!dbProduct) return { title: 'Товар не найден' };
@@ -64,20 +68,60 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const safeCategory = String(category || '').trim();
   const canonical = `${SITE_URL}/catalog/${safeCategory}/${dbProduct.slug}`.replace(/\/+/g, '/');
+
+  // Generate proper hreflang URLs
+  const basePath = `/catalog/${safeCategory}/${dbProduct.slug}`;
+  const hreflangUrls = {
+    'ru': `${SITE_URL}${basePath}`,
+    'en': `${SITE_URL}/en${basePath}`,
+    'uz': `${SITE_URL}/uz${basePath}`,
+    'x-default': `${SITE_URL}${basePath}`,
+  };
+
+  // Generate keywords from product data
+  const keywords = [
+    title,
+    safeCategory,
+    'купить в Ташкенте',
+    'пожарная безопасность',
+    dbProduct.brand || '',
+    'POJ PRO',
+  ].filter(Boolean).join(', ');
+
   return {
     title: `${title} - купить в Ташкенте | POJ-PRO.UZ`,
     description,
+    keywords,
     alternates: {
       canonical,
-      languages: {
-        ru: canonical,
-        en: canonical,
-        uz: canonical,
-        'x-default': canonical,
+      languages: hreflangUrls,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
     },
     openGraph: {
       url: canonical,
+      title: `${title} | POJ-PRO.UZ`,
+      description,
+      type: 'website',
+      siteName: 'POJ PRO',
+      images: mainImage ? [{
+        url: normalizeImageUrl(mainImage),
+        width: 1200,
+        height: 630,
+        alt: title,
+      }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
       title: `${title} | POJ-PRO.UZ`,
       description,
       images: mainImage ? [normalizeImageUrl(mainImage)] : [],
@@ -90,11 +134,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const locale = await getLocale();
   const dict = await getDictionary(locale);
 
+  // Нормализуем локаль для запроса к базе данных (en -> eng, uz -> uzb)
+  const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
+
   const dbProduct = await prisma.product.findUnique({
     where: { slug: id },
     include: {
       category: { select: { id: true, name: true, slug: true } },
-      i18n: { where: { locale }, select: { title: true, summary: true, description: true } },
+      i18n: { where: { locale: dbLocale }, select: { title: true, summary: true, description: true } },
     },
   });
 
@@ -146,8 +193,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const categoryLabel =
     (override?.[lang] || constName || dictName || dbProduct.category?.name || fallbackName(categorySlug));
 
-  const normalizeForTranslation = (input: string): string => {
-    const s = input.trim().toLowerCase();
+  const normalizeForTranslation = (input: string | null | undefined | unknown): string => {
+    // Преобразуем input в строку, если это не строка
+    const str = typeof input === 'string' ? input : (input != null ? String(input) : '');
+    const s = str.trim().toLowerCase();
     const translationMap: Record<string, string> = {
       'вес': 'weight', 'цвет': 'color', 'производитель': 'manufacturer', 'тип': 'type',
       'объем': 'volume', 'материал': 'material', 'длина': 'length', 'ширина': 'width',
@@ -178,11 +227,29 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     return getNestedValue(dict as unknown as Record<string, unknown>, key) ?? defaultValue;
   };
 
+  // Нормализуем локаль для specs (в базе: ru, eng, uzb; в Next.js: ru, en, uz)
+  const specsLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
+
   const specsEntries: [string, string][] = dbProduct.specs && typeof dbProduct.specs === 'object'
-    ? Object.entries(dbProduct.specs as Record<string, string>).map(([key, value]) => [
-        t(`productSpecs.${normalizeForTranslation(key)}`, key),
-        t(`productSpecValues.${normalizeForTranslation(value)}`, value),
-      ])
+    ? Object.entries(dbProduct.specs as Record<string, unknown>)
+      .filter(([key, value]) => key != null && value != null) // Фильтруем null/undefined
+      .map(([key, value]) => {
+        // Извлекаем значение для текущего языка из объекта переводов
+        let specValue = '';
+        if (typeof value === 'object' && value !== null) {
+          const valueObj = value as Record<string, unknown>;
+          // Пробуем получить значение для текущего языка, затем для ru как fallback
+          specValue = String(valueObj[specsLocale] || valueObj['ru'] || valueObj['eng'] || valueObj['uzb'] || '');
+        } else {
+          // Если значение не объект, используем как есть
+          specValue = String(value);
+        }
+
+        return [
+          t(`productSpecs.${normalizeForTranslation(key)}`, String(key)),
+          t(`productSpecValues.${normalizeForTranslation(specValue)}`, specValue),
+        ];
+      })
     : [];
 
   const priceNumber = dbProduct.price != null ? Number(dbProduct.price) : null;

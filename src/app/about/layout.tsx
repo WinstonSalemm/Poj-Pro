@@ -11,6 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
     descriptionKey: 'aboutus.meta.description',
     path: '/about',
     lang,
+    keywords: ['о нас', 'компания', 'POJ PRO', 'пожарная безопасность', 'Ташкент'],
   });
 }
 

@@ -143,8 +143,8 @@ if (!i18n.isInitialized) {
     .use(initReactI18next)
     .use(LanguageDetector)
     .init({
-      ...getOptions('ru', ['translation', 'aboutus']),
-      ns: ['translation', 'aboutus'],
+      ...getOptions('ru', ['translation', 'aboutus', 'common']),
+      ns: ['translation', 'aboutus', 'common'],
       defaultNS: 'aboutus',
       resources,
       detection: detectionOptions,

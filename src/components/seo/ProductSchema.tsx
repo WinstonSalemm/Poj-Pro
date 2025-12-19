@@ -47,29 +47,50 @@ export const ProductSchema: React.FC<ProductSchemaProps> = ({ product }) => {
     description: product.description,
     image: product.image,
     sku: product.sku,
-    brand: { name: product.brand || 'POJ PRO' },
+    mpn: product.sku, // Manufacturer Part Number
+    brand: {
+      '@type': 'Brand',
+      name: product.brand || 'POJ PRO',
+    },
     category: product.category,
+    productID: product.sku,
     offers: clean({
       '@type': 'Offer',
       price: Number.isFinite(basePrice) ? basePrice : Number(basePrice || 0),
       priceCurrency: product.priceCurrency || 'UZS',
-      availability,
+      availability: availability,
       url: product.url,
+      priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Valid for 1 year
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: {
+        '@type': 'Organization',
+        name: 'POJ PRO',
+      },
     }),
     aggregateRating: product.aggregateRating
       ? clean({
-          '@type': 'AggregateRating',
-          ratingValue: product.aggregateRating.ratingValue,
-          reviewCount: product.aggregateRating.reviewCount,
-        })
+        '@type': 'AggregateRating',
+        ratingValue: product.aggregateRating.ratingValue,
+        reviewCount: product.aggregateRating.reviewCount,
+        bestRating: 5,
+        worstRating: 1,
+      })
       : undefined,
     review: product.review?.map((r) =>
       clean({
         '@type': 'Review',
-        author: r.author,
+        author: {
+          '@type': 'Person',
+          name: r.author,
+        },
         datePublished: r.datePublished,
         reviewBody: r.reviewBody,
-        reviewRating: clean({ '@type': 'Rating', ratingValue: r.reviewRating.ratingValue }),
+        reviewRating: clean({
+          '@type': 'Rating',
+          ratingValue: r.reviewRating.ratingValue,
+          bestRating: 5,
+          worstRating: 1,
+        }),
       })
     ),
   });

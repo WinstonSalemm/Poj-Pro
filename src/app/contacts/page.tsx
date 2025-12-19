@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     descriptionKey: "contacts.seo.description",
     path: "/contacts",
     lang,
+    keywords: ['контакты', 'связаться', 'адрес', 'телефон', 'POJ PRO', 'Ташкент'],
   });
 }
 

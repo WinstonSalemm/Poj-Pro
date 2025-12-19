@@ -43,8 +43,26 @@ export const metadata: Metadata = {
   },
   description:
     'Продажа огнетушителей (ОП, ОУ), пожарных шкафов, рукавов и СИЗ в Ташкенте. Доставка, обслуживание, перезарядка. Официальные сертификаты.',
+  keywords: 'огнетушители, пожарная безопасность, пожарное оборудование, Ташкент, POJ PRO, огнетушители ОП, огнетушители ОУ, пожарные шкафы, пожарные рукава, СИЗ, средства пожаротушения',
   alternates: {
     canonical: '/',
+    languages: {
+      'ru': SITE_URL,
+      'en': `${SITE_URL}/en`,
+      'uz': `${SITE_URL}/uz`,
+      'x-default': SITE_URL,
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   openGraph: {
     title: 'POJ PRO — Огнетушители и пожарная безопасность в Ташкенте',
@@ -54,14 +72,19 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     type: 'website',
     locale: 'ru_RU',
-    images: ['/OtherPics/favicon-large.webp'],
+    images: [{
+      url: `${SITE_URL}/OtherPics/favicon-large.webp`,
+      width: 1200,
+      height: 630,
+      alt: 'POJ PRO — Пожарная безопасность',
+    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'POJ PRO — Огнетушители и пожарная безопасность в Ташкенте',
     description:
       'Продажа огнетушителей (ОП, ОУ), пожарных шкафов, рукавов и СИЗ в Ташкенте. Доставка, обслуживание, перезарядка. Официальные сертификаты.',
-    images: ['/OtherPics/favicon-large.webp'],
+    images: [`${SITE_URL}/OtherPics/favicon-large.webp`],
   },
 };
 
@@ -264,7 +287,7 @@ export default async function RootLayout({
           <I18nProvider initialLocale={locale}>
             <CartProvider>
               <Header />
-              <main id="main-content" className="flex-grow">{children}</main>
+              <main id="main-content" className="flex-grow pt-[68px]">{children}</main>
               <Footer />
               <ClientWidgets />
             </CartProvider>

@@ -6,8 +6,12 @@
   "guide": {
     "title": "Yong'in xavfsizligi bo'yicha gid",
     "intro": "Uy, ofis va omborlarda yong'in xavfsizligi uskunalarini qayerga, nechta va nima uchun o'rnatish bo'yicha amaliy maslahatlar.",
-    "toc": { "title": "Mundarija" },
-    "quickLinks": { "title": "Katalogga tezkor havolalar" },
+    "toc": {
+      "title": "Mundarija"
+    },
+    "quickLinks": {
+      "title": "Katalogga tezkor havolalar"
+    },
     "tablesTitle": "Minimal to'plam (taxminan)",
     "tables": {
       "headers": {
@@ -17,20 +21,121 @@
         "notes": "Izohlar"
       },
       "apartment": [
-        { "type": "OP‑5 / OP‑10", "qty": "1–2", "mount": "Kronshteyn ~1.5 m", "notes": "Chiqish/oshxona yonida" },
-        { "type": "OU‑3 / OU‑5", "qty": "1", "mount": "Kronshteyn", "notes": "Elektr shit yonida" },
-        { "type": "Tutun detektori", "qty": "2–3", "mount": "Shift", "notes": "Yo'lak/yotoq xonalari" }
+        {
+          "type": "OP‑5 / OP‑10",
+          "qty": "1–2",
+          "mount": "Kronshteyn ~1.5 m",
+          "notes": "Chiqish/oshxona yonida"
+        },
+        {
+          "type": "OU‑3 / OU‑5",
+          "qty": "1",
+          "mount": "Kronshteyn",
+          "notes": "Elektr shit yonida"
+        },
+        {
+          "type": "Tutun detektori",
+          "qty": "2–3",
+          "mount": "Shift",
+          "notes": "Yo'lak/yotoq xonalari"
+        }
       ],
       "office": [
-        { "type": "OP‑5 / OP‑10", "qty": "me'yor bo'yicha", "mount": "Kronshteyn", "notes": "Qavat bo'ylab taqsimlash" },
-        { "type": "OU‑5", "qty": "1+", "mount": "Kronshteyn", "notes": "Shit/server xonasi" },
-        { "type": "Yong'in shkafi", "qty": "loyiha bo'yicha", "mount": "Devoriy", "notes": "Shlang+stvol+ventil" }
+        {
+          "type": "OP‑5 / OP‑10",
+          "qty": "me'yor bo'yicha",
+          "mount": "Kronshteyn",
+          "notes": "Qavat bo'ylab taqsimlash"
+        },
+        {
+          "type": "OU‑5",
+          "qty": "1+",
+          "mount": "Kronshteyn",
+          "notes": "Shit/server xonasi"
+        },
+        {
+          "type": "Yong'in shkafi",
+          "qty": "loyiha bo'yicha",
+          "mount": "Devoriy",
+          "notes": "Shlang+stvol+ventil"
+        }
       ],
       "warehouse": [
-        { "type": "OP‑10 / OP‑50", "qty": "bir tekis", "mount": "Kronshteyn/aravacha", "notes": "Qamrov zonalari" },
-        { "type": "Kukunli modul (MPP)", "qty": "xavfga ko'ra", "mount": "Mahkamlash", "notes": "Mahalliy himoya" },
-        { "type": "Gidrant/shkaf", "qty": "loyiha bo'yicha", "mount": "Doimiy", "notes": "Kirish imkoniyati" }
+        {
+          "type": "OP‑10 / OP‑50",
+          "qty": "bir tekis",
+          "mount": "Kronshteyn/aravacha",
+          "notes": "Qamrov zonalari"
+        },
+        {
+          "type": "Kukunli modul (MPP)",
+          "qty": "xavfga ko'ra",
+          "mount": "Mahkamlash",
+          "notes": "Mahalliy himoya"
+        },
+        {
+          "type": "Gidrant/shkaf",
+          "qty": "loyiha bo'yicha",
+          "mount": "Doimiy",
+          "notes": "Kirish imkoniyati"
+        }
       ]
+    },
+    "minimalKits": {
+      "title": "Binolar turlari bo'yicha minimal yong'in xavfsizligi uskunalari to'plami",
+      "note": "<strong>Muhim:</strong> Talablar maydon, qavatlar soni va binoning maqsadiga qarab farq qilishi mumkin. Kerakli uskunalarni aniq hisoblash uchun mutaxassislar bilan maslahatlashish tavsiya etiladi.",
+      "buildings": {
+        "apartment": {
+          "title": "Xonadon",
+          "items": [
+            "Kukunli o'chirgich OP-5 (1 dona)",
+            "Tutun detektori (1 dona)",
+            "Birinchi yordam dastasi",
+            "O'tga chidamli mato (1 dona)"
+          ]
+        },
+        "office": {
+          "title": "Ofis",
+          "items": [
+            "O'chirgich OP-5 (100 m² uchun 1 dona)",
+            "Yong'in shkafi shlang bilan (1 dona)",
+            "Yong'in signalizatsiya tizimi",
+            "Evakuatsiya rejasi",
+            "O'tga chidamli mato (2 dona)"
+          ]
+        },
+        "house": {
+          "title": "Uy",
+          "items": [
+            "O'chirgich OP-5 (2-3 dona)",
+            "Yong'in shkafi shlang bilan (1 dona)",
+            "Yong'in detektorlari (qavatlar bo'yicha)",
+            "O'tga chidamli mato (2 dona)",
+            "Yong'in narvoni (agar 2+ qavat bo'lsa)"
+          ]
+        },
+        "gasStation": {
+          "title": "Yoqilg'i quyish shoxobchasi",
+          "items": [
+            "O'chirgich OP-10 (kamida 2 dona)",
+            "Yong'in shkafi shlang bilan (2+ dona)",
+            "Avtomatik yong'in o'chirish tizimi",
+            "Yong'in signalizatsiyasi",
+            "Qum va belkuraklar (yoqilg'i to'kilishi uchun)",
+            "O'tga chidamli mato (3+ dona)"
+          ]
+        },
+        "electricalPanel": {
+          "title": "Elektr shchiti",
+          "items": [
+            "Uglerodli o'chirgich OU-2 (1 dona)",
+            "Kukunli o'chirgich OP-5 (1 dona)",
+            "Tutun detektori (1 dona)",
+            "O'tga chidamli mato (1 dona)",
+            "Ogohlantiruvchi belgilar"
+          ]
+        }
+      }
     },
     "cta": {
       "title": "Tanlashda yordam kerakmi?",
@@ -93,18 +198,54 @@
     },
     "faqTitle": "Ko'p so'raladigan savollar",
     "faq": [
-      { "q": "OP va OU o‘rtasidagi farq nima?", "a": "OP — kukunli, A/B/C/E sinflarida universal, iz qoldiradi. OU — karbonat angidrid (CO2), elektr jihozlari va suyuqliklar uchun, iz qoldirmaydi, yopiq kichik xonalarda xavfli (bo‘g‘ilish havfi)." },
-      { "q": "O‘t o‘chirgich hajmini qanday tanlash kerak?", "a": "Uy: OP‑5/OP‑10. Ofis: maydon/kategoriya me’yorlariga binoan OP‑5–10. Ombor: OP‑10/OP‑50 va aravachalar. Yong‘in sinflari va kirish qulayligini hisobga oling." },
-      { "q": "CO2 bilan qog‘oz/ yog‘ochni o‘chirish mumkinmi?", "a": "CO2 elektr jihozlari va suyuqliklarda samarali; A sinfi (qog‘oz/ yog‘och) uchun kukun/suv/ko‘pik ma’qul. CO2 tez tarqaladi, qayta yonish ehtimoli bor." },
-      { "q": "A/B/C/E yong‘in sinflari nimani anglatadi?", "a": "A — qattiq moddalar (qog‘oz, yog‘och), B — suyuqliklar, C — gazlar, E — kuchlanish ostidagi elektr. O‘t o‘chirgichni sinfga mos tanlang." },
-      { "q": "Qachon servis/qayta zaryad kerak?", "a": "Har qanday ishlatishdan keyin; pasportdagi servis intervaliga muvofiq; bosim yashil zonadan chiqqanda; shikastlanganda." },
-      { "q": "O‘t o‘chirgichni qanday saqlash kerak?", "a": "Quruq joyda, issiqlik manbalaridan yiroqda, oson kirish mumkin bo‘lgan joyda; kronshteynga mahkamlangan, plomba butun, manometr yashil zonada." },
-      { "q": "Belgilar va evakuatsiya rejasi kerakmi?", "a": "Ofis/omborlar uchun — ha: rejalar, chiqish belgilari, yo‘nalish strelkalari, o‘chirish vositalari belgilar." },
-      { "q": "Elektr xonasi/server uchun nimalar kerak?", "a": "Yaqinda OU‑3/5, zaxira sifatida OP; tutun/harorat detektorlari, ogohlantirish; xonani toza saqlang, yong‘inga chidamli eshiklar." },
-      { "q": "Yong‘in shkaflariga qo‘yiladigan talablar?", "a": "Kirish qulayligi, belgilanishi, to‘liq jihozlangan (shalang, stvol, ventil), uzilish va chalg‘ishlar yo‘q; shalanglarni vaqti‑vaqti bilan bosim sinovidan o‘tkazish." },
-      { "q": "O‘qitish qancha tez‑tez o‘tkaziladi?", "a": "Ishga qabulda boshlang‘ich yo‘riqnoma va yiliga 1–2 marta evakuatsiya mashg‘ulotlari (mahalliy me’yorlarni tekshiring)." },
-      { "q": "Qaysi hujjatlar kerak bo‘ladi?", "a": "Muvofiqlik sertifikatlari, mahsulot pasportlari, servis jurnallari, qayta zaryad/sinov dalolatnomalari." },
-      { "q": "Mashinada o‘t o‘chirgich olib yurish mumkinmi?", "a": "Ha, avtomobil kronshteyn/remenlarini ishlating, dumalab ketmasligi uchun mahkamlang, harorat me’yorlariga va bosimga rioya qiling." }
+      {
+        "q": "OP va OU o‘rtasidagi farq nima?",
+        "a": "OP — kukunli, A/B/C/E sinflarida universal, iz qoldiradi. OU — karbonat angidrid (CO2), elektr jihozlari va suyuqliklar uchun, iz qoldirmaydi, yopiq kichik xonalarda xavfli (bo‘g‘ilish havfi)."
+      },
+      {
+        "q": "O‘t o‘chirgich hajmini qanday tanlash kerak?",
+        "a": "Uy: OP‑5/OP‑10. Ofis: maydon/kategoriya me’yorlariga binoan OP‑5–10. Ombor: OP‑10/OP‑50 va aravachalar. Yong‘in sinflari va kirish qulayligini hisobga oling."
+      },
+      {
+        "q": "CO2 bilan qog‘oz/ yog‘ochni o‘chirish mumkinmi?",
+        "a": "CO2 elektr jihozlari va suyuqliklarda samarali; A sinfi (qog‘oz/ yog‘och) uchun kukun/suv/ko‘pik ma’qul. CO2 tez tarqaladi, qayta yonish ehtimoli bor."
+      },
+      {
+        "q": "A/B/C/E yong‘in sinflari nimani anglatadi?",
+        "a": "A — qattiq moddalar (qog‘oz, yog‘och), B — suyuqliklar, C — gazlar, E — kuchlanish ostidagi elektr. O‘t o‘chirgichni sinfga mos tanlang."
+      },
+      {
+        "q": "Qachon servis/qayta zaryad kerak?",
+        "a": "Har qanday ishlatishdan keyin; pasportdagi servis intervaliga muvofiq; bosim yashil zonadan chiqqanda; shikastlanganda."
+      },
+      {
+        "q": "O‘t o‘chirgichni qanday saqlash kerak?",
+        "a": "Quruq joyda, issiqlik manbalaridan yiroqda, oson kirish mumkin bo‘lgan joyda; kronshteynga mahkamlangan, plomba butun, manometr yashil zonada."
+      },
+      {
+        "q": "Belgilar va evakuatsiya rejasi kerakmi?",
+        "a": "Ofis/omborlar uchun — ha: rejalar, chiqish belgilari, yo‘nalish strelkalari, o‘chirish vositalari belgilar."
+      },
+      {
+        "q": "Elektr xonasi/server uchun nimalar kerak?",
+        "a": "Yaqinda OU‑3/5, zaxira sifatida OP; tutun/harorat detektorlari, ogohlantirish; xonani toza saqlang, yong‘inga chidamli eshiklar."
+      },
+      {
+        "q": "Yong‘in shkaflariga qo‘yiladigan talablar?",
+        "a": "Kirish qulayligi, belgilanishi, to‘liq jihozlangan (shalang, stvol, ventil), uzilish va chalg‘ishlar yo‘q; shalanglarni vaqti‑vaqti bilan bosim sinovidan o‘tkazish."
+      },
+      {
+        "q": "O‘qitish qancha tez‑tez o‘tkaziladi?",
+        "a": "Ishga qabulda boshlang‘ich yo‘riqnoma va yiliga 1–2 marta evakuatsiya mashg‘ulotlari (mahalliy me’yorlarni tekshiring)."
+      },
+      {
+        "q": "Qaysi hujjatlar kerak bo‘ladi?",
+        "a": "Muvofiqlik sertifikatlari, mahsulot pasportlari, servis jurnallari, qayta zaryad/sinov dalolatnomalari."
+      },
+      {
+        "q": "Mashinada o‘t o‘chirgich olib yurish mumkinmi?",
+        "a": "Ha, avtomobil kronshteyn/remenlarini ishlating, dumalab ketmasligi uchun mahkamlang, harorat me’yorlariga va bosimga rioya qiling."
+      }
     ]
   },
   "popularProductsBlock": {
@@ -138,8 +279,12 @@
       "between500k2m": "500 000 – 2 000 000",
       "gt2m": "> 2 000 000"
     },
-    "volume": { "title": "Hajm/vazn" },
-    "fireclass": { "title": "Yong‘in sinfi" },
+    "volume": {
+      "title": "Hajm/vazn"
+    },
+    "fireclass": {
+      "title": "Yong‘in sinfi"
+    },
     "availability": {
       "title": "Mavjudligi",
       "in": "Omborda",
@@ -148,8 +293,12 @@
     },
     "hoses": {
       "title": "Shlanglar",
-      "diameter": { "title": "Diametr" },
-      "length": { "title": "Uzunlik" }
+      "diameter": {
+        "title": "Diametr"
+      },
+      "length": {
+        "title": "Uzunlik"
+      }
     },
     "cabinets": {
       "title": "Shkaflar",
@@ -163,7 +312,9 @@
         "one": "1 bo‘lim",
         "two": "2 bo‘lim"
       },
-      "window": { "with": "Oynali" }
+      "window": {
+        "with": "Oynali"
+      }
     },
     "ppe": {
       "title": "SHV",
@@ -229,7 +380,9 @@
     "sectionAriaLabel": "Mahsulot kategoriyalari"
   },
   "lp": {
-    "cta": { "catalog": "Katalogga o'tish" },
+    "cta": {
+      "catalog": "Katalogga o'tish"
+    },
     "common": {
       "order_now": "Hozir buyurtma berish",
       "consult": "Konsultatsiya",
@@ -701,61 +854,5 @@
   "partners": {
     "title": "Quyida bizning hamkorlarimiz keltirilgan.",
     "subtitle": "Biz ularga yong'inga qarshi uskunalar va texnik xizmat ko'rsatish xizmatlarini taqdim etamiz."
-  },
-  "supplies": {
-    "title": "Yetkazib berishlar",
-    "subtitle": "Kelgusi va yakunlangan yetkazib berishlar haqida yangi ma'lumot",
-    "searchPlaceholder": "Mahsulotlar va etkazib beruvchilar bo'yicha qidirish...",
-    "noSupplies": "Yetkazib berishlar topilmadi",
-    "noSuppliesDescription": "Hozircha faol yetkazib berishlar mavjud emas",
-    "tryDifferentSearch": "Qidiruv mezonlarini o'zgartirib ko'ring",
-    "showMore": "Ko'proq ko'rsatish",
-    "showLess": "Kamroq ko'rsatish",
-    "showAll": "Barchasini ko'rsatish",
-    "itemsCount": "{count} ta mahsulot",
-    "status": {
-      "planned": "Rejalashtirilgan",
-      "in_transit": "Yo'lda",
-      "arrived": "Yetkazib berildi"
-    },
-    "eta": "Kutilayotgan sana",
-    "soon": "yaqin orada",
-    "items": {
-      "name": "Nomi",
-      "quantity": "Miqdori",
-      "supplier": "Etkazib beruvchi",
-      "notes": "Izohlar",
-      "showItems": "Mahsulotlarni ko'rsatish",
-      "hideItems": "Yashirish"
-    },
-    "error": {
-      "loadingError": "Yetkazib berishlar yuklanmoqda",
-      "tryAgain": "Qayta urinish",
-      "reloadPage": "Sahifani qayta yuklash"
-    },
-    "admin": {
-      "addSupply": "Yetkazib berish qo'shish",
-      "editSupply": "Tahrirlash",
-      "deleteSupply": "O'chirish",
-      "confirmDelete": "Haqiqatan ham bu yetkazib berishni o'chirmoqchimisiz?",
-      "cancel": "Bekor qilish",
-      "save": "Saqlash",
-      "saving": "Saqlanmoqda...",
-      "supplyTitle": "Yetkazib berish nomi",
-      "etaDate": "Kelish sanasi",
-      "status": "Holati",
-      "items": "Yetkazib berishdagi mahsulotlar",
-      "bulkAdd": "Ko'p miqdorda qo'shish",
-      "bulkAddHelp": "Ma'lumotlarni quyidagi formatda kiriting: Nomi — Miqdori — Etkazib beruvchi (ixtiyoriy)",
-      "addItems": "Mahsulot qo'shish",
-      "addItem": "Mahsulot qo'shish",
-      "name": "Nomi",
-      "quantity": "Miqdori",
-      "supplier": "Etkazib beruvchi",
-      "notes": "Izohlar",
-      "requiredField": "Majburiy maydon",
-      "minItemsRequired": "Kamida bitta mahsulot bo'lishi kerak",
-      "positiveQuantity": "Miqdor 0 dan katta bo'lishi kerak"
-    }
   }
 }

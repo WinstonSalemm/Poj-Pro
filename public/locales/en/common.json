@@ -1,0 +1,12 @@
+{
+    "updates": {
+        "title": "New Arrivals",
+        "subtitle": "Discover the latest updates",
+        "items": [
+            "Expanded product range",
+            "New items in catalog",
+            "Special offers for customers"
+        ]
+    },
+    "goToCatalog": "Go to catalog"
+}

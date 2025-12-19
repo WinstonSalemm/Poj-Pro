@@ -76,32 +76,71 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const canonical = `${SITE_URL}/catalog/${normalizedSlug}`;
   const filterKeys = Object.keys(sp || {}).filter((k) => sp[k] != null);
 
+  // Generate proper hreflang URLs
+  const basePath = `/catalog/${normalizedSlug}`;
+  const hreflangUrls = {
+    'ru': `${SITE_URL}${basePath}`,
+    'en': `${SITE_URL}/en${basePath}`,
+    'uz': `${SITE_URL}/uz${basePath}`,
+    'x-default': `${SITE_URL}${basePath}`,
+  };
+
+  // Generate keywords
+  const keywords = [
+    categoryName,
+    'купить в Ташкенте',
+    'пожарная безопасность',
+    'POJ PRO',
+    normalizedSlug,
+  ].filter(Boolean).join(', ');
+
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical,
-      languages: {
-        ru: canonical,
-        en: canonical,
-        uz: canonical,
-        'x-default': canonical,
-      },
+      languages: hreflangUrls,
     },
+    robots: filterKeys.length > 1
+      ? { index: false, follow: true }
+      : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
     openGraph: {
       url: canonical,
       title,
       description,
       siteName: SITE_NAME,
-      images: ogImage ? [{ url: ogImage }] : undefined,
+      type: 'website',
+      locale: locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_US' : 'uz_UZ',
+      images: ogImage ? [{
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: categoryName,
+      }] : undefined,
     },
-    twitter: ogImage ? { images: [ogImage] } : undefined,
-    robots: filterKeys.length > 1 ? { index: false, follow: true } : { index: true, follow: true },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 import type { Product } from '@/types/product';
 import CategoryProductsClient from '@/components/catalog/CategoryProductsClient';
 import PreOrderBanner from '@/components/ui/PreOrderBanner';
+import NewProductsBlock from '@/components/catalog/NewProductsBlock';
 // Removed legacy ItemListSchema in favor of JsonLd helpers
 import { sortProductsAsc } from '@/lib/sortProducts';
 
@@ -127,15 +166,17 @@ function toSlug(s: string) {
 
 async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | 'uz') {
   const url = `/api/categories/${encodeURIComponent(categorySlug)}?locale=${locale}`;
-  const data = await fetchAPI<{ products: Array<{
-    id: string | number;
-    slug: string;
-    title?: string;
-    category?: { name?: string; slug?: string };
-    image?: string;
-    price?: number | string;
-    description?: string;
-  }> }>(url, { cache: 'force-cache', next: { revalidate: 60 } });
+  const data = await fetchAPI<{
+    products: Array<{
+      id: string | number;
+      slug: string;
+      title?: string;
+      category?: { name?: string; slug?: string };
+      image?: string;
+      price?: number | string;
+      description?: string;
+    }>
+  }>(url, { cache: 'force-cache', next: { revalidate: 60 } });
   const items = data.products || [];
   const formatted: Product[] = items.map((item) => ({
     id: item.id,
@@ -329,6 +370,9 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
 
       {/* Products grid */}
       <CategoryProductsClient products={products} rawCategory={rawCategory} lang={locale} />
+
+      {/* New Products Block */}
+      <NewProductsBlock type="new" limit={6} />
 
       {/* Collapsible SEO/intro content below the grid */}
       {(() => {

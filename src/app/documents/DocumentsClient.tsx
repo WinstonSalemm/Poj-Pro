@@ -212,15 +212,15 @@ export default function DocumentsClient() {
               </div>
               <Link
                 href="/documents/certificates"
-                className="self-start sm:self-auto inline-flex items-center gap-2 rounded-xl border border-[#660000] px-2.5 py-1.5 text-xs sm:text-sm sm:px-3 sm:py-2 font-medium !text-[#660000] hover:bg-[#660000] hover:!text-white hover:border-neutral-300 transition"
+                className="self-start sm:self-auto inline-flex items-center gap-3 rounded-xl border-2 border-[#660000] bg-[#660000] px-5 py-3 text-base sm:text-lg font-semibold !text-white hover:bg-[#550000] hover:border-[#550000] hover:shadow-lg transition-all duration-200 transform hover:scale-105"
               >
                 <svg
-                  width="18"
-                  height="18"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                   className="transition"
                   aria-hidden="true"
                 >

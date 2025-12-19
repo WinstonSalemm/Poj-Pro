@@ -24,6 +24,7 @@ export interface LocalBusinessJsonLdProps {
 const LocalBusinessJsonLd: React.FC<LocalBusinessJsonLdProps> = ({ name, url, telephone, image, priceRange, address, openingHours, sameAs }) => {
   const data = clean({
     '@type': 'LocalBusiness',
+    '@id': `${url}#business`,
     name,
     url,
     telephone,
@@ -37,8 +38,41 @@ const LocalBusinessJsonLd: React.FC<LocalBusinessJsonLdProps> = ({ name, url, te
       postalCode: address.postalCode,
       addressCountry: address.addressCountry,
     }),
+    geo: clean({
+      '@type': 'GeoCoordinates',
+      // Coordinates for Tashkent (approximate)
+      latitude: 41.2995,
+      longitude: 69.2401,
+    }),
+    openingHoursSpecification: openingHours?.map((hours) => {
+      const [days, time] = hours.split(' ');
+      const [open, close] = time.split('-');
+      const dayMap: Record<string, string> = {
+        'Mo': 'Monday',
+        'Tu': 'Tuesday',
+        'We': 'Wednesday',
+        'Th': 'Thursday',
+        'Fr': 'Friday',
+        'Sa': 'Saturday',
+        'Su': 'Sunday',
+      };
+      const dayOfWeek = days.includes('-')
+        ? days.split('-').map(d => dayMap[d] || d)
+        : [dayMap[days] || days];
+
+      return clean({
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek,
+        opens: open,
+        closes: close,
+      });
+    }),
     openingHours,
     sameAs,
+    areaServed: {
+      '@type': 'Country',
+      name: 'Uzbekistan',
+    },
   });
 
   return <JsonLd data={data} type="LocalBusiness" keyOverride="localbusiness" />;

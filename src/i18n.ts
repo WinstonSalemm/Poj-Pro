@@ -6,23 +6,17 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import ruTranslation from '@/locales/ru/translation.json';
 import uzbTranslation from '@/locales/uzb/translation.json';
 import engTranslation from '@/locales/eng/translation.json';
-import ruSupplies from '@/locales/ru/supplies.json';
-import uzbSupplies from '@/locales/uzb/supplies.json';
-import engSupplies from '@/locales/eng/supplies.json';
 
 // Export resources for type definitions
 export const resources = {
   ru: { 
-    translation: ruTranslation,
-    supplies: ruSupplies 
+    translation: ruTranslation
   },
   uzb: { 
-    translation: uzbTranslation,
-    supplies: uzbSupplies 
+    translation: uzbTranslation
   },
   eng: { 
-    translation: engTranslation,
-    supplies: engSupplies 
+    translation: engTranslation
   },
 } as const;
 

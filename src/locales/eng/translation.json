@@ -6,8 +6,68 @@
   "guide": {
     "title": "Fire Safety Guide",
     "intro": "Practical tips on where, how many and why to install fire safety equipment at home, in the office and at warehouses.",
-    "toc": { "title": "Contents" },
-    "quickLinks": { "title": "Quick links to catalog" },
+    "toc": {
+      "title": "Contents"
+    },
+    "quickLinks": {
+      "title": "Quick links to catalog"
+    },
+    "minimalKits": {
+      "title": "Minimum fire safety equipment set by building type",
+      "note": "<strong>Important:</strong> Requirements may vary depending on area, number of floors and building purpose. It is recommended to consult with specialists for accurate calculation of required equipment.",
+      "buildings": {
+        "apartment": {
+          "title": "Apartment",
+          "items": [
+            "Powder fire extinguisher OP-5 (1 pcs.)",
+            "Smoke detector (1 pcs.)",
+            "First aid kit",
+            "Fire-resistant blanket (1 pcs.)"
+          ]
+        },
+        "office": {
+          "title": "Office",
+          "items": [
+            "Fire extinguisher OP-5 (1 pcs. per 100 m²)",
+            "Fire cabinet with hose (1 pcs.)",
+            "Fire alarm system",
+            "Evacuation plan",
+            "Fire-resistant blanket (2 pcs.)"
+          ]
+        },
+        "house": {
+          "title": "House",
+          "items": [
+            "Fire extinguisher OP-5 (2-3 pcs.)",
+            "Fire cabinet with hose (1 pcs.)",
+            "Fire detectors (by floors)",
+            "Fire-resistant blanket (2 pcs.)",
+            "Fire escape ladder (if 2+ floors)"
+          ]
+        },
+        "gasStation": {
+          "title": "Gas Station",
+          "items": [
+            "Fire extinguisher OP-10 (minimum 2 pcs.)",
+            "Fire cabinet with hose (2+ pcs.)",
+            "Automatic fire suppression system",
+            "Fire alarm",
+            "Sand and shovels (for fuel spills)",
+            "Fire-resistant blanket (3+ pcs.)"
+          ]
+        },
+        "electricalPanel": {
+          "title": "Electrical Panel",
+          "items": [
+            "Carbon dioxide fire extinguisher OU-2 (1 pcs.)",
+            "Powder fire extinguisher OP-5 (1 pcs.)",
+            "Smoke detector (1 pcs.)",
+            "Fire-resistant blanket (1 pcs.)",
+            "Warning signs"
+          ]
+        }
+      }
+    },
     "cta": {
       "title": "Need help choosing?",
       "subtitle": "We'll prepare a quote, consult you and suggest the optimal set.",
@@ -24,19 +84,64 @@
         "notes": "Notes"
       },
       "apartment": [
-        { "type": "OP-5 / OP-10", "qty": "1–2", "mount": "Bracket ~1.5 m", "notes": "Near exit/kitchen" },
-        { "type": "OU-3 / OU-5", "qty": "1", "mount": "Bracket", "notes": "By electrical panel" },
-        { "type": "Smoke detector", "qty": "2–3", "mount": "Ceiling", "notes": "Hallway/bedrooms" }
+        {
+          "type": "OP-5 / OP-10",
+          "qty": "1–2",
+          "mount": "Bracket ~1.5 m",
+          "notes": "Near exit/kitchen"
+        },
+        {
+          "type": "OU-3 / OU-5",
+          "qty": "1",
+          "mount": "Bracket",
+          "notes": "By electrical panel"
+        },
+        {
+          "type": "Smoke detector",
+          "qty": "2–3",
+          "mount": "Ceiling",
+          "notes": "Hallway/bedrooms"
+        }
       ],
       "office": [
-        { "type": "OP-5 / OP-10", "qty": "by norms", "mount": "Bracket", "notes": "Distribute across floor" },
-        { "type": "OU-5", "qty": "1+", "mount": "Bracket", "notes": "Electrical/server room" },
-        { "type": "Fire cabinet", "qty": "by design", "mount": "Wall-mounted", "notes": "Hose+nozzle+valve" }
+        {
+          "type": "OP-5 / OP-10",
+          "qty": "by norms",
+          "mount": "Bracket",
+          "notes": "Distribute across floor"
+        },
+        {
+          "type": "OU-5",
+          "qty": "1+",
+          "mount": "Bracket",
+          "notes": "Electrical/server room"
+        },
+        {
+          "type": "Fire cabinet",
+          "qty": "by design",
+          "mount": "Wall-mounted",
+          "notes": "Hose+nozzle+valve"
+        }
       ],
       "warehouse": [
-        { "type": "OP-10 / OP-50", "qty": "uniform", "mount": "Bracket/trolley", "notes": "Coverage zones" },
-        { "type": "Powder module (MPP)", "qty": "by risks", "mount": "Fixings", "notes": "Local protection" },
-        { "type": "Hydrant/cabinet", "qty": "by design", "mount": "Fixed", "notes": "Accessibility" }
+        {
+          "type": "OP-10 / OP-50",
+          "qty": "uniform",
+          "mount": "Bracket/trolley",
+          "notes": "Coverage zones"
+        },
+        {
+          "type": "Powder module (MPP)",
+          "qty": "by risks",
+          "mount": "Fixings",
+          "notes": "Local protection"
+        },
+        {
+          "type": "Hydrant/cabinet",
+          "qty": "by design",
+          "mount": "Fixed",
+          "notes": "Accessibility"
+        }
       ]
     },
     "sections": {
@@ -93,18 +198,54 @@
     },
     "faqTitle": "Frequently Asked Questions",
     "faq": [
-      { "q": "What’s the difference between OP and OU?", "a": "OP — powder, versatile for A/B/C/E classes, leaves residue. OU — CO2 for electrical equipment and liquids, no residue, hazardous in tight rooms (asphyxiation risk)." },
-      { "q": "How to choose extinguisher size?", "a": "Home: OP‑5/OP‑10. Office: OP‑5–10 by area/category norms. Warehouse: OP‑10/OP‑50 and trolleys. Consider fire classes and accessibility." },
-      { "q": "Can CO2 extinguish paper/wood?", "a": "CO2 is effective on electrical equipment and liquids; for Class A (paper/wood) prefer powder/water/foam. CO2 dissipates fast, reignition possible." },
-      { "q": "What are fire classes A/B/C/E?", "a": "A — solids (paper, wood), B — liquids, C — gases, E — electrical under voltage. Match extinguisher to class." },
-      { "q": "When to service/recharge?", "a": "After any use; by service interval in passport; if pressure is out of green zone; upon damage." },
-      { "q": "How to store an extinguisher?", "a": "Dry place, away from heat, accessible; mounted on bracket, intact seal, pressure in green zone." },
-      { "q": "Are signs and evac plans required?", "a": "For offices/warehouses — yes: plans, photoluminescent exit signs, arrows, equipment signs." },
-      { "q": "What to provide for electrical room/server room?", "a": "OU‑3/5 nearby, OP as backup; smoke/heat detectors, PA; keep room tidy, fire‑rated doors." },
-      { "q": "Requirements for fire cabinets?", "a": "Accessibility, labeling, completeness (hose, nozzle, valve), no twists/leaks; periodic hose pressure‑tests." },
-      { "q": "Training frequency?", "a": "Initial briefing at onboarding and evacuation drills 1–2 times a year (check local norms)." },
-      { "q": "Documents required?", "a": "Certificates of conformity, product passports, service logbooks, recharge/test reports." },
-      { "q": "Can I keep an extinguisher in a car?", "a": "Yes, use car brackets/straps, fix to avoid rolling, observe temperature limits and pressure." }
+      {
+        "q": "What’s the difference between OP and OU?",
+        "a": "OP — powder, versatile for A/B/C/E classes, leaves residue. OU — CO2 for electrical equipment and liquids, no residue, hazardous in tight rooms (asphyxiation risk)."
+      },
+      {
+        "q": "How to choose extinguisher size?",
+        "a": "Home: OP‑5/OP‑10. Office: OP‑5–10 by area/category norms. Warehouse: OP‑10/OP‑50 and trolleys. Consider fire classes and accessibility."
+      },
+      {
+        "q": "Can CO2 extinguish paper/wood?",
+        "a": "CO2 is effective on electrical equipment and liquids; for Class A (paper/wood) prefer powder/water/foam. CO2 dissipates fast, reignition possible."
+      },
+      {
+        "q": "What are fire classes A/B/C/E?",
+        "a": "A — solids (paper, wood), B — liquids, C — gases, E — electrical under voltage. Match extinguisher to class."
+      },
+      {
+        "q": "When to service/recharge?",
+        "a": "After any use; by service interval in passport; if pressure is out of green zone; upon damage."
+      },
+      {
+        "q": "How to store an extinguisher?",
+        "a": "Dry place, away from heat, accessible; mounted on bracket, intact seal, pressure in green zone."
+      },
+      {
+        "q": "Are signs and evac plans required?",
+        "a": "For offices/warehouses — yes: plans, photoluminescent exit signs, arrows, equipment signs."
+      },
+      {
+        "q": "What to provide for electrical room/server room?",
+        "a": "OU‑3/5 nearby, OP as backup; smoke/heat detectors, PA; keep room tidy, fire‑rated doors."
+      },
+      {
+        "q": "Requirements for fire cabinets?",
+        "a": "Accessibility, labeling, completeness (hose, nozzle, valve), no twists/leaks; periodic hose pressure‑tests."
+      },
+      {
+        "q": "Training frequency?",
+        "a": "Initial briefing at onboarding and evacuation drills 1–2 times a year (check local norms)."
+      },
+      {
+        "q": "Documents required?",
+        "a": "Certificates of conformity, product passports, service logbooks, recharge/test reports."
+      },
+      {
+        "q": "Can I keep an extinguisher in a car?",
+        "a": "Yes, use car brackets/straps, fix to avoid rolling, observe temperature limits and pressure."
+      }
     ]
   },
   "popularProductsBlock": {
@@ -138,8 +279,12 @@
       "between500k2m": "500,000 – 2,000,000",
       "gt2m": "> 2,000,000"
     },
-    "volume": { "title": "Volume/weight" },
-    "fireclass": { "title": "Fire class" },
+    "volume": {
+      "title": "Volume/weight"
+    },
+    "fireclass": {
+      "title": "Fire class"
+    },
     "availability": {
       "title": "Availability",
       "in": "In stock",
@@ -148,8 +293,12 @@
     },
     "hoses": {
       "title": "Hoses",
-      "diameter": { "title": "Diameter" },
-      "length": { "title": "Length" }
+      "diameter": {
+        "title": "Diameter"
+      },
+      "length": {
+        "title": "Length"
+      }
     },
     "cabinets": {
       "title": "Cabinets",
@@ -163,7 +312,9 @@
         "one": "1 section",
         "two": "2 sections"
       },
-      "window": { "with": "With window" }
+      "window": {
+        "with": "With window"
+      }
     },
     "ppe": {
       "title": "PPE",
@@ -197,63 +348,6 @@
   "partners": {
     "title": "Our Partners",
     "subtitle": "We provide them with fire equipment and maintenance services."
-  },
-  "supplies": {
-    "noDate": "No date specified",
-    "title": "Below are our official suppliers and partners.",
-    "subtitle": "We have been working together reliably for over 10 years.",
-    "searchPlaceholder": "Search by items and suppliers...",
-    "noSupplies": "No supplies found",
-    "noSuppliesDescription": "There are currently no active supplies",
-    "tryDifferentSearch": "Try changing your search criteria",
-    "showMore": "Show more",
-    "showLess": "Show less",
-    "showAll": "Show all",
-    "itemsCount": "{{count}} position(s)",
-    "status": {
-      "planned": "Planned",
-      "in_transit": "In Transit",
-      "arrived": "Arrived"
-    },
-    "eta": "Expected",
-    "soon": "soon",
-    "items": {
-      "name": "Name",
-      "quantity": "Quantity",
-      "supplier": "Supplier",
-      "notes": "Notes",
-      "showItems": "Show items",
-      "hideItems": "Hide items"
-    },
-    "error": {
-      "loadingError": "Failed to load supplies",
-      "tryAgain": "Try again",
-      "reloadPage": "Reload page"
-    },
-    "admin": {
-      "addSupply": "Add Supply",
-      "editSupply": "Edit Supply",
-      "deleteSupply": "Delete Supply",
-      "confirmDelete": "Are you sure you want to delete this supply?",
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "supplyTitle": "Supply Title",
-      "etaDate": "Arrival Date",
-      "status": "Status",
-      "items": "Items in Supply",
-      "bulkAdd": "Bulk Add",
-      "bulkAddHelp": "Enter data in format: Name — Quantity — Supplier (optional)",
-      "addItems": "Add Items",
-      "addItem": "Add Item",
-      "name": "Name",
-      "quantity": "Quantity",
-      "supplier": "Supplier",
-      "notes": "Notes",
-      "requiredField": "Required field",
-      "minItemsRequired": "At least one item is required",
-      "positiveQuantity": "Quantity must be greater than 0"
-    }
   },
   "header": {
     "catalog": "Catalog",
@@ -364,7 +458,6 @@
       }
     }
   },
-  
   "categories": {
     "ognetushiteli": "Fire Extinguishers",
     "pozharnye_shkafy": "Fire Cabinets",
@@ -594,7 +687,9 @@
     "catalog": "Catalog"
   },
   "lp": {
-    "cta": { "catalog": "Go to catalog" },
+    "cta": {
+      "catalog": "Go to catalog"
+    },
     "common": {
       "order_now": "Order now",
       "consult": "Consultation",
@@ -664,7 +759,9 @@
       "title": "Address",
       "value": "Tashkent city, Chilanzar district, 1st quarter, house 33 magazine BOLID with green wall"
     },
-    "phone": { "title": "Phone" },
+    "phone": {
+      "title": "Phone"
+    },
     "hours": {
       "title": "Working Hours",
       "weekdays": "Mon–Fri: 09:00–18:00",

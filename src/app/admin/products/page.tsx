@@ -103,7 +103,7 @@ export default function AdminProductsPage() {
       };
 
       if (form.id) {
-        const res = await fetch(`/api/admin/products/${form.id}` , {
+        const res = await fetch(`/api/admin/products/${form.id}`, {
           method: 'PUT',
           headers,
           body: JSON.stringify(base),
@@ -132,7 +132,7 @@ export default function AdminProductsPage() {
   const onDelete = async (id: string) => {
     if (!confirm('Удалить товар?')) return;
     try {
-      const res = await fetch(`/api/admin/products/${id}` , {
+      const res = await fetch(`/api/admin/products/${id}`, {
         method: 'DELETE',
         headers: { 'x-admin-token': token },
       });
@@ -150,6 +150,20 @@ export default function AdminProductsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Управление товарами</h1>
+          <div className="flex items-center gap-3">
+            <a
+              href="/admin/new"
+              className="px-4 py-2 rounded border border-[#660000] text-[#660000] hover:bg-[#660000] hover:text-white transition-colors"
+            >
+              Новые товары
+            </a>
+            <a
+              href="/admin/products/add"
+              className="px-4 py-2 rounded bg-[#660000] text-white hover:bg-[#7a1a1a] transition-colors"
+            >
+              + Добавить товар
+            </a>
+          </div>
         </div>
 
         <form onSubmit={onSubmit} className="bg-white shadow rounded-lg p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -269,12 +283,12 @@ export default function AdminProductsPage() {
                       <td className="px-4 py-2 text-sm text-gray-600">{p.stock}</td>
                       <td className="px-4 py-2 text-sm text-gray-600">{p.category?.name || '-'}</td>
                       <td className="px-4 py-2 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => onEdit(p)}
+                        <a
+                          href={`/admin/products/add?id=${p.id}`}
                           className="text-[#660000] hover:text-[#7a1a1a] mr-3"
                         >
                           Редактировать
-                        </button>
+                        </a>
                         <button
                           onClick={() => onDelete(p.id)}
                           className="text-red-600 hover:text-red-800"

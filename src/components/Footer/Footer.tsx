@@ -51,42 +51,7 @@ export default function Footer() {
                                     {t("footer.navigation.home")}
                                 </Link>
                             </li>
-                            <li className="text-center">
-                                <Link
-                                    href="/catalog/ognetushiteli"
-                                    title="Огнетушители Ташкент купить — спец‑предложение"
-                                    className="hover:opacity-70 transition-opacity"
-                                >
-                                    огнетушители ташкент купить
-                                </Link>
-                            </li>
-                            <li className="text-center">
-                                <Link
-                                    href="/catalog/rukava_i_pozharnaya_armatura"
-                                    title="Пожарные рукава Ташкент купить"
-                                    className="hover:opacity-70 transition-opacity"
-                                >
-                                    пожарные рукава ташкент купить
-                                </Link>
-                            </li>
-                            <li className="text-center">
-                                <Link
-                                    href="/catalog/furnitura_dlya_ognetushiteley"
-                                    title="Кронштейны для огнетушителей Ташкент купить"
-                                    className="hover:opacity-70 transition-opacity"
-                                >
-                                    кронштейны огнетушителей ташкент купить
-                                </Link>
-                            </li>
-                            <li className="text-center">
-                                <Link
-                                    href="/catalog/pozharnye_shkafy"
-                                    title="Пожарные шкафы Ташкент купить"
-                                    className="hover:opacity-70 transition-opacity"
-                                >
-                                    пожарные шкафы ташкент купить
-                                </Link>
-                            </li>
+
                             <li className="text-center">
                                 <Link
                                     href="/catalog"

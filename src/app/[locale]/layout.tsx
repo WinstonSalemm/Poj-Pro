@@ -23,31 +23,59 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
     uz: 'Toshkent shahrida professional yong\'in xavfsizligi uskunalari. Yong\'in o\'chirgichlar, yong\'in kranlari, signalizatsiya va boshqa xavfsizlik uskunalari.',
   }[locale] || DEFAULT_SEO.description;
 
+  const keywords = {
+    ru: 'огнетушители, пожарная безопасность, пожарное оборудование, Ташкент, POJ PRO, огнетушители ОП, огнетушители ОУ, пожарные шкафы, пожарные рукава, СИЗ',
+    en: 'fire extinguishers, fire safety, fire equipment, Tashkent, POJ PRO, fire cabinets, fire hoses, PPE',
+    uz: 'o\'t o\'chirgichlar, yong\'in xavfsizligi, yong\'in uskunalari, Toshkent, POJ PRO, yong\'in shkablari, yong\'in shlanglari, SIZ',
+  }[locale] || 'fire safety, POJ PRO';
+
   return {
     title: {
       default: title,
       template: `%s | ${SITE_URL.replace(/^https?:\/\//, '')}`,
     },
     description,
+    keywords,
     alternates: {
-      canonical: `/${lang}`,
+      canonical: lang === 'ru' ? SITE_URL : `${SITE_URL}/${lang}`,
       // Use simple hreflang codes expected by tests, plus x-default
       languages: {
-        ru: '/',
-        en: '/en',
-        uz: '/uz',
-        'x-default': '/ru',
+        ru: SITE_URL,
+        en: `${SITE_URL}/en`,
+        uz: `${SITE_URL}/uz`,
+        'x-default': SITE_URL,
+      },
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
     },
     openGraph: {
       locale: i18nAlt[locale],
-      url: `${SITE_URL}/${lang}`,
+      url: lang === 'ru' ? SITE_URL : `${SITE_URL}/${lang}`,
       title,
       description,
+      type: 'website',
+      siteName: 'POJ PRO',
+      images: [{
+        url: `${SITE_URL}/OtherPics/favicon-large.webp`,
+        width: 1200,
+        height: 630,
+        alt: title,
+      }],
     },
     twitter: {
+      card: 'summary_large_image',
       title,
       description,
+      images: [`${SITE_URL}/OtherPics/favicon-large.webp`],
     },
   };
 }

@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     titleKey: "documents.certificatesPageTitle",
     path: "/documents/certificates",
     lang,
+    keywords: ['сертификаты', 'сертификаты соответствия', 'документы', 'POJ PRO', 'пожарная безопасность'],
   });
 }
 
@@ -24,8 +25,8 @@ export default async function CertificatesPage() {
   const list: CertificateItem[] = Array.isArray(resp?.certificates)
     ? resp.certificates!
     : Array.isArray(resp?.items)
-    ? (resp.items as CertificateItem[])
-    : [];
+      ? (resp.items as CertificateItem[])
+      : [];
 
   return (
     <main className="max-w-5xl mt-[100px] mx-auto px-4 py-8">

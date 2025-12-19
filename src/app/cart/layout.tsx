@@ -10,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
     titleKey: 'cart.title',
     path: '/cart',
     lang,
+    noIndex: true, // Корзина не должна индексироваться
   });
 }
 

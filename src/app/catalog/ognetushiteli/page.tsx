@@ -15,15 +15,17 @@ import { buildCategoryLongContent } from '@/lib/categoryLongContent';
 const CANONICAL_PATH = '/catalog/ognetushiteli';
 
 async function getProducts(locale: 'ru' | 'en' | 'uz') {
-  const data = await fetchAPI<{ products: Array<{
-    id: string | number;
-    slug: string;
-    title?: string;
-    category?: { name?: string; slug?: string };
-    image?: string;
-    price?: number | string;
-    description?: string;
-  }> }>(`/api/categories/ognetushiteli?locale=${locale}`, { cache: 'force-cache', next: { revalidate: 60 } });
+  const data = await fetchAPI<{
+    products: Array<{
+      id: string | number;
+      slug: string;
+      title?: string;
+      category?: { name?: string; slug?: string };
+      image?: string;
+      price?: number | string;
+      description?: string;
+    }>
+  }>(`/api/categories/ognetushiteli?locale=${locale}`, { cache: 'force-cache', next: { revalidate: 60 } });
   const items = data.products || [];
   const formatted: Product[] = items.map((item) => ({
     id: item.id,
@@ -66,28 +68,58 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   const ogImageFile = CATEGORY_IMAGE_MAP['fire-extinguishers'];
   const ogImage = ogImageFile ? `${SITE_URL}/CatalogImage/${ogImageFile}` : undefined;
 
+  // Generate proper hreflang URLs
+  const basePath = CANONICAL_PATH;
+  const hreflangUrls = {
+    'ru': `${SITE_URL}${basePath}`,
+    'en': `${SITE_URL}/en${basePath}`,
+    'uz': `${SITE_URL}/uz${basePath}`,
+    'x-default': `${SITE_URL}${basePath}`,
+  };
+
+  const keywords = 'огнетушители, огнетушители ОП, огнетушители ОУ, порошковые огнетушители, углекислотные огнетушители, купить огнетушитель, Ташкент, POJ PRO, пожарная безопасность';
+
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical,
-      languages: {
-        ru: canonical,
-        en: canonical,
-        uz: canonical,
-        'x-default': canonical,
-      },
+      languages: hreflangUrls,
     },
-    robots,
+    robots: filterKeys.length > 1
+      ? { index: false, follow: true }
+      : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
     openGraph: {
       url: canonical,
       title,
       description,
       siteName: SITE_NAME,
       type: 'website',
-      images: ogImage ? [{ url: ogImage }] : undefined,
+      locale: 'ru_RU',
+      images: ogImage ? [{
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: 'Огнетушители в Ташкенте',
+      }] : undefined,
     },
-    twitter: ogImage ? { images: [ogImage] } : undefined,
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 
@@ -223,7 +255,7 @@ export default async function FireExtinguishersCategoryPage() {
         const text = (p1 || '').toString();
         const plain = text.replace(/<[^>]+>/g, '');
         const short = plain.length > 200 ? plain.slice(0, 200).trim() + '…' : plain;
-        const moreLabel: Record<'ru'|'en'|'uz', string> = {
+        const moreLabel: Record<'ru' | 'en' | 'uz', string> = {
           ru: 'Подробнее',
           en: 'Read more',
           uz: 'Batafsil',
@@ -253,7 +285,7 @@ export default async function FireExtinguishersCategoryPage() {
 
       {/* Collapsible SEO/intro content below grid */}
       {(() => {
-        const summaryLabel: Record<'ru'|'en'|'uz', string> = {
+        const summaryLabel: Record<'ru' | 'en' | 'uz', string> = {
           ru: 'Описание категории',
           en: 'Category description',
           uz: 'Kategoriya tavsifi',

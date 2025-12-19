@@ -53,23 +53,64 @@ export function getLocalized(key: string, lang: Lang, fallback = ''): string {
   return fallback;
 }
 
-export function buildPageMetadata(opts: { titleKey?: string; descriptionKey?: string; defaultTitle?: string; defaultDescription?: string; path: string; lang?: Lang; titleSuffix?: string; }): Metadata {
+export function buildPageMetadata(opts: { titleKey?: string; descriptionKey?: string; defaultTitle?: string; defaultDescription?: string; path: string; lang?: Lang; titleSuffix?: string; keywords?: string[]; noIndex?: boolean; }): Metadata {
   const lang = opts.lang ?? 'ru';
   const titleRaw = (opts.titleKey ? getLocalized(opts.titleKey, lang) : undefined) || opts.defaultTitle || 'POJ PRO';
   const title = `${titleRaw}${opts.titleSuffix ?? ` — ${SITE_NAME}`}`;
   const description = (opts.descriptionKey ? (getLocalized(opts.descriptionKey, lang) || undefined) : undefined) || opts.defaultDescription;
   const canonical = `${SITE_URL}${opts.path.startsWith('/') ? opts.path : `/${opts.path}`}`;
+  
+  // Generate hreflang URLs
+  const basePath = opts.path.startsWith('/') ? opts.path : `/${opts.path}`;
+  const localeMap: Record<Lang, string> = { ru: 'ru', eng: 'en', uzb: 'uz' };
+  const currentLocale = localeMap[lang];
+  const hreflangUrls: Record<string, string> = {
+    'x-default': canonical,
+  };
+  
+  // Add hreflang for all supported locales
+  ['ru', 'en', 'uz'].forEach((loc) => {
+    if (loc === 'ru') {
+      hreflangUrls['ru'] = `${SITE_URL}${basePath}`;
+    } else {
+      hreflangUrls[loc] = `${SITE_URL}/${loc}${basePath}`;
+    }
+  });
+  
+  // Generate keywords
+  const defaultKeywords = ['POJ PRO', 'пожарная безопасность', 'Ташкент'];
+  const keywords = opts.keywords 
+    ? [...opts.keywords, ...defaultKeywords].filter(Boolean).join(', ')
+    : defaultKeywords.join(', ');
 
   return {
     title,
     description,
-    alternates: { canonical },
+    keywords,
+    alternates: {
+      canonical,
+      languages: hreflangUrls,
+    },
+    robots: opts.noIndex
+      ? { index: false, follow: true }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+          },
+        },
     openGraph: {
       url: canonical,
       siteName: SITE_NAME,
       title,
       description,
       type: 'website',
+      locale: lang === 'ru' ? 'ru_RU' : lang === 'eng' ? 'en_US' : 'uz_UZ',
     },
     twitter: {
       card: 'summary_large_image',

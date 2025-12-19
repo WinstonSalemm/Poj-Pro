@@ -15,16 +15,21 @@ const DISALLOWED_PATHS = [
   '/account/*',
   '/login',
   '/register',
-  '/password-reset'
+  '/password-reset',
+  '/admin-console',
+  '/admin/*',
 ];
+
+// Crawl delay for different bots (in seconds)
+const CRAWL_DELAY = {
+  '*': 0.5, // Default delay
+  'Googlebot': 0.1,
+  'Bingbot': 0.2,
+};
 
 // List of allowed sitemaps
 const SITEMAPS = [
   `${SITE_URL}/sitemap.xml`,
-  // Add more sitemaps if you have them, e.g.:
-  // `${SITE_URL}/sitemap-pages.xml`,
-  // `${SITE_URL}/sitemap-products.xml`,
-  // `${SITE_URL}/sitemap-categories.xml`,
 ];
 
 export default function robots(): MetadataRoute.Robots {
@@ -44,20 +49,41 @@ export default function robots(): MetadataRoute.Robots {
   // Production rules
   return {
     rules: [
-      // Global allow all
+      // Googlebot - optimized rules
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: DISALLOWED_PATHS,
+        crawlDelay: CRAWL_DELAY.Googlebot,
+      },
+      // Bingbot
+      {
+        userAgent: 'Bingbot',
+        allow: '/',
+        disallow: DISALLOWED_PATHS,
+        crawlDelay: CRAWL_DELAY.Bingbot,
+      },
+      // Yandex
+      {
+        userAgent: 'Yandex',
+        allow: '/',
+        disallow: DISALLOWED_PATHS,
+      },
+      // Global allow all with restrictions
       {
         userAgent: '*',
         allow: '/',
+        disallow: DISALLOWED_PATHS,
+        crawlDelay: CRAWL_DELAY['*'],
       },
-      // Disallow specific paths
-      ...DISALLOWED_PATHS.map(path => ({
-        userAgent: '*',
-        disallow: path,
-      })),
-      // Allow media files
+      // Allow media files for image bots
       {
         userAgent: 'Googlebot-Image',
-        allow: '/*',
+        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*'],
+      },
+      {
+        userAgent: 'Bingbot-Image',
+        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*'],
       },
     ],
     // Add sitemaps

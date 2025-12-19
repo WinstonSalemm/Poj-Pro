@@ -7,6 +7,7 @@ import type { getDictionary } from "@/i18n/server";
 import { CATEGORY_NAMES, CATEGORIES } from "@/constants/categories";
 import { CATEGORY_NAME_OVERRIDES, type Lang } from "@/constants/categoryNameOverrides";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import NewProductsBlock from "@/components/catalog/NewProductsBlock";
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSafeKey } from "@/lib/react";
@@ -158,9 +159,9 @@ function CatalogProductSearch({ locale }: { locale: string }) {
         />
         <div className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400">
           {loading ? (
-            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="2" className="opacity-25"/><path d="M4 12a8 8 0 018-8" strokeWidth="2" className="opacity-75"/></svg>
+            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="2" className="opacity-25" /><path d="M4 12a8 8 0 018-8" strokeWidth="2" className="opacity-75" /></svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
           )}
         </div>
       </form>
@@ -210,7 +211,7 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
       slug: String((c as any).slug || '').trim(),
       name: typeof (c as any).name === 'string' && (c as any).name.trim() ? String((c as any).name).trim() : String((c as any).slug || '').trim(),
     }));
-  
+
   const lang = normalizeLang(String(locale));
 
   // Build priority map based on CategoryBlock order
@@ -250,8 +251,8 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
     // 1) Manual overrides first (check both formats)
     const override = pickByLang(
       (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<Lang, string>>>)[slug] ||
-        CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
-        CATEGORY_NAME_OVERRIDES[altSlug],
+      CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
+      CATEGORY_NAME_OVERRIDES[altSlug],
       lang
     );
     if (override) {
@@ -321,40 +322,43 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
           </div>
         ) : (
           <div className="grid [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))] gap-6 justify-items-center">
-          {sorted.map((cat, idx) => (
-            <Link
-              key={cat.id}
-              href={`/catalog/${cat.slug}`}
-              className="w-full max-w-[320px] group animate-in-up"
-              style={{
-                animationDelay: `${idx * 0.07}s`,
-              }}
-              aria-label={categoryLabels[cat.slug] || cat.name}
-            >
-              <div className="bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] px-3 py-4 flex flex-col items-center justify-between min-h-[260px] text-center transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-neutral-200">
-                <div className="w-full h-[150px] bg-white rounded-xl border border-[#f0f0f0] shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex items-center justify-center p-3 mb-3 overflow-hidden">
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={imgPath(cat.slug)} // Assuming image name matches slug
-                      alt={categoryLabels[cat.slug] || fallbackName(cat.slug)}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 180px"
-                      priority={idx < 4} // Prioritize first 4 images
-                      className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
-                    />
+            {sorted.map((cat, idx) => (
+              <Link
+                key={cat.id}
+                href={`/catalog/${cat.slug}`}
+                className="w-full max-w-[320px] group animate-in-up"
+                style={{
+                  animationDelay: `${idx * 0.07}s`,
+                }}
+                aria-label={categoryLabels[cat.slug] || cat.name}
+              >
+                <div className="bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] px-3 py-4 flex flex-col items-center justify-between min-h-[260px] text-center transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-neutral-200">
+                  <div className="w-full h-[150px] bg-white rounded-xl border border-[#f0f0f0] shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex items-center justify-center p-3 mb-3 overflow-hidden">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={imgPath(cat.slug)} // Assuming image name matches slug
+                        alt={categoryLabels[cat.slug] || fallbackName(cat.slug)}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 180px"
+                        priority={idx < 4} // Prioritize first 4 images
+                        className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="text-[0.95rem] font-semibold text-[#222] leading-tight tracking-[0.01em] px-2 min-h-[2.6em] flex items-center justify-center">
-                  {categoryLabels[cat.slug] || fallbackName(cat.slug)}
-                </div>
+                  <div className="text-[0.95rem] font-semibold text-[#222] leading-tight tracking-[0.01em] px-2 min-h-[2.6em] flex items-center justify-center">
+                    {categoryLabels[cat.slug] || fallbackName(cat.slug)}
+                  </div>
 
-                <hr className="w-[60%] h-[2px] border-0 bg-gradient-to-r from-[#e63946] to-[#f8f9fa] opacity-[0.13] rounded mt-2" />
-              </div>
-            </Link>
-          ))}
+                  <hr className="w-[60%] h-[2px] border-0 bg-gradient-to-r from-[#e63946] to-[#f8f9fa] opacity-[0.13] rounded mt-2" />
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </section>
+
+      {/* New Products Block */}
+      <NewProductsBlock type="new" limit={6} />
 
       {/* keyframes */}
       <style jsx global>{`

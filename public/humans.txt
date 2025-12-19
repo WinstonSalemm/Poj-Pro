@@ -1,0 +1,16 @@
+/* TEAM */
+Developer: POJ PRO Development Team
+Contact: info@poj-pro.uz
+Location: Tashkent, Uzbekistan
+
+/* THANKS */
+Next.js - https://nextjs.org/
+React - https://reactjs.org/
+Prisma - https://www.prisma.io/
+Tailwind CSS - https://tailwindcss.com/
+
+/* SITE */
+Last update: 2025-01-20
+Standards: HTML5, CSS3, ES2023
+Components: React 18, Next.js 15
+Software: Node.js 20+

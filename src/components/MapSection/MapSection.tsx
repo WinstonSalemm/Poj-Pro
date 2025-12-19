@@ -54,7 +54,9 @@ export default function MapSection() {
         <Marker position={position} icon={customIcon}>
           <Link href="https://www.google.com/maps/place/POj+PRO+(%D0%BC%D0%B0%D0%B3%D0%B0%D0%B7%D0%B8%D0%BD+BOLID)/@41.2837093,69.2304518,19z/data=!4m6!3m5!1s0x38ae8b654ce3be15:0x764ece0d6201569b!8m2!3d41.283467!4d69.2303922!16s%2Fg%2F11xn1gh5vq?entry=ttu&g_ep=EgoyMDI1MDgxMy4wIKXMDSoASAFQAw%3D%3D">
             <Popup>
-              <div className="text-[#660000] font-semibold">POJ PRO — наш офис</div>
+              <Link href="https://www.google.com/maps/place/POj+PRO+(%D0%BC%D0%B0%D0%B3%D0%B0%D0%B7%D0%B8%D0%BD+BOLID)/@41.2837093,69.2304518,19z/data=!4m6!3m5!1s0x38ae8b654ce3be15:0x764ece0d6201569b!8m2!3d41.283467!4d69.2303922!16s%2Fg%2F11xn1gh5vq?entry=ttu&g_ep=EgoyMDI1MDgxMy4wIKXMDSoASAFQAw%3D%3D" className="underline text-blue-600">
+                <div className="text-[#660000] font-semibold">POJ PRO — наш офис</div>
+              </Link>
             </Popup>
           </Link>
         </Marker>

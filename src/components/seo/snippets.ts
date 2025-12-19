@@ -17,9 +17,28 @@ export const generateBreadcrumbList = (items: BreadcrumbItem[]) => ({
 
 export const generateOrganization = () => ({
   '@type': 'Organization',
+  '@id': `${SITE_URL}#organization`,
   name: 'POJ PRO',
   url: SITE_URL,
-  logo: `${SITE_URL}/images/logo.png`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE_URL}/OtherPics/favicon-large.webp`,
+    width: 1200,
+    height: 630,
+  },
+  image: `${SITE_URL}/OtherPics/favicon-large.webp`,
+  description: 'Профессиональное пожарное оборудование и средства безопасности в Ташкенте. Огнетушители, пожарные шкафы, рукава и СИЗ.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'ул. Уста Ширин, 105',
+    addressLocality: 'Ташкент',
+    addressRegion: 'Toshkent',
+    postalCode: '100000',
+    addressCountry: 'UZ',
+  },
+  telephone: '+998 99 393 66 16',
+  email: 'info@poj-pro.uz',
+  foundingDate: '2012',
   sameAs: [
     'https://t.me/pojsystema',
     'https://www.instagram.com/pojpro',
@@ -27,19 +46,29 @@ export const generateOrganization = () => ({
   ],
   contactPoint: {
     '@type': 'ContactPoint',
-    telephone: '+998901234567',
+    telephone: '+998 99 393 66 16',
     contactType: 'customer service',
     availableLanguage: ['Russian', 'English', 'Uzbek'],
+    areaServed: 'UZ',
   },
 });
 
 export const generateWebSite = () => ({
   '@type': 'WebSite',
+  '@id': `${SITE_URL}#website`,
   name: 'POJ PRO',
   url: SITE_URL,
+  description: 'Продажа огнетушителей (ОП, ОУ), пожарных шкафов, рукавов и СИЗ в Ташкенте. Доставка, обслуживание, перезарядка. Официальные сертификаты.',
+  publisher: {
+    '@id': `${SITE_URL}#organization`,
+  },
+  inLanguage: ['ru', 'en', 'uz'],
   potentialAction: {
     '@type': 'SearchAction',
-    target: `${SITE_URL}/search?q={search_term_string}`,
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/catalog?search={search_term_string}`,
+    },
     'query-input': 'required name=search_term_string',
   },
 });

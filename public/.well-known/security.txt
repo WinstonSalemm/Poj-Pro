@@ -1,0 +1,7 @@
+Contact: mailto:security@poj-pro.uz
+Contact: https://www.poj-pro.uz/contacts
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: ru, en, uz
+Canonical: https://www.poj-pro.uz/.well-known/security.txt
+Policy: https://www.poj-pro.uz/documents
+Acknowledgments: https://www.poj-pro.uz/about

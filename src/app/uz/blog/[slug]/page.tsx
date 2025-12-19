@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { loadPost, getAllPostSlugs, getPostAlternates, getRelatedPosts } from '@/lib/blog/loader';
 import ArticleJsonLd from '@/components/seo/ArticleJsonLd';
 import FaqJsonLd from '@/components/seo/FaqJsonLd';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-static';
 
@@ -20,16 +21,60 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const post = loadPost('uz', slug);
   if (!post) return {};
   const alternates = getPostAlternates(slug);
+  const canonical = `${SITE_URL}/uz/blog/${post.slug}`;
+  const keywords = [
+    post.frontmatter.title,
+    'yong\'in xavfsizligi',
+    'POJ PRO',
+    'Toshkent',
+    ...(post.frontmatter.tags || []),
+  ].filter(Boolean).join(', ');
+
   return {
     title: post.frontmatter.title,
     description: post.frontmatter.description,
+    keywords,
     alternates: {
-      canonical: `/uz/blog/${post.slug}`,
+      canonical,
       languages: {
-        'ru-RU': alternates.ru || `/blog/${post.slug}`,
-        'en-US': alternates.en || `/en/blog/${post.slug}`,
-        'uz-UZ': alternates.uz || `/uz/blog/${post.slug}`,
+        'ru-RU': alternates.ru ? `${SITE_URL}${alternates.ru}` : `${SITE_URL}/blog/${post.slug}`,
+        'en-US': alternates.en ? `${SITE_URL}${alternates.en}` : `${SITE_URL}/en/blog/${post.slug}`,
+        'uz-UZ': alternates.uz ? `${SITE_URL}${alternates.uz}` : canonical,
+        'x-default': canonical,
       },
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    openGraph: {
+      url: canonical,
+      title: post.frontmatter.title,
+      description: post.frontmatter.description,
+      type: 'article',
+      siteName: 'POJ PRO',
+      locale: 'uz_UZ',
+      images: post.frontmatter.cover ? [{
+        url: post.frontmatter.cover.startsWith('http') ? post.frontmatter.cover : `${SITE_URL}${post.frontmatter.cover}`,
+        width: 1200,
+        height: 630,
+        alt: post.frontmatter.title,
+      }] : undefined,
+      publishedTime: post.frontmatter.date,
+      modifiedTime: post.frontmatter.date,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.frontmatter.title,
+      description: post.frontmatter.description,
+      images: post.frontmatter.cover ? [post.frontmatter.cover.startsWith('http') ? post.frontmatter.cover : `${SITE_URL}${post.frontmatter.cover}`] : undefined,
     },
   };
 }
@@ -93,7 +138,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
       <section>
         <h3>Bog&#39;liq</h3>
         <ul className="list-disc pl-5">
-          {related.slice(0,5).map(r => (
+          {related.slice(0, 5).map(r => (
             <li key={r.slug}><Link href={`/uz/blog/${r.slug}`}>{r.frontmatter.title}</Link></li>
           ))}
         </ul>

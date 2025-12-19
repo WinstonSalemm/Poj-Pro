@@ -36,15 +36,14 @@ import { getAllPostsAllLocales, getPostAlternates } from '@/lib/blog/loader';
 
  // Static pages that don't change often
  function getStaticPages(): SitemapEntry[] {
-   const baseRoutes = [
-     { path: '/', priority: 1.0 },
-     { path: '/about', priority: 0.8 },
-     { path: '/contacts', priority: 0.8 },
-     { path: '/catalog', priority: 0.9 },
-     { path: '/documents', priority: 0.7 },
-     { path: '/supplies', priority: 0.7 },
-     { path: '/blog', priority: 0.7 },
-   ];
+  const baseRoutes = [
+    { path: '/', priority: 1.0 },
+    { path: '/about', priority: 0.8 },
+    { path: '/contacts', priority: 0.8 },
+    { path: '/catalog', priority: 0.9 },
+    { path: '/documents', priority: 0.7 },
+    { path: '/blog', priority: 0.7 },
+  ];
    const staticRoutes = [...baseRoutes];
 
    const now = new Date().toISOString();

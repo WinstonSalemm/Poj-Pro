@@ -11,6 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
     defaultDescription: 'Каталог оборудования для пожарной безопасности в Ташкенте.',
     path: '/catalog',
     lang,
+    keywords: ['каталог', 'пожарное оборудование', 'огнетушители', 'POJ PRO', 'Ташкент'],
   });
 }
 

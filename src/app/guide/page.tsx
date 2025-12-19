@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     descriptionKey: 'guide.intro',
     path: '/guide',
     lang,
+    keywords: ['гид по пожарной безопасности', 'пожарная безопасность', 'руководство', 'инструкция', 'POJ PRO'],
   });
 }
 
