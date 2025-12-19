@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import AdminGate from '@/components/admin/AdminGate';
 import { toast } from 'react-hot-toast';
 
@@ -151,18 +152,18 @@ export default function AdminProductsPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Управление товарами</h1>
           <div className="flex items-center gap-3">
-            <a
+            <Link
               href="/admin/new"
               className="px-4 py-2 rounded border border-[#660000] text-[#660000] hover:bg-[#660000] hover:text-white transition-colors"
             >
               Новые товары
-            </a>
-            <a
+            </Link>
+            <Link
               href="/admin/products/add"
               className="px-4 py-2 rounded bg-[#660000] text-white hover:bg-[#7a1a1a] transition-colors"
             >
               + Добавить товар
-            </a>
+            </Link>
           </div>
         </div>
 

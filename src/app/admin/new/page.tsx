@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import AdminGate from '@/components/admin/AdminGate';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -160,12 +161,12 @@ export default function AdminNewProductsPage() {
               </p>
             </div>
           </div>
-          <a
+          <Link
             href="/admin/products"
             className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Все товары
-          </a>
+          </Link>
         </div>
 
         <div className="bg-white shadow rounded-lg mb-6">
@@ -298,7 +299,7 @@ export default function AdminNewProductsPage() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
               <strong>Совет:</strong> После редактирования и проверки товаров используйте кнопку
-              "В основную массу", чтобы они больше не отображались в блоке "Новые товары" на сайте.
+              &quot;В основную массу&quot;, чтобы они больше не отображались в блоке &quot;Новые товары&quot; на сайте.
             </p>
           </div>
         )}
