@@ -40,7 +40,15 @@ export default function Header() {
   const switcherMobileRef = useRef<HTMLDivElement | null>(null);
   const switcherDesktopRef = useRef<HTMLDivElement | null>(null);
 
-  const currentLanguage = (i18n.language as Lang) || "ru";
+  // Normalize language code for display (i18n uses 'en'/'uz', but we need 'eng'/'uzb' for comparison)
+  const normalizeLangForDisplay = (lang: string): Lang => {
+    const normalized = lang.toLowerCase();
+    if (normalized === "en" || normalized === "eng") return "eng";
+    if (normalized === "uz" || normalized === "uzb") return "uzb";
+    return "ru";
+  };
+  
+  const currentLanguage = normalizeLangForDisplay(i18n.language || "ru");
 
   const menuLeft: MenuItem[] = [
     { id: "catalog", href: "/catalog", translationKey: "header.catalog" },
@@ -175,12 +183,16 @@ export default function Header() {
                   </button>
 
                   {langOpen && (
-                    <div className="absolute right-0 mt-2 w-20 rounded-md bg-white shadow-lg ring-1 ring-black/5">
+                    <div className="absolute right-0 mt-2 w-20 rounded-md bg-white shadow-lg ring-1 ring-black/5 z-50">
                       {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
                         <button
                           key={lang}
                           onClick={() => changeLanguage(lang)}
-                          className="block !color-[#660000] w-full px-4 py-2 text-sm text-left hover:bg-gray-50"
+                          className={`block w-full px-4 py-2 text-sm text-left hover:bg-gray-50 ${
+                            currentLanguage === lang
+                              ? "bg-brand/10 text-brand font-medium"
+                              : "text-gray-700"
+                          }`}
                         >
                           {lang.toUpperCase()}
                         </button>
@@ -205,8 +217,29 @@ export default function Header() {
                   {t(item.translationKey)}
                 </Link>
               ))}
-              <div className="px-4 py-3">
+              <div className="px-4 py-3 border-b border-neutral-200">
                 <AuthButton />
+              </div>
+              {/* Language switcher for mobile */}
+              <div className="px-4 py-3 border-b border-neutral-200" ref={switcherMobileRef}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Язык / Language / Til</span>
+                </div>
+                <div className="flex gap-2">
+                  {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => changeLanguage(lang)}
+                      className={`flex-1 px-3 py-2 text-sm rounded-md border transition-colors ${
+                        currentLanguage === lang
+                          ? "bg-brand text-white border-brand"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      {lang.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
               </div>
             </nav>
           )}

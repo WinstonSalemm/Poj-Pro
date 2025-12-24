@@ -478,36 +478,6 @@ export default function DocumentsClient() {
           </div>
         )}
 
-        {/* keyframes (оставляем анимации) */}
-        <style jsx global>{`
-          @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-          .animate-fadeIn { animation: fadeIn .25s ease-out }
-
-          @keyframes slideBar {
-            0% { transform: translateX(-120%) }
-            60% { transform: translateX(160%) }
-            100% { transform: translateX(160%) }
-          }
-          .animate-slideBar { animation: slideBar 1.2s ease-in-out infinite }
-
-          @keyframes inUp {
-            0% { opacity: 0; transform: translateY(16px) }
-            100% { opacity: 1; transform: translateY(0) }
-          }
-          .animate-in-up { animation: inUp .6s cubic-bezier(.22,.61,.36,1) both }
-
-          .shimmer {
-            position: relative;
-            background: linear-gradient(90deg, #f5f6f7 25%, #eceef1 37%, #f5f6f7 63%);
-            background-size: 400% 100%;
-            animation: shimmerMove 1.2s ease-in-out infinite;
-            border-radius: 8px;
-          }
-          @keyframes shimmerMove {
-            0% { background-position: 100% 0 }
-            100% { background-position: 0 0 }
-          }
-        `}</style>
       </main>
     </>
   );

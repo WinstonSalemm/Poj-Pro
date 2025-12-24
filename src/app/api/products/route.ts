@@ -26,20 +26,22 @@ export const GET = withApiCache({
 })(async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = normalize(searchParams.get('locale'));
+  // Нормализуем локаль для БД (в БД: 'ru', 'eng', 'uzb')
+  const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
   const t0 = Date.now();
 
   try {
     const products = await prisma.product.findMany({
       where: {
         isActive: true,
-        i18n: { some: { locale } }, // фильтр по локали у связанной таблицы
+        i18n: { some: { locale: dbLocale } }, // фильтр по локали у связанной таблицы в формате БД
       },
       orderBy: { id: 'asc' },
       take: 500,
       include: {
         i18n: {
-          where: { locale },
-          select: { title: true, summary: true, description: true },
+          where: { locale: dbLocale }, // получаем переводы для текущей локали в формате БД
+          select: { locale: true, title: true, summary: true, description: true },
         },
         category: { select: { id: true, slug: true, name: true } },
         certificates: {

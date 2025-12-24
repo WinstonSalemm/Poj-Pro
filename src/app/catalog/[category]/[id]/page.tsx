@@ -49,12 +49,29 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const dbProduct = await prisma.product.findUnique({
     where: { slug: id },
-    include: { i18n: { where: { locale: dbLocale }, select: { title: true, summary: true } } },
+    include: { 
+      i18n: { 
+        where: { locale: { in: [dbLocale, 'ru', 'eng', 'uzb'] } }, 
+        select: { locale: true, title: true, summary: true },
+      } 
+    },
   });
 
   if (!dbProduct) return { title: 'Товар не найден' };
 
-  const i18n = dbProduct.i18n[0];
+  // Находим перевод для текущей локали с правильным fallback
+  let i18n = dbProduct.i18n.find(t => t.locale === dbLocale);
+  if (!i18n) {
+    // Если нет перевода для текущей локали, используем русский как основной fallback
+    i18n = dbProduct.i18n.find(t => t.locale === 'ru');
+  }
+  if (!i18n) {
+    // Если нет русского, пробуем остальные
+    i18n = dbProduct.i18n.find(t => t.locale === 'eng') 
+      || dbProduct.i18n.find(t => t.locale === 'uzb')
+      || dbProduct.i18n[0] // Последний fallback - любой доступный перевод
+      || null;
+  }
   const title = i18n?.title || dbProduct.slug;
   const description = (i18n?.summary || `Купить ${title} в Ташкенте по выгодной цене.`).slice(0, 160);
 
@@ -135,13 +152,19 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const dict = await getDictionary(locale);
 
   // Нормализуем локаль для запроса к базе данных (en -> eng, uz -> uzb)
+  // Важно: в БД используются коды 'ru', 'eng', 'uzb', а в Next.js 'ru', 'en', 'uz'
   const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
 
   const dbProduct = await prisma.product.findUnique({
     where: { slug: id },
     include: {
       category: { select: { id: true, name: true, slug: true } },
-      i18n: { where: { locale: dbLocale }, select: { title: true, summary: true, description: true } },
+      // Получаем все доступные переводы для всех языков
+      // Важно: получаем все переводы, чтобы иметь возможность fallback
+      i18n: { 
+        where: { locale: { in: ['ru', 'eng', 'uzb'] } }, 
+        select: { locale: true, title: true, summary: true, description: true },
+      },
     },
   });
 
@@ -230,30 +253,121 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   // Нормализуем локаль для specs (в базе: ru, eng, uzb; в Next.js: ru, en, uz)
   const specsLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
 
+  // Обработка характеристик с улучшенным fallback
   const specsEntries: [string, string][] = dbProduct.specs && typeof dbProduct.specs === 'object'
     ? Object.entries(dbProduct.specs as Record<string, unknown>)
-      .filter(([key, value]) => key != null && value != null) // Фильтруем null/undefined
+      .filter(([key, value]) => {
+        // Фильтруем только валидные записи
+        if (!key || key.trim() === '') return false;
+        if (value === null || value === undefined) return false;
+        // Если значение объект, проверяем что в нем есть хотя бы одно значение
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          const obj = value as Record<string, unknown>;
+          return Object.keys(obj).length > 0 && Object.values(obj).some(v => v != null && String(v).trim() !== '');
+        }
+        // Если значение строка, проверяем что она не пустая
+        if (typeof value === 'string') {
+          return value.trim() !== '';
+        }
+        return true;
+      })
       .map(([key, value]) => {
         // Извлекаем значение для текущего языка из объекта переводов
         let specValue = '';
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
           const valueObj = value as Record<string, unknown>;
-          // Пробуем получить значение для текущего языка, затем для ru как fallback
-          specValue = String(valueObj[specsLocale] || valueObj['ru'] || valueObj['eng'] || valueObj['uzb'] || '');
+          // Пробуем получить значение для текущего языка, затем для ru как fallback, затем для других
+          specValue = String(
+            valueObj[specsLocale] 
+            || valueObj['ru'] 
+            || valueObj['eng'] 
+            || valueObj['uzb']
+            || valueObj['en']
+            || valueObj['uz']
+            || Object.values(valueObj).find(v => v != null && String(v).trim() !== '') 
+            || ''
+          );
         } else {
           // Если значение не объект, используем как есть
-          specValue = String(value);
+          specValue = String(value || '');
         }
 
-        return [
-          t(`productSpecs.${normalizeForTranslation(key)}`, String(key)),
-          t(`productSpecValues.${normalizeForTranslation(specValue)}`, specValue),
-        ];
+        // Нормализуем ключ и значение для перевода
+        const normalizedKey = normalizeForTranslation(key);
+        const normalizedValue = normalizeForTranslation(specValue);
+        
+        // Пробуем получить перевод, если нет - используем оригинальное значение
+        const translatedKey = t(`productSpecs.${normalizedKey}`, key);
+        const translatedValue = t(`productSpecValues.${normalizedValue}`, specValue);
+
+        return [translatedKey, translatedValue];
       })
+      .filter(([key, value]) => key.trim() !== '' && value.trim() !== '') // Убираем пустые значения
     : [];
 
   const priceNumber = dbProduct.price != null ? Number(dbProduct.price) : null;
-  const i18n = dbProduct.i18n[0];
+  
+  // Отладочная информация (только в development)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[ProductPage] Locale:', locale, 'dbLocale:', dbLocale);
+    console.log('[ProductPage] Available i18n:', dbProduct.i18n.map(t => ({ 
+      locale: t.locale, 
+      title: t.title?.substring(0, 50) || '(empty)',
+      hasTitle: !!t.title?.trim(), 
+      hasSummary: !!t.summary?.trim(),
+      hasDescription: !!t.description?.trim()
+    })));
+    console.log('[ProductPage] Looking for locale:', dbLocale);
+    console.log('[ProductPage] Found match:', dbProduct.i18n.find(t => t.locale === dbLocale) ? 'YES' : 'NO');
+  }
+  
+  // Находим перевод для текущей локали с правильным fallback
+  // Важно: dbLocale уже нормализован (uz -> uzb, en -> eng)
+  
+  // Функция для проверки, что перевод имеет хотя бы одно заполненное поле
+  const hasContent = (t: { title: string | null; summary: string | null; description: string | null }) => {
+    return !!(t.title?.trim() || t.summary?.trim() || t.description?.trim());
+  };
+  
+  // Сначала ищем перевод для текущей локали (даже если он частично заполнен)
+  let i18n = dbProduct.i18n.find(t => t.locale === dbLocale);
+  
+  // Если нашли перевод для текущей локали, но он пустой, все равно используем его
+  // (лучше показать пустое, чем fallback на другой язык)
+  if (i18n && !hasContent(i18n)) {
+    // Если перевод полностью пустой, делаем fallback
+    if (dbLocale !== 'ru') {
+      i18n = dbProduct.i18n.find(t => t.locale === 'ru' && hasContent(t)) || null;
+    }
+  }
+  
+  // Если нет перевода для текущей локали, используем русский как основной fallback
+  if (!i18n && dbLocale !== 'ru') {
+    i18n = dbProduct.i18n.find(t => t.locale === 'ru' && hasContent(t));
+  }
+  
+  // Если нет русского с контентом, пробуем любой русский (даже пустой)
+  if (!i18n && dbLocale !== 'ru') {
+    i18n = dbProduct.i18n.find(t => t.locale === 'ru');
+  }
+  
+  // Если нет русского, пробуем остальные доступные переводы с контентом
+  if (!i18n) {
+    i18n = dbProduct.i18n.find(t => (t.locale === 'eng' || t.locale === 'uzb') && hasContent(t))
+      || dbProduct.i18n.find(t => t.locale === 'eng' || t.locale === 'uzb')
+      || dbProduct.i18n[0] // Последний fallback - любой доступный перевод
+      || null;
+  }
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[ProductPage] Selected i18n:', i18n ? { 
+      locale: i18n.locale, 
+      hasTitle: !!i18n.title?.trim(),
+      hasSummary: !!i18n.summary?.trim(),
+      hasDescription: !!i18n.description?.trim()
+    } : 'null');
+  }
+  
   const title = i18n?.title || dbProduct.slug;
   const summary = i18n?.summary || null;
   const description = i18n?.description || null;

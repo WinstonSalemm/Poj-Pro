@@ -95,14 +95,24 @@ a {
 }
 .animate-in-up { animation: inUp .6s cubic-bezier(.22,.61,.36,1) both }
 
-/* Shimmer skeleton */
+/* Shimmer skeleton - optimized with transform for better performance */
 .shimmer {
   position: relative;
+  overflow: hidden;
+}
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
-  background-size: 400% 100%;
+  background-size: 200% 100%;
   animation: shimmerMove 1.2s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes shimmerMove {
-  0% { background-position: 100% 0 }
-  100% { background-position: 0 0 }
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(100%) }
 }

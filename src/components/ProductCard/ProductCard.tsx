@@ -62,18 +62,23 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   const [qty, setQty] = useState(1);
 
   // безопасно достаём локализованный заголовок из product.i18n по текущему языку
-  const normLang = (lang?: string) => {
+  // Важно: в БД используются коды 'ru', 'eng', 'uzb', а в i18n могут быть 'ru', 'en', 'uz'
+  const normLangForDB = (lang?: string) => {
     const s = (lang || '').toLowerCase();
-    if (s === 'en' || s === 'eng') return 'en';
-    if (s === 'uz' || s === 'uzb') return 'uz';
+    // Нормализуем для поиска в БД (где хранятся 'eng', 'uzb', 'ru')
+    if (s === 'en' || s === 'eng') return 'eng';
+    if (s === 'uz' || s === 'uzb') return 'uzb';
     return 'ru';
   };
-  const currentLang = normLang(i18n?.language);
+  const dbLocale = normLangForDB(i18n?.language);
   const i18nTitle = (() => {
     const i18nArr = product.i18n;
     if (!Array.isArray(i18nArr)) return undefined;
-    const match = i18nArr.find((tr) => tr?.locale === currentLang);
-    const title = match?.title ?? i18nArr[0]?.title;
+    // Ищем перевод для текущей локали в формате БД
+    const match = i18nArr.find((tr) => tr?.locale === dbLocale);
+    // Если нет перевода для текущей локали, используем русский как fallback
+    const fallback = i18nArr.find((tr) => tr?.locale === 'ru');
+    const title = match?.title ?? fallback?.title ?? i18nArr[0]?.title;
     return typeof title === 'string' && title.trim() ? String(title) : undefined;
   })();
 
@@ -129,7 +134,7 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   return (
     <div
       onClick={() => onClick?.(product)}
-      className={`group relative bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-all duration-300 ${highlightCls}`}
+      className={`group relative bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-[border-color,background-color,box-shadow] duration-300 ${highlightCls}`}
     >
       {/* изображение */}
       <div className="relative w-full overflow-hidden rounded-xl bg-gray-100 aspect-square">

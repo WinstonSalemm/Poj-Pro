@@ -14,18 +14,39 @@ export default function GuideClient() {
 
   const [activeId, setActiveId] = useState<string>("apt");
 
-  const getArray = (key: string): string[] => {
-    try {
-      const anyT = t as unknown as (k: string, o?: unknown) => unknown;
-      const arr = anyT(key, { returnObjects: true });
-      return Array.isArray(arr) ? (arr as string[]) : [];
-    } catch {
-      return [];
-    }
-  };
+  // Memoize getArray function to avoid recreating it on every render
+  const getArray = useMemo(
+    () => (key: string): string[] => {
+      try {
+        const anyT = t as unknown as (k: string, o?: unknown) => unknown;
+        const arr = anyT(key, { returnObjects: true });
+        return Array.isArray(arr) ? (arr as string[]) : [];
+      } catch {
+        return [];
+      }
+    },
+    [t]
+  );
 
-  const mtRecs = getArray("guide.sections.maintenance.recs");
-  const sgRecs = getArray("guide.sections.signage.recs");
+  // Memoize all array results to avoid recalculating on every render
+  const mtRecs = useMemo(() => getArray("guide.sections.maintenance.recs"), [getArray]);
+  const sgRecs = useMemo(() => getArray("guide.sections.signage.recs"), [getArray]);
+
+  // Memoize building items arrays
+  const apartmentItems = useMemo(() => getArray("guide.minimalKits.buildings.apartment.items"), [getArray]);
+  const officeItems = useMemo(() => getArray("guide.minimalKits.buildings.office.items"), [getArray]);
+  const houseItems = useMemo(() => getArray("guide.minimalKits.buildings.house.items"), [getArray]);
+  const gasStationItems = useMemo(() => getArray("guide.minimalKits.buildings.gasStation.items"), [getArray]);
+  const electricalPanelItems = useMemo(() => getArray("guide.minimalKits.buildings.electricalPanel.items"), [getArray]);
+
+  // Memoize quick links array
+  const quickLinksSlugs = useMemo(() => [
+    "ognetushiteli",
+    "pozharnye_shkafy",
+    "rukava_i_pozharnaya_armatura",
+    "pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva",
+    "siz",
+  ], []);
 
   const sectionIds = useMemo(() => {
     const ids = ["minimal-kits"];
@@ -36,30 +57,42 @@ export default function GuideClient() {
   }, [mtRecs.length, sgRecs.length]);
 
   useEffect(() => {
+    // Use passive observer with optimized settings
     const observer = new IntersectionObserver(
       (entries) => {
+        // Find the entry with highest intersection ratio
         let best: IntersectionObserverEntry | null = null;
+        let maxRatio = 0;
+
         for (const e of entries) {
-          if (!best || e.intersectionRatio > (best.intersectionRatio || 0)) {
+          const ratio = e.intersectionRatio;
+          if (ratio > maxRatio && e.isIntersecting) {
+            maxRatio = ratio;
             best = e;
           }
         }
-        if (best?.isIntersecting && best.target.id) {
+
+        if (best?.target.id) {
           setActiveId(best.target.id);
         }
       },
       {
         rootMargin: "-80px 0px -60% 0px",
         threshold: [0.15, 0.3, 0.6],
+        // Use passive observation for better performance
       }
     );
 
-    sectionIds
+    // Batch DOM queries and observations
+    const elements = sectionIds
       .map((id) => document.getElementById(id))
-      .filter(Boolean)
-      .forEach((el) => observer.observe(el!));
+      .filter(Boolean) as HTMLElement[];
 
-    return () => observer.disconnect();
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+    };
   }, [sectionIds]);
 
   return (
@@ -119,13 +152,7 @@ export default function GuideClient() {
             {t("guide.quickLinks.title")}
           </h2>
           <div className="flex flex-col sm:flex-row flex-wrap gap-2">
-            {[
-              "ognetushiteli",
-              "pozharnye_shkafy",
-              "rukava_i_pozharnaya_armatura",
-              "pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva",
-              "siz",
-            ].map((slug) => (
+            {quickLinksSlugs.map((slug) => (
               <Link
                 key={slug}
                 href={`/catalog/${slug}`}
@@ -157,7 +184,7 @@ export default function GuideClient() {
                 </h3>
               </div>
               <ul className="space-y-2 text-sm sm:text-base text-gray-700">
-                {getArray("guide.minimalKits.buildings.apartment.items").map((item, i) => (
+                {apartmentItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-[#660000] mt-1">•</span>
                     <span>{item}</span>
@@ -177,7 +204,7 @@ export default function GuideClient() {
                 </h3>
               </div>
               <ul className="space-y-2 text-sm sm:text-base text-gray-700">
-                {getArray("guide.minimalKits.buildings.office.items").map((item, i) => (
+                {officeItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-[#660000] mt-1">•</span>
                     <span>{item}</span>
@@ -197,7 +224,7 @@ export default function GuideClient() {
                 </h3>
               </div>
               <ul className="space-y-2 text-sm sm:text-base text-gray-700">
-                {getArray("guide.minimalKits.buildings.house.items").map((item, i) => (
+                {houseItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-[#660000] mt-1">•</span>
                     <span>{item}</span>
@@ -217,7 +244,7 @@ export default function GuideClient() {
                 </h3>
               </div>
               <ul className="space-y-2 text-sm sm:text-base text-gray-700">
-                {getArray("guide.minimalKits.buildings.gasStation.items").map((item, i) => (
+                {gasStationItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-[#660000] mt-1">•</span>
                     <span>{item}</span>
@@ -237,7 +264,7 @@ export default function GuideClient() {
                 </h3>
               </div>
               <ul className="space-y-2 text-sm sm:text-base text-gray-700">
-                {getArray("guide.minimalKits.buildings.electricalPanel.items").map((item, i) => (
+                {electricalPanelItems.map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-[#660000] mt-1">•</span>
                     <span>{item}</span>

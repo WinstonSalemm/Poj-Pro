@@ -129,30 +129,6 @@ export default function AboutPage() {
 
       {/* Partners Section */}
       <PartnersSection />
-
-      {/* keyframes (те же, что и в каталоге) */}
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
-
-        @keyframes slideBar {
-          0% { transform: translateX(-120%); }
-          60% { transform: translateX(160%); }
-          100% { transform: translateX(160%); }
-        }
-        .animate-slideBar { animation: slideBar 1.2s ease-in-out infinite; }
-
-        @keyframes inUp {
-          0% { opacity: 0; transform: translateY(16px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-in-up {
-          animation: inUp 0.6s cubic-bezier(.22,.61,.36,1) both;
-        }
-      `}</style>
     </main>
   );
 }

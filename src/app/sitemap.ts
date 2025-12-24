@@ -42,6 +42,8 @@ import { getAllPostsAllLocales, getPostAlternates } from '@/lib/blog/loader';
     { path: '/contacts', priority: 0.8 },
     { path: '/catalog', priority: 0.9 },
     { path: '/documents', priority: 0.7 },
+    { path: '/documents/certificates', priority: 0.7 },
+    { path: '/guide', priority: 0.7 },
     { path: '/blog', priority: 0.7 },
   ];
    const staticRoutes = [...baseRoutes];

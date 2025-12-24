@@ -11,19 +11,37 @@ export type GuideFAQClientProps = {
 
 export default function GuideFAQClient({ fallbackItems }: GuideFAQClientProps) {
   const { t } = useTranslation();
-  // Pull array of FAQ items from i18n: guide.faq
+  // Pull array of FAQ items from i18n: guide.faq - memoized for performance
   const items = useMemo<FAQItem[]>(() => {
     try {
       const arr = (t as unknown as (key: string, opts?: unknown) => unknown)(
         "guide.faq",
         { returnObjects: true }
       );
-      if (Array.isArray(arr)) return arr as unknown as FAQItem[];
+      if (Array.isArray(arr) && arr.length > 0) {
+        return arr as unknown as FAQItem[];
+      }
     } catch {}
     return fallbackItems ?? [];
   }, [t, fallbackItems]);
 
   const [open, setOpen] = useState<number | null>(0);
+  
+  // Memoize JSON-LD structured data
+  const jsonLd = useMemo(
+    () => JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: items.map((it) => ({
+        '@type': 'Question',
+        name: it.q,
+        acceptedAnswer: { '@type': 'Answer', text: it.a },
+      })),
+    }),
+    [items]
+  );
+  
+  // Early return if no items
   if (!items.length) return null;
 
   return (
@@ -31,21 +49,7 @@ export default function GuideFAQClient({ fallbackItems }: GuideFAQClientProps) {
       {/* JSON-LD structured data for FAQ */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            {
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              mainEntity: items.map((it) => ({
-                '@type': 'Question',
-                name: it.q,
-                acceptedAnswer: { '@type': 'Answer', text: it.a },
-              })),
-            },
-            null,
-            2
-          ),
-        }}
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
       />
       <h2 className="text-xl font-semibold !text-[#660000] mb-3">
         {t("guide.faqTitle", "Частые вопросы")}

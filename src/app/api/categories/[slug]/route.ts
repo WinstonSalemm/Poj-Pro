@@ -46,9 +46,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     }
 
+    // Нормализуем локаль для поиска в БД (в БД: 'ru', 'eng', 'uzb')
+    const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
+    
     const products = category.products.map((p) => {
+      // Ищем перевод для текущей локали в формате БД, затем fallback на русский
       const t =
-        p.i18n.find((x) => x.locale === locale) ??
+        p.i18n.find((x) => x.locale === dbLocale) ??
         p.i18n.find((x) => x.locale === 'ru') ??
         p.i18n[0];
 
