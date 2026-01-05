@@ -121,11 +121,11 @@ export default function CreatorModal() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, x: 20, scale: 0.95 }}
+          initial={{ opacity: 0, x: -20, scale: 0.95 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 20, scale: 0.95 }}
+          exit={{ opacity: 0, x: -20, scale: 0.95 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)]"
+          className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] max-w-[380px]"
         >
           <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg ring-1 ring-black/5">
             {/* Decorative top bar */}
@@ -135,36 +135,36 @@ export default function CreatorModal() {
             <button
               onClick={close}
               aria-label={closeButtonLabel}
-              className="absolute right-3 top-3 rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 z-10"
+              className="absolute right-2 top-2 sm:right-3 sm:top-3 rounded-full p-1.5 sm:p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 z-10"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
 
             {/* Content */}
-            <div className="p-6 pt-7">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            <div className="p-4 sm:p-6 pt-5 sm:pt-7">
+              <div className="mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
                   {t('creator.title')}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600">
                   {t('creator.description')}
                 </p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {/* Email */}
                 <a
                   href="mailto:winston234123@gmail.com"
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-[#660000] hover:bg-[#fff0f0] transition-colors group"
+                  className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border border-gray-200 hover:border-[#660000] hover:bg-[#fff0f0] transition-colors group"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#fff0f0] flex items-center justify-center group-hover:bg-[#660000] transition-colors">
-                    <Mail className="h-5 w-5 text-[#660000] group-hover:text-white transition-colors" />
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fff0f0] flex items-center justify-center group-hover:bg-[#660000] transition-colors">
+                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-[#660000] group-hover:text-white transition-colors" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-0.5">
+                    <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5">
                       {t('creator.email')}
                     </div>
-                    <div className="text-sm font-medium text-gray-900 truncate">
+                    <div className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                       winston234123@gmail.com
                     </div>
                   </div>
@@ -173,16 +173,16 @@ export default function CreatorModal() {
                 {/* Phone */}
                 <a
                   href="tel:+998911321403"
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-[#660000] hover:bg-[#fff0f0] transition-colors group"
+                  className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border border-gray-200 hover:border-[#660000] hover:bg-[#fff0f0] transition-colors group"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#fff0f0] flex items-center justify-center group-hover:bg-[#660000] transition-colors">
-                    <Phone className="h-5 w-5 text-[#660000] group-hover:text-white transition-colors" />
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fff0f0] flex items-center justify-center group-hover:bg-[#660000] transition-colors">
+                    <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-[#660000] group-hover:text-white transition-colors" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-0.5">
+                    <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5">
                       {t('creator.phone')}
                     </div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-xs sm:text-sm font-medium text-gray-900 break-all">
                       +998 91 132 14 03
                     </div>
                   </div>
@@ -193,16 +193,16 @@ export default function CreatorModal() {
                   href="https://t.me/djdvd1"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-[#660000] hover:bg-[#fff0f0] transition-colors group"
+                  className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border border-gray-200 hover:border-[#660000] hover:bg-[#fff0f0] transition-colors group"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#fff0f0] flex items-center justify-center group-hover:bg-[#660000] transition-colors">
-                    <MessageCircle className="h-5 w-5 text-[#660000] group-hover:text-white transition-colors" />
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#fff0f0] flex items-center justify-center group-hover:bg-[#660000] transition-colors">
+                    <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#660000] group-hover:text-white transition-colors" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-0.5">
+                    <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5">
                       {t('creator.telegram')}
                     </div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-xs sm:text-sm font-medium text-gray-900">
                       @djdvd1
                     </div>
                   </div>
