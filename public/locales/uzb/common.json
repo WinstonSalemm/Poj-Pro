@@ -8,5 +8,12 @@
             "Mijozlar uchun maxsus takliflar"
         ]
     },
-    "goToCatalog": "Katalogga o'tish"
+    "goToCatalog": "Katalogga o'tish",
+    "creator": {
+        "title": "Veb-sayt yaratuvchisi",
+        "description": "Agar sizda saytni yaxshilash bo'yicha savollar yoki takliflar bo'lsa, men bilan bog'laning",
+        "email": "Email",
+        "phone": "Telefon",
+        "telegram": "Telegram"
+    }
 }

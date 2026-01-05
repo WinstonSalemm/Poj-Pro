@@ -255,7 +255,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   // Обработка характеристик с улучшенным fallback
   const specsEntries: [string, string][] = dbProduct.specs && typeof dbProduct.specs === 'object'
-    ? Object.entries(dbProduct.specs as Record<string, unknown>)
+    ? (Object.entries(dbProduct.specs as Record<string, unknown>)
       .filter(([key, value]) => {
         // Фильтруем только валидные записи
         if (!key || key.trim() === '') return false;
@@ -300,9 +300,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         const translatedKey = t(`productSpecs.${normalizedKey}`, key);
         const translatedValue = t(`productSpecValues.${normalizedValue}`, specValue);
 
-        return [translatedKey, translatedValue];
+        return [translatedKey, translatedValue] as [string, string];
       })
-      .filter(([key, value]) => key.trim() !== '' && value.trim() !== '') // Убираем пустые значения
+      .filter(([key, value]) => key.trim() !== '' && value.trim() !== '') as [string, string][]) // Убираем пустые значения
     : [];
 
   const priceNumber = dbProduct.price != null ? Number(dbProduct.price) : null;
@@ -337,7 +337,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (i18n && !hasContent(i18n)) {
     // Если перевод полностью пустой, делаем fallback
     if (dbLocale !== 'ru') {
-      i18n = dbProduct.i18n.find(t => t.locale === 'ru' && hasContent(t)) || null;
+      i18n = dbProduct.i18n.find(t => t.locale === 'ru' && hasContent(t));
     }
   }
   
@@ -355,8 +355,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (!i18n) {
     i18n = dbProduct.i18n.find(t => (t.locale === 'eng' || t.locale === 'uzb') && hasContent(t))
       || dbProduct.i18n.find(t => t.locale === 'eng' || t.locale === 'uzb')
-      || dbProduct.i18n[0] // Последний fallback - любой доступный перевод
-      || null;
+      || dbProduct.i18n[0]; // Последний fallback - любой доступный перевод
   }
   
   if (process.env.NODE_ENV === 'development') {

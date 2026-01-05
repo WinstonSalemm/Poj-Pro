@@ -8,5 +8,12 @@
             "Special offers for customers"
         ]
     },
-    "goToCatalog": "Go to catalog"
+    "goToCatalog": "Go to catalog",
+    "creator": {
+        "title": "Website Developer",
+        "description": "If you have any questions or suggestions for improving the website, please contact me",
+        "email": "Email",
+        "phone": "Phone",
+        "telegram": "Telegram"
+    }
 }

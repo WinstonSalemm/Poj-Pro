@@ -9,12 +9,14 @@ const AnalyticsLazy = dynamic(() => import('@/components/Analytics'), { ssr: fal
 const CookieConsentModalLazy = dynamic(() => import('@/components/CookieConsentModal/CookieConsentModal'), { ssr: false });
 const ClientWrapperLazy = dynamic(() => import('@/app/ClientWrapper'), { ssr: false });
 const CartAddToastLazy = dynamic(() => import('@/components/Cart/CartAddToast'), { ssr: false });
+const CreatorModalLazy = dynamic(() => import('@/components/CreatorModal/CreatorModal'), { ssr: false });
 
 export default function ClientWidgets() {
   return (
     <>
       <CartAddToastLazy />
       <CookieConsentModalLazy />
+      <CreatorModalLazy />
       <ClientWrapperLazy />
       {isProd && <AnalyticsLazy />}
     </>
