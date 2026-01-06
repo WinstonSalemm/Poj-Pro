@@ -5,7 +5,6 @@ import { getAllPostsAllLocales, getPostAlternates } from "@/lib/blog/loader";
 
 // Supported locales
 type Locale = "ru" | "uz" | "en";
-const LOCALES: Locale[] = ["ru", "uz", "en"];
 const DEFAULT_LOCALE: Locale = "ru";
 
 // Type for sitemap entry
@@ -26,24 +25,12 @@ type SitemapEntry = {
   };
 };
 
-// Helper to generate alternate language URLs
-const localeMap: Record<Locale, string> = {
-  ru: "ru-RU",
-  en: "en-US",
-  uz: "uz-UZ",
-};
-
-function generateAlternateUrls(path: string): Record<string, string> {
-  return LOCALES.reduce<Record<string, string>>((acc, locale) => {
-    const langCode = localeMap[locale];
-    acc[langCode] = `${SITE_URL}${
-      locale === DEFAULT_LOCALE ? "" : `/${locale}`
-    }${path}`;
-    return acc;
-  }, {});
-}
+// Note: Language switching is client-side via cookies, not separate URLs
+// Only blog has separate routes: /blog (ru), /en/blog (en), /uz/blog (uz)
 
 // Static pages that don't change often
+// Note: Language switching is client-side via cookies, no separate URLs for /ru/, /en/, /uz/
+// Only blog has separate routes: /blog (ru), /en/blog (en), /uz/blog (uz)
 function getStaticPages(): SitemapEntry[] {
   const baseRoutes = [
     { path: "/", priority: 1.0 },
@@ -53,38 +40,18 @@ function getStaticPages(): SitemapEntry[] {
     { path: "/documents", priority: 0.7 },
     { path: "/documents/certificates", priority: 0.7 },
     { path: "/guide", priority: 0.7 },
-    { path: "/blog", priority: 0.7 },
+    { path: "/blog", priority: 0.7 }, // Russian blog (default)
   ];
   const staticRoutes = [...baseRoutes];
 
   const now = new Date().toISOString();
   const routesArr = Array.isArray(staticRoutes) ? staticRoutes : [];
-  return routesArr.flatMap(({ path, priority }) => {
-    // Only the homepage has localized routes in this app. Other static pages exist once at root.
-    if (path === "/") {
-      return LOCALES.map(
-        (locale): SitemapEntry => ({
-          url: `${SITE_URL}${
-            locale === DEFAULT_LOCALE ? "" : `/${locale}`
-          }${path}`,
-          lastModified: now,
-          changeFrequency: "weekly",
-          priority,
-          alternates: {
-            languages: generateAlternateUrls(path),
-          },
-        })
-      );
-    }
-    return [
-      {
-        url: `${SITE_URL}${path}`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority,
-      },
-    ];
-  });
+  return routesArr.map(({ path, priority }) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority,
+  }));
 }
 
 // Generate product pages sitemap entries with correct URLs
@@ -219,7 +186,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...blogEntries,
     ];
     const filteredPages = allPages.filter((page) => {
-      const url = typeof page.url === "string" ? page.url : page.url.toString();
+      const url = page.url;
       // Exclude URLs with query parameters
       if (url.includes("?")) return false;
       // Exclude URLs with fragments
