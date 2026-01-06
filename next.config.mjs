@@ -126,6 +126,16 @@ const nextConfig = {
         destination: '/catalog',
         permanent: true,
       },
+      {
+        source: '/catalog/fire-extinguishers',
+        destination: '/catalog/ognetushiteli',
+        permanent: true,
+      },
+      {
+        source: '/catalog/fire-extinguishers/:path*',
+        destination: '/catalog/ognetushiteli/:path*',
+        permanent: true,
+      },
     ];
   },
 };
