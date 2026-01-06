@@ -5,19 +5,30 @@ import { SITE_URL } from '@/lib/site';
 const DISALLOWED_PATHS = [
   '/admin',
   '/admin/*',
+  '/adminProducts',
+  '/admin-console',
   '/api/*',
   '/_next/*',
+  '/_next/static/*',
+  '/_next/image/*',
   '/404',
   '/500',
   '/_error',
   '/cart',
+  '/cart/*',
+  '/checkout',
   '/checkout/*',
+  '/account',
   '/account/*',
   '/login',
   '/register',
   '/password-reset',
-  '/admin-console',
-  '/admin/*',
+  '/debug',
+  '/debug/*',
+  '/supplies',
+  '/supplies/*',
+  '/Pbase',
+  '/lp/*',
 ];
 
 // Crawl delay for different bots (in seconds)
@@ -79,11 +90,15 @@ export default function robots(): MetadataRoute.Robots {
       // Allow media files for image bots
       {
         userAgent: 'Googlebot-Image',
-        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*'],
+        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*', '/brands/*'],
       },
       {
         userAgent: 'Bingbot-Image',
-        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*'],
+        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*', '/brands/*'],
+      },
+      {
+        userAgent: 'YandexImages',
+        allow: ['/ProductImages/*', '/OtherPics/*', '/CatalogImage/*', '/certificates/*', '/brands/*'],
       },
     ],
     // Add sitemaps
