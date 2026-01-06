@@ -78,7 +78,9 @@ async function getProductPages(): Promise<SitemapEntry[]> {
       orderBy: { updatedAt: "desc" },
     });
 
-    return products
+    console.log('[sitemap] Found products in DB:', products.length);
+
+    const result = products
       .filter((p) => p.category?.slug && p.slug) // Ensure both category and product slugs exist
       .map((p) => {
         const cat = p.category!.slug;
@@ -91,8 +93,15 @@ async function getProductPages(): Promise<SitemapEntry[]> {
           priority: 0.7,
         } satisfies SitemapEntry;
       });
+
+    console.log('[sitemap] Valid product pages generated:', result.length);
+    return result;
   } catch (error) {
     console.error("Error generating product pages for sitemap:", error);
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     return [];
   }
 }
@@ -122,7 +131,9 @@ async function getCategoryPages(): Promise<SitemapEntry[]> {
       orderBy: { slug: "asc" },
     });
 
-    return categories.map((category) => {
+    console.log('[sitemap] Found categories in DB:', categories.length);
+
+    const result = categories.map((category) => {
       const path = `/catalog/${category.slug}`;
       // Use the most recent product update date, or current date if no products
       const lastModified = category.products[0]?.updatedAt
@@ -136,20 +147,33 @@ async function getCategoryPages(): Promise<SitemapEntry[]> {
         priority: 0.8,
       } satisfies SitemapEntry;
     });
+
+    console.log('[sitemap] Valid category pages generated:', result.length);
+    return result;
   } catch (error) {
     console.error("Error generating category pages for sitemap:", error);
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     return [];
   }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
+    console.log('[sitemap] Starting sitemap generation...');
+    
     // Fetch all data in parallel
     const [staticPages, productPages, categoryPages] = await Promise.all([
       getStaticPages(),
       getProductPages(),
       getCategoryPages(),
     ]);
+
+    console.log('[sitemap] Static pages:', staticPages.length);
+    console.log('[sitemap] Category pages:', categoryPages.length);
+    console.log('[sitemap] Product pages:', productPages.length);
 
     // Blog posts from MDX across locales
     const blogEntries: SitemapEntry[] = (() => {
@@ -177,6 +201,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     })();
 
+    console.log('[sitemap] Blog entries:', blogEntries.length);
+
     // Combine all pages and filter out any potential duplicates
     // Also filter out URLs with query parameters (should not be in sitemap)
     const allPages = [
@@ -185,6 +211,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...productPages,
       ...blogEntries,
     ];
+    
+    console.log('[sitemap] Total pages before filtering:', allPages.length);
+    
     const filteredPages = allPages.filter((page) => {
       const url = page.url;
       // Exclude URLs with query parameters
@@ -200,9 +229,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       new Map(filteredPages.map((page) => [page.url, page])).values()
     );
 
+    console.log('[sitemap] Final unique pages:', uniquePages.length);
+    console.log('[sitemap] Sitemap generation completed successfully');
+
     return uniquePages;
   } catch (error) {
     console.error("Error generating sitemap:", error);
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     // Return at least the static pages if there's an error
     return getStaticPages();
   }
