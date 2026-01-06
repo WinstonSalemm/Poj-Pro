@@ -10,8 +10,8 @@
     },
     "goToCatalog": "Katalogga o'tish",
     "creator": {
-        "title": "Veb-sayt yaratuvchisi",
-        "description": "Agar sizda saytni yaxshilash bo'yicha savollar yoki takliflar bo'lsa, men bilan bog'laning",
+        "title": "Sayt yoqdimi?",
+        "description": "Men bu saytni o'zim yaratdim. Agar sizga sayt yoki veb-yechim kerak bo'lsa, men bilan to'g'ridan-to'g'ri bog'lanishingiz mumkin.",
         "email": "Email",
         "phone": "Telefon",
         "telegram": "Telegram"
