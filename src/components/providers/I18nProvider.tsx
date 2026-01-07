@@ -8,8 +8,12 @@ export function I18nProvider({ children, locale }: { children: React.ReactNode; 
     const [instance] = useState(() => i18n);
 
     useEffect(() => {
-        if (i18n.language !== locale) {
-            i18n.changeLanguage(locale);
+        // Normalize locale: convert legacy codes to standard codes
+        const normalizedLocale = locale === 'eng' ? 'en' : locale === 'uzb' ? 'uz' : locale;
+        
+        // Only change if different to avoid unnecessary updates
+        if (i18n.language !== normalizedLocale) {
+            i18n.changeLanguage(normalizedLocale);
         }
     }, [locale]);
 

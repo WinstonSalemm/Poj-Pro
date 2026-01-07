@@ -31,20 +31,30 @@ export function LanguageSwitcher() {
   };
 
   // On mount, normalize any legacy stored language codes to standard ones for i18next UI
+  // Only run once on initial mount, not on every language change
   useEffect(() => {
     const current = (i18n.language || '').toLowerCase();
-    if (current === 'eng') {
-      i18n.changeLanguage('en');
-      try { localStorage.setItem('i18nextLng', 'en'); } catch {}
-      document.cookie = `i18next=en; path=/; max-age=31536000; SameSite=Lax`;
-    } else if (current === 'uzb') {
-      i18n.changeLanguage('uz');
-      try { localStorage.setItem('i18nextLng', 'uz'); } catch {}
-      document.cookie = `i18next=uz; path=/; max-age=31536000; SameSite=Lax`;
+    // Check if we need to normalize (only if it's a legacy code)
+    if (current === 'eng' || current === 'uzb') {
+      // Check what's actually stored to avoid conflicts
+      const stored = localStorage.getItem('i18nextLng');
+      const cookieLang = document.cookie.split(';').find(c => c.trim().startsWith('i18next='));
+      const cookieValue = cookieLang ? cookieLang.split('=')[1] : null;
+      
+      // Only normalize if stored value matches legacy code
+      if (current === 'eng' && (!stored || stored === 'eng') && (!cookieValue || cookieValue === 'eng')) {
+        i18n.changeLanguage('en');
+        try { localStorage.setItem('i18nextLng', 'en'); } catch {}
+        document.cookie = `i18next=en; path=/; max-age=31536000; SameSite=Lax`;
+      } else if (current === 'uzb' && (!stored || stored === 'uzb') && (!cookieValue || cookieValue === 'uzb')) {
+        i18n.changeLanguage('uz');
+        try { localStorage.setItem('i18nextLng', 'uz'); } catch {}
+        document.cookie = `i18next=uz; path=/; max-age=31536000; SameSite=Lax`;
+      }
     }
     // Keep backend cookie 'lang' as-is so API keeps working
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // Empty deps - only run once on mount
 
   return (
     <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full p-1 border border-gray-200 shadow-sm">

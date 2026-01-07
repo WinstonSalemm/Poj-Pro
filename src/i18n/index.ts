@@ -99,17 +99,25 @@ const detectionOptions = {
   caches: ['localStorage', 'cookie'],
   cookieMinutes: 60 * 24 * 365, // 1 year
   // Convert browser language to our supported codes
+  // Only convert navigator language, not manually set languages
   convertDetectedLanguage: (lng: string): string => {
+    // If language is already one of our supported codes, keep it as-is
+    const supported = ['ru', 'eng', 'uzb', 'en', 'uz'];
+    const normalized = lng.toLowerCase().split('-')[0];
+    if (supported.includes(normalized)) {
+      return normalized;
+    }
+    // Only convert browser-detected languages
     const langMap: Record<string, string> = {
-      en: 'eng',
-      en_us: 'eng',
-      en_gb: 'eng',
-      uz: 'uzb',
-      uz_uz: 'uzb',
+      en: 'en', // Keep standard codes for manual switching
+      en_us: 'en',
+      en_gb: 'en',
+      uz: 'uz', // Keep standard codes for manual switching
+      uz_uz: 'uz',
       ru: 'ru',
       ru_ru: 'ru',
     };
-    return langMap[lng.toLowerCase()] || 'ru';
+    return langMap[normalized] || 'ru';
   },
 };
 
@@ -118,23 +126,39 @@ export const updateLanguageStorage = (lng: string) => {
   if (typeof window === 'undefined') return;
   
   try {
-    // Update localStorage
-    localStorage.setItem('i18nextLng', lng);
+    // Normalize language code for storage (keep standard codes: en, uz, ru)
+    const normalizedLng = lng.toLowerCase().split('-')[0];
+    const storageLng = normalizedLng === 'eng' ? 'en' : normalizedLng === 'uzb' ? 'uz' : normalizedLng;
+    
+    // Map to backend code for API compatibility
+    const backendLng = storageLng === 'en' ? 'eng' : storageLng === 'uz' ? 'uzb' : storageLng;
+    
+    // Update localStorage with standard code
+    localStorage.setItem('i18nextLng', storageLng);
     
     // Update cookie (1 year expiry)
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    // Keep both cookies for compatibility: primary 'i18next', legacy 'lang'
-    document.cookie = `i18next=${lng}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
-    document.cookie = `lang=${lng}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+    // Keep both cookies for compatibility: primary 'i18next' uses standard codes, legacy 'lang' uses backend codes
+    document.cookie = `i18next=${storageLng}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+    document.cookie = `lang=${backendLng}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
   } catch (e) {
     console.warn('Failed to update language storage', e);
   }
 };
 
 // Listen for language changes and update storage
+// Use a flag to prevent recursive updates
+let isUpdatingLanguage = false;
 i18n.on('languageChanged', (lng: string) => {
-  updateLanguageStorage(lng);
+  if (!isUpdatingLanguage) {
+    isUpdatingLanguage = true;
+    updateLanguageStorage(lng);
+    // Reset flag after a short delay to allow the update to complete
+    setTimeout(() => {
+      isUpdatingLanguage = false;
+    }, 100);
+  }
 });
 
 // Initialize i18next if not already initialized

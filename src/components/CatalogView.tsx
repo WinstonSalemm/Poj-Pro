@@ -342,6 +342,9 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
                         sizes="(max-width: 768px) 50vw, 180px"
                         priority={idx < 4} // Prioritize first 4 images
                         className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
+                        quality={80}
+                        fetchPriority={idx < 4 ? "high" : "auto"}
+                        loading={idx < 4 ? undefined : "lazy"}
                       />
                     </div>
                   </div>

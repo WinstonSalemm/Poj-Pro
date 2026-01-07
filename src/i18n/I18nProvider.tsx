@@ -18,20 +18,35 @@ export function I18nProvider({ children, initialLocale, messages }: I18nProvider
   useEffect(() => {
     if (!initialLocale) return;
 
+    // Normalize locale: convert legacy codes to standard codes
+    const normalizedLocale = initialLocale === 'eng' ? 'en' : initialLocale === 'uzb' ? 'uz' : initialLocale;
+
     try {
       if (messages && Object.keys(messages).length > 0) {
         // Inject server-loaded messages into the default namespace
         const ns = 'translation';
         // Deep merge enabled (true, true) to not overwrite existing keys
-        i18n.addResourceBundle(initialLocale, ns, messages, true, true);
+        // Add messages for both normalized and original locale codes for compatibility
+        i18n.addResourceBundle(normalizedLocale, ns, messages, true, true);
+        if (normalizedLocale !== initialLocale) {
+          i18n.addResourceBundle(initialLocale, ns, messages, true, true);
+        }
       }
-      if (i18n.language !== initialLocale) {
-        i18n.changeLanguage(initialLocale);
+      // Only change language if it's different and not already set by user interaction
+      // Check if language was manually set by checking if it matches a standard code
+      const currentLang = i18n.language?.toLowerCase() || '';
+      const isManuallySet = ['en', 'uz', 'ru'].includes(currentLang);
+      
+      if (!isManuallySet && i18n.language !== normalizedLocale) {
+        i18n.changeLanguage(normalizedLocale);
       }
     } catch {
-      // Fail-safe: still attempt to set language
-      if (i18n.language !== initialLocale) {
-        i18n.changeLanguage(initialLocale);
+      // Fail-safe: still attempt to set language only if not manually set
+      const currentLang = i18n.language?.toLowerCase() || '';
+      const isManuallySet = ['en', 'uz', 'ru'].includes(currentLang);
+      
+      if (!isManuallySet && i18n.language !== normalizedLocale) {
+        i18n.changeLanguage(normalizedLocale);
       }
     }
   }, [initialLocale, messages]);

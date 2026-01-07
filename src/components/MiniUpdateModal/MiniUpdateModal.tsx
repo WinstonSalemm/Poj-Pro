@@ -133,13 +133,23 @@ export default function MiniUpdateModal() {
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.95 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)]"
-        >
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={close}
+            className="fixed inset-0 z-40 bg-black/50"
+          />
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed top-1/2 left-1/2 z-50 w-[280px] -translate-x-1/2 -translate-y-1/2 max-w-[calc(100vw-2rem)]"
+          >
           <div className="relative overflow-hidden rounded-xl border border-red-100 bg-white shadow-lg ring-1 ring-black/5">
             {/* Decorative elements */}
             <div className="absolute left-0 top-0 h-1.5 w-full bg-[#660000]"></div>
@@ -191,6 +201,7 @@ export default function MiniUpdateModal() {
             </div>
           </div>
         </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

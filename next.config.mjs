@@ -79,8 +79,12 @@ const nextConfig = {
     minimumCacheTTL: 31536000,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Disable optimizer in development to prevent /_next/image 400s
-    unoptimized: process.env.NODE_ENV !== 'production',
+    // Enable optimization in production for better performance
+    unoptimized: false,
+    // Add loader for better image optimization
+    loader: 'default',
+    // Enable image optimization
+    domains: [],
   },
   async headers() {
     return [
@@ -101,6 +105,12 @@ const nextConfig = {
         ],
       }, {
         source: '/:path*(woff2|woff|ttf|eot|avif|webp)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      }, {
+        // Cache optimized Next.js images aggressively
+        source: '/_next/image',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],

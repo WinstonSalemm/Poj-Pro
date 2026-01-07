@@ -148,7 +148,8 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
           loading={priority ? undefined : "lazy"}
           placeholder="blur"
           blurDataURL={BLUR_DATA}
-          quality={60}
+          quality={75}
+          fetchPriority={priority ? "high" : "auto"}
         />
         {/* Быстрое действие: в корзину */}
         <button

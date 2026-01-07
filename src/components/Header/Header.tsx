@@ -81,12 +81,18 @@ export default function Header() {
   }, []);
 
   const changeLanguage = (lng: Lang) => {
-    i18n.changeLanguage(lng);
-    const normalized = lng === "eng" ? "eng" : lng === "uzb" ? "uzb" : "ru";
-    document.cookie = `i18next=${normalized}; path=/; max-age=31536000; SameSite=Lax`;
-    document.cookie = `lang=${normalized}; path=/; max-age=31536000; SameSite=Lax`;
+    // Convert legacy codes to standard codes for i18n
+    const uiCode = lng === "eng" ? "en" : lng === "uzb" ? "uz" : "ru";
+    const backendCode = lng === "eng" ? "eng" : lng === "uzb" ? "uzb" : "ru";
+    
+    // Update i18n with standard code
+    i18n.changeLanguage(uiCode);
+    
+    // Set cookies: UI uses standard codes, backend uses legacy codes
+    document.cookie = `i18next=${uiCode}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `lang=${backendCode}; path=/; max-age=31536000; SameSite=Lax`;
     try {
-      localStorage.setItem("i18nextLng", normalized);
+      localStorage.setItem("i18nextLng", uiCode);
     } catch { }
     router.refresh();
     setLangOpen(false);
