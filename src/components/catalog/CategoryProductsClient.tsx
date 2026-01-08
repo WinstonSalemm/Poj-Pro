@@ -68,7 +68,7 @@ export default function CategoryProductsClient({
   }, []);
 
   const categoryTitle = useMemo(() => {
-    const dict = t("categories", { returnObjects: true, defaultValue: {} }) as
+    const dict = t("categories", { returnObjects: true, defaultValue: {} }) as unknown as
       | Record<string, string>
       | undefined;
     const l = (lang as Lang) || "ru";

@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useRouter, usePathname } from "next/navigation";
 import BlurReveal from "@/components/ui/BlurReveal";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Defer non-critical header widgets
 const CartIcon = dynamic(() => import("../Cart/CartIcon"), {
