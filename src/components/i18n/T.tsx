@@ -2,7 +2,7 @@
 import React from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 
-type KnownNS = "translation" | "aboutus";
+type KnownNS = "translation" | "seo" | "common";
 
 type TProps<E extends React.ElementType = "span"> = {
   k: string;

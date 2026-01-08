@@ -7,29 +7,11 @@ import { useMemo } from "react";
 import { Truck, Box, Handshake, Phone, LineChart, ShoppingCart } from "lucide-react";
 
 export default function SmallAboutUs() {
-  // Try aboutus namespace first, fallback to translation namespace
-  const { t: tAboutus, ready: aboutusReady } = useTranslation("aboutus");
-  const { t: tTranslation } = useTranslation("translation");
-
-  // Use translation namespace as primary source (more reliable)
-  // since aboutus is extracted from translation.json anyway
-  const t = useMemo(() => {
-    return (key: string, options?: { returnObjects?: boolean; defaultValue?: string }) => {
-      // First try aboutus namespace
-      if (aboutusReady) {
-        const aboutusValue = tAboutus(key, { ...options, returnObjects: true });
-        if (aboutusValue && aboutusValue !== key) {
-          return aboutusValue;
-        }
-      }
-      // Fallback to translation namespace
-      return tTranslation(`aboutus.${key}`, options);
-    };
-  }, [tAboutus, tTranslation, aboutusReady]);
+  const { t } = useTranslation();
 
   // Get reasons object like AboutPage does
   const reasonsObj = useMemo(() => {
-    const reasons = (t("reasons", { returnObjects: true }) || {}) as Record<
+    const reasons = (t("aboutus.reasons", { returnObjects: true }) || {}) as Record<
       string,
       { title: string; text: string }
     >;
@@ -58,10 +40,10 @@ export default function SmallAboutUs() {
     <section className="py-[60px] px-5 max-[480px]:py-10 max-[360px]:py-8">
       <div className="max-w-[1200px] mx-auto">
         <h2 className="text-[2.5rem] font-bold mb-1 text-[#660000] text-center rounded-[3%] pt-2 max-[768px]:text-[2rem] max-[480px]:text-[1.6rem] max-[360px]:text-[1.4rem]">
-          {t("title")}
+          {t("aboutus.title")}
         </h2>
         <p className="flex justify-center text-center items-center text-[1.1rem] font-bold mb-5 text-[#681818] max-[768px]:text-[1rem] max-[768px]:px-2 max-[480px]:text-[0.95rem] max-[360px]:text-[0.85rem]">
-          {t("subtitle")}
+          {t("aboutus.subtitle")}
         </p>
 
         {/* grid: repeat(auto-fit, minmax(280px, 1fr)) */}
@@ -89,7 +71,7 @@ export default function SmallAboutUs() {
             href="https://www.510777.xn--p1ai/ru"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={t('featuredSupplier.aria', { defaultValue: 'Открыть сайт поставщика Огнеборец' })}
+            aria-label={t('aboutus.featuredSupplier.aria', { defaultValue: 'Открыть сайт поставщика Огнеборец' }) as string}
             className="block"
           >
             <div
@@ -107,10 +89,10 @@ export default function SmallAboutUs() {
               />
               <div className="text-center">
                 <div className="text-[#660000] font-semibold text-lg md:text-xl">
-                  {t('featuredSupplier.title')}
+                  {t('aboutus.featuredSupplier.title')}
                 </div>
                 <div className="text-[#965454] text-sm mt-1">
-                  {t('featuredSupplier.cta')}
+                  {t('aboutus.featuredSupplier.cta')}
                 </div>
               </div>
             </div>
@@ -130,7 +112,7 @@ export default function SmallAboutUs() {
     max-[360px]:text-[0.9rem] max-[360px]:py-3
   "
           >
-            {t('more')}
+            {t('aboutus.more')}
           </Link>
         </div>
       </div>
