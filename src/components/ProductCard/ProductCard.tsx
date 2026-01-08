@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { memo, useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/useTranslation";
 import type { Product as CanonicalProduct } from "@/types/product";
 import { trackAddToCart } from "@/components/analytics/events";
 import { evSelectItem } from "@/lib/analytics/dataLayer";

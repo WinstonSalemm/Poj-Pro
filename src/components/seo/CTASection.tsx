@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 
 interface CTASectionProps {
   category?: string;

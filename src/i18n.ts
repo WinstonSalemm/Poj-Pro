@@ -2,22 +2,48 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import translation files
+// Import translation files from src/locales
 import ruTranslation from '@/locales/ru/translation.json';
 import uzbTranslation from '@/locales/uzb/translation.json';
 import engTranslation from '@/locales/eng/translation.json';
 
+// Import additional namespaces from public/locales
+import ruSEO from '../public/locales/ru/seo.json';
+import uzSEO from '../public/locales/uz/seo.json';
+import enSEO from '../public/locales/en/seo.json';
+
+import ruCommon from '../public/locales/ru/common.json';
+import uzCommon from '../public/locales/uz/common.json';
+import enCommon from '../public/locales/en/common.json';
+
 // Export resources for type definitions
 export const resources = {
   ru: { 
-    translation: ruTranslation
+    translation: ruTranslation,
+    seo: ruSEO,
+    common: ruCommon
   },
   uzb: { 
-    translation: uzbTranslation
+    translation: uzbTranslation,
+    seo: uzSEO,
+    common: uzCommon
   },
   eng: { 
-    translation: engTranslation
+    translation: engTranslation,
+    seo: enSEO,
+    common: enCommon
   },
+  // Aliases for standard codes
+  uz: {
+    translation: uzbTranslation,
+    seo: uzSEO,
+    common: uzCommon
+  },
+  en: {
+    translation: engTranslation,
+    seo: enSEO,
+    common: enCommon
+  }
 } as const;
 
 // Initialize i18n
@@ -30,7 +56,11 @@ i18n
     // Default language
     lng: 'ru',
     fallbackLng: 'ru',
-    supportedLngs: ['ru', 'uzb', 'eng'],
+    supportedLngs: ['ru', 'uzb', 'eng', 'uz', 'en'],
+    
+    // Default namespace
+    defaultNS: 'translation',
+    fallbackNS: 'translation',
     
     // Debug only in development
     debug: process.env.NODE_ENV === 'development',
@@ -42,8 +72,10 @@ i18n
     
     // Detection options
     detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
+      order: ['localStorage', 'cookie', 'navigator'],
+      caches: ['localStorage', 'cookie'],
+      lookupCookie: 'i18next',
+      lookupLocalStorage: 'i18nextLng',
     },
     
     // Disable loading via backend for now to avoid CORS issues

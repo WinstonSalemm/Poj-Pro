@@ -22,7 +22,7 @@ export default function AboutPage() {
   >;
 
   return (
-    <main className="box-border w-full max-w-[1200px] mx-auto mt-[90px] px-4 py-10 bg-gray-50 relative text-[#660000]">
+    <main className="box-border w-full max-w-[1200px] mx-auto mt-[100px] px-4 py-10 bg-gray-50 relative text-[#660000]">
       {/* Шторка */}
       {bootLoading && (
         <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">

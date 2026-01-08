@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 
 type CartItem = {
   id: string | number;

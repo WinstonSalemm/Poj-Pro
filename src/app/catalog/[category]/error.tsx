@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 
 export default function Error({
   error,

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import i18n from '@/i18n';
 import { X, Mail, Phone, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

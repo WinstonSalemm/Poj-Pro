@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import FAQAccordion from '@/components/seo/FAQAccordion';
 
 export default function FAQSectionClient({ faqKey }: { faqKey: string }) {

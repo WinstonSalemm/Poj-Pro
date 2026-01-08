@@ -3,7 +3,7 @@
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/useTranslation";
 import ProductCard from "@/components/ProductCard/ProductCard";
 import { evViewItemList } from "@/lib/analytics/dataLayer";
 import Breadcrumbs from "@/components/Breadcrumbs";

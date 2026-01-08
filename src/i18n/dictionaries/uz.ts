@@ -4,6 +4,10 @@ const uz = {
   },
   header: {
     catalog: 'Katalog',
+    guide: 'Qo\'llanma',
+    about: 'Biz haqimizda',
+    contacts: 'Aloqa',
+    documents: 'Hujjatlar',
   },
   catalog: {
     title: 'Mahsulotlar katalogi',

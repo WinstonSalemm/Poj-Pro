@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/useTranslation";
 import dynamic from "next/dynamic";
 
 const MapSection = dynamic(() => import("@/components/MapSection/MapSection"), {
@@ -19,7 +19,7 @@ export default function ContactsClient() {
   }, []);
 
   return (
-    <main className="w-full max-w-[1200px] mx-auto mt-[90px] px-4 py-10 bg-gray-50 relative text-[#660000]">
+    <main className="w-full max-w-[1200px] mx-auto mt-[100px] px-4 py-10 bg-gray-50 relative text-[#660000]">
       {/* Шторка (белая) */}
       {bootLoading && (
         <div className="fixed inset-0 z-[60] bg-white text-black flex flex-col items-center justify-center animate-fadeIn">

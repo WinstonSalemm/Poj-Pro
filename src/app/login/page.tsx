@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 const MotionImg = dynamic(() => import('framer-motion').then(mod => mod.motion.img));
 const MotionH2 = dynamic(() => import('framer-motion').then(mod => mod.motion.h2));
 const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div));
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function LoginPage() {

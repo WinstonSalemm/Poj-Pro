@@ -1,6 +1,6 @@
 import { usePathname } from 'next/navigation';
 import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { DEFAULT_SEO, SITE_NAME, SITE_URL, i18nAlt } from '@/lib/site';
 
 type SEOProps = {

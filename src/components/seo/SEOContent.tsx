@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { SEOTextBlock, SEOSection, FAQItem } from '@/i18n/seo.types';
 import { validateSEO } from '@/i18n/seo.schema';
 import { CTASection } from './CTASection';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

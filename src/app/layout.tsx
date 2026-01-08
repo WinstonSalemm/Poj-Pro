@@ -287,7 +287,7 @@ export default async function RootLayout({
           <I18nProvider initialLocale={locale}>
             <CartProvider>
               <Header />
-              <main id="main-content" className="flex-grow pt-[68px]">{children}</main>
+              <main id="main-content" className="flex-grow pt-[90px]">{children}</main>
               <Footer />
               <ClientWidgets />
             </CartProvider>

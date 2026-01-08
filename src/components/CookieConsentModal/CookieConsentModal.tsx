@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/useTranslation";
 import { consentGrantAll } from "@/lib/analytics/dataLayer";
 
 export default function CookieConsentModal() {

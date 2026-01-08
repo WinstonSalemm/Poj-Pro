@@ -1,7 +1,7 @@
 // src/hooks/useLocale.ts
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { useMemo } from 'react';
 
 /**

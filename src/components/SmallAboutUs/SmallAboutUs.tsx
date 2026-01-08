@@ -2,30 +2,66 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/useTranslation";
+import { useMemo } from "react";
 import { Truck, Box, Handshake, Phone, LineChart, ShoppingCart } from "lucide-react";
 
 export default function SmallAboutUs() {
-  // Use default namespace typing; keys are fully-qualified (e.g., 'aboutus.*')
-  const { t } = useTranslation();
+  // Try aboutus namespace first, fallback to translation namespace
+  const { t: tAboutus, ready: aboutusReady } = useTranslation("aboutus");
+  const { t: tTranslation } = useTranslation("translation");
 
-  const reasons = [
-    { Icon: ShoppingCart, title: t("aboutus.reasons.first.title"), text: t("aboutus.reasons.first.text") },
-    { Icon: Truck, title: t("aboutus.reasons.delivery.title"), text: t("aboutus.reasons.delivery.text") },
-    { Icon: Box, title: t("aboutus.reasons.stock.title"), text: t("aboutus.reasons.stock.text") },
-    { Icon: Handshake, title: t("aboutus.reasons.honest.title"), text: t("aboutus.reasons.honest.text") },
-    { Icon: Phone, title: t("aboutus.reasons.support.title"), text: t("aboutus.reasons.support.text") },
-    { Icon: LineChart, title: t("aboutus.reasons.stability.title"), text: t("aboutus.reasons.stability.text") },
-  ];
+  // Use translation namespace as primary source (more reliable)
+  // since aboutus is extracted from translation.json anyway
+  const t = useMemo(() => {
+    return (key: string, options?: { returnObjects?: boolean; defaultValue?: string }) => {
+      // First try aboutus namespace
+      if (aboutusReady) {
+        const aboutusValue = tAboutus(key, { ...options, returnObjects: true });
+        if (aboutusValue && aboutusValue !== key) {
+          return aboutusValue;
+        }
+      }
+      // Fallback to translation namespace
+      return tTranslation(`aboutus.${key}`, options);
+    };
+  }, [tAboutus, tTranslation, aboutusReady]);
+
+  // Get reasons object like AboutPage does
+  const reasonsObj = useMemo(() => {
+    const reasons = (t("reasons", { returnObjects: true }) || {}) as Record<
+      string,
+      { title: string; text: string }
+    >;
+    return reasons;
+  }, [t]);
+
+  // Map reasons to array with icons
+  const reasons = useMemo(() => {
+    const reasonsMap: Record<string, typeof ShoppingCart> = {
+      first: ShoppingCart,
+      delivery: Truck,
+      stock: Box,
+      honest: Handshake,
+      support: Phone,
+      stability: LineChart,
+    };
+
+    return Object.entries(reasonsObj).map(([key, value]) => ({
+      Icon: reasonsMap[key] || ShoppingCart,
+      title: value?.title || '',
+      text: value?.text || '',
+    }));
+  }, [reasonsObj]);
 
   return (
     <section className="py-[60px] px-5 max-[480px]:py-10 max-[360px]:py-8">
       <div className="max-w-[1200px] mx-auto">
         <h2 className="text-[2.5rem] font-bold mb-1 text-[#660000] text-center rounded-[3%] pt-2 max-[768px]:text-[2rem] max-[480px]:text-[1.6rem] max-[360px]:text-[1.4rem]">
-          {t("aboutus.title")}
+          {t("title")}
         </h2>
         <p className="flex justify-center text-center items-center text-[1.1rem] font-bold mb-5 text-[#681818] max-[768px]:text-[1rem] max-[768px]:px-2 max-[480px]:text-[0.95rem] max-[360px]:text-[0.85rem]">
-          {t("aboutus.subtitle")}
+          {t("subtitle")}
         </p>
 
         {/* grid: repeat(auto-fit, minmax(280px, 1fr)) */}
@@ -53,7 +89,7 @@ export default function SmallAboutUs() {
             href="https://www.510777.xn--p1ai/ru"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={t('aboutus.featuredSupplier.aria', { defaultValue: 'Открыть сайт поставщика Огнеборец' })}
+            aria-label={t('featuredSupplier.aria', { defaultValue: 'Открыть сайт поставщика Огнеборец' })}
             className="block"
           >
             <div
@@ -70,8 +106,12 @@ export default function SmallAboutUs() {
                 sizes="(max-width: 768px) 256px, 600px"
               />
               <div className="text-center">
-                <div className="text-[#660000] font-semibold text-lg md:text-xl">{t('aboutus.featuredSupplier.title', { defaultValue: "Наш главный поставщик — 'Огнеборец'. Мы предлагаем купить огнетушители и все необходимое для пожарной безопасности в Ташкенте по лучшим ценам." })}</div>
-                <div className="text-[#965454] text-sm mt-1">{t('aboutus.featuredSupplier.cta', { defaultValue: 'Нажмите, чтобы перейти на официальный сайт' })}</div>
+                <div className="text-[#660000] font-semibold text-lg md:text-xl">
+                  {t('featuredSupplier.title')}
+                </div>
+                <div className="text-[#965454] text-sm mt-1">
+                  {t('featuredSupplier.cta')}
+                </div>
               </div>
             </div>
           </a>
@@ -90,7 +130,7 @@ export default function SmallAboutUs() {
     max-[360px]:text-[0.9rem] max-[360px]:py-3
   "
           >
-            {t('aboutus.more')}
+            {t('more')}
           </Link>
         </div>
       </div>

@@ -4,6 +4,10 @@ const ru = {
   },
   header: {
     catalog: 'Каталог',
+    guide: 'Гид',
+    about: 'О нас',
+    contacts: 'Контакты',
+    documents: 'Документы',
   },
   catalog: {
     title: 'Каталог продукции',

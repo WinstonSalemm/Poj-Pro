@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import i18n from '@/i18n';
 import { X, AlertCircle, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,6 +22,8 @@ export default function MiniUpdateModal() {
   const { t, i18n: i18nInstance } = useTranslation('common');
   const [translationsLoaded, setTranslationsLoaded] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18nInstance.language || 'ru');
+  const [hasNewProducts, setHasNewProducts] = useState(false);
+  const [checkingProducts, setCheckingProducts] = useState(true);
 
   // Загрузка переводов из public/locales
   useEffect(() => {
@@ -102,13 +104,87 @@ export default function MiniUpdateModal() {
     return Array.isArray(items) ? items : [];
   }, [t, translationsLoaded, currentLang]);
 
+  // Проверяем наличие новых товаров
+  useEffect(() => {
+    const checkNewProducts = async () => {
+      try {
+        // Получаем локаль в формате БД
+        const langCode = langMap[currentLang] || currentLang || 'ru';
+        const dbLocale = langCode === 'eng' ? 'eng' : langCode === 'uzb' ? 'uzb' : 'ru';
+        
+        const response = await fetch(
+          `/api/products/featured?type=new&locale=${dbLocale}&limit=1`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          const hasProducts = data.success && 
+                            Array.isArray(data.data?.products) && 
+                            data.data.products.length > 0;
+          setHasNewProducts(hasProducts);
+        } else {
+          setHasNewProducts(false);
+        }
+      } catch (error) {
+        console.warn('Failed to check new products:', error);
+        setHasNewProducts(false);
+      } finally {
+        setCheckingProducts(false);
+      }
+    };
+
+    if (translationsLoaded) {
+      checkNewProducts();
+    }
+  }, [translationsLoaded, currentLang]);
+
   useEffect(() => {
     const hidden = localStorage.getItem(STORAGE_KEY);
     if (hidden) return;
+    
+    // Не показываем модальное окно если нет новых товаров или еще проверяем
+    if (checkingProducts || !hasNewProducts) return;
 
-    const timer = setTimeout(() => {
-      setVisible(true);
-    }, 2000);
+    let timer: NodeJS.Timeout | null = null;
+    let startTime = Date.now();
+    let accumulatedTime = 0;
+    let isPageVisible = !document.hidden;
+
+    // Отслеживаем видимость страницы - приостанавливаем таймер если пользователь ушел
+    const handleVisibilityChange = () => {
+      const now = Date.now();
+      if (document.hidden) {
+        // Страница скрыта - сохраняем накопленное время и останавливаем таймер
+        accumulatedTime += now - startTime;
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      } else {
+        // Страница видна - возобновляем отсчет с оставшегося времени
+        isPageVisible = true;
+        startTime = now;
+        const remainingTime = Math.max(0, 60000 - accumulatedTime);
+        if (remainingTime > 0) {
+          timer = setTimeout(() => {
+            setVisible(true);
+          }, remainingTime);
+        } else {
+          // Если уже накопилось 60 секунд, показываем сразу
+          setVisible(true);
+        }
+      }
+    };
+
+    // Начинаем отсчет 60 секунд
+    timer = setTimeout(() => {
+      if (isPageVisible) {
+        setVisible(true);
+      }
+    }, 60000);
+
+    // Отслеживаем видимость страницы
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
@@ -117,10 +193,11 @@ export default function MiniUpdateModal() {
     window.addEventListener('keydown', onEsc);
 
     return () => {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('keydown', onEsc);
     };
-  }, []);
+  }, [checkingProducts, hasNewProducts]);
 
   const close = () => {
     localStorage.setItem(STORAGE_KEY, '1');
@@ -134,20 +211,25 @@ export default function MiniUpdateModal() {
     <AnimatePresence>
       {visible && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop with blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={close}
-            className="fixed inset-0 z-40 bg-black/50"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-md"
           />
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ 
+              type: 'spring', 
+              damping: 30, 
+              stiffness: 400,
+              mass: 0.8
+            }}
             className="fixed top-1/2 left-1/2 z-50 w-[280px] -translate-x-1/2 -translate-y-1/2 max-w-[calc(100vw-2rem)]"
           >
           <div className="relative overflow-hidden rounded-xl border border-red-100 bg-white shadow-lg ring-1 ring-black/5">
@@ -157,13 +239,13 @@ export default function MiniUpdateModal() {
               <AlertCircle className="h-16 w-16 opacity-10" />
             </div>
 
-            {/* Close button */}
+            {/* Close button - заметная, но не режущая */}
             <button
               onClick={close}
               aria-label={closeButtonLabel}
-              className="absolute right-3 top-3 rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              className="absolute right-3 top-3 z-10 rounded-full p-1.5 bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 transition-all hover:bg-white hover:text-[#660000] hover:border-[#660000]/30 hover:shadow-sm"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
 
             {/* Content */}

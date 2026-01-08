@@ -4,6 +4,10 @@ const en = {
   },
   header: {
     catalog: 'Catalog',
+    guide: 'Guide',
+    about: 'About',
+    contacts: 'Contacts',
+    documents: 'Documents',
   },
   catalog: {
     title: 'Product Catalog',

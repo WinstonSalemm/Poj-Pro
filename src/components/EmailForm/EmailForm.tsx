@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/i18n/useTranslation";
 import { init, sendForm } from "@emailjs/browser";
 
 // Чтение ключей из NEXT_PUBLIC_* переменных окружения (Next.js)

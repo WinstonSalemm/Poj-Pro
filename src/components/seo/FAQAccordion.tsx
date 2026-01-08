@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useMemo } from 'react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from '@/i18n/useTranslation';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FAQItem } from '@/i18n/seo.types';
 

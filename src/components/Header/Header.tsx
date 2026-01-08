@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useRouter, usePathname } from "next/navigation";
 import BlurReveal from "@/components/ui/BlurReveal";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Defer non-critical header widgets
 const CartIcon = dynamic(() => import("../Cart/CartIcon"), {
@@ -34,11 +35,8 @@ export default function Header() {
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
-  const switcherMobileRef = useRef<HTMLDivElement | null>(null);
-  const switcherDesktopRef = useRef<HTMLDivElement | null>(null);
 
   // Normalize language code for display (i18n uses 'en'/'uz', but we need 'eng'/'uzb' for comparison)
   const normalizeLangForDisplay = (lang: string): Lang => {
@@ -67,10 +65,6 @@ export default function Header() {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
-      const inMobile = switcherMobileRef.current?.contains(target);
-      const inDesktop = switcherDesktopRef.current?.contains(target);
-
-      if (!inMobile && !inDesktop) setLangOpen(false);
       if (headerRef.current && !headerRef.current.contains(target)) {
         setMobileOpen(false);
       }
@@ -85,18 +79,26 @@ export default function Header() {
     const uiCode = lng === "eng" ? "en" : lng === "uzb" ? "uz" : "ru";
     const backendCode = lng === "eng" ? "eng" : lng === "uzb" ? "uzb" : "ru";
     
-    // Update i18n with standard code
-    i18n.changeLanguage(uiCode);
-    
-    // Set cookies: UI uses standard codes, backend uses legacy codes
-    document.cookie = `i18next=${uiCode}; path=/; max-age=31536000; SameSite=Lax`;
-    document.cookie = `lang=${backendCode}; path=/; max-age=31536000; SameSite=Lax`;
-    try {
-      localStorage.setItem("i18nextLng", uiCode);
-    } catch { }
-    router.refresh();
-    setLangOpen(false);
+    // Небольшая задержка для плавности
+    setTimeout(() => {
+      // Update i18n with standard code
+      i18n.changeLanguage(uiCode);
+      
+      // Set cookies: UI uses standard codes, backend uses legacy codes
+      document.cookie = `i18next=${uiCode}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `lang=${backendCode}; path=/; max-age=31536000; SameSite=Lax`;
+      try {
+        localStorage.setItem("i18nextLng", uiCode);
+      } catch { }
+      router.refresh();
+    }, 150);
   };
+
+  const languages: { code: Lang; label: string }[] = [
+    { code: "ru", label: "RU" },
+    { code: "uzb", label: "UZ" },
+    { code: "eng", label: "EN" },
+  ];
 
   if (pathname === "/login" || pathname === "/register") {
     return null;
@@ -130,10 +132,7 @@ export default function Header() {
             {/* LEFT */}
             <div className="flex min-w-[44px] items-center justify-start">
               <button
-                onClick={() => {
-                  setMobileOpen((v) => !v);
-                  setLangOpen(false);
-                }}
+                onClick={() => setMobileOpen((v) => !v)}
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
                 className="relative z-[1002] lg:hidden inline-flex items-center justify-center w-11 h-11 -ml-1 rounded-md"
@@ -172,40 +171,13 @@ export default function Header() {
 
             {/* RIGHT */}
             <div className="flex min-w-[44px] items-center justify-end gap-2">
-              <div className="lg:hidden text-brand">
+              <div className="md:hidden text-brand">
                 <CartIcon />
               </div>
 
-              <div className="hidden lg:flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-2 md:gap-3">
                 <CartIcon />
                 <AuthButton />
-
-                <div className="relative" ref={switcherDesktopRef}>
-                  <button
-                    onClick={() => setLangOpen(!langOpen)}
-                    className="btn-ghost h-9 px-3 text-sm"
-                  >
-                    {currentLanguage.toUpperCase()}
-                  </button>
-
-                  {langOpen && (
-                    <div className="absolute right-0 mt-2 w-20 rounded-md bg-white shadow-lg ring-1 ring-black/5 z-50">
-                      {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
-                        <button
-                          key={lang}
-                          onClick={() => changeLanguage(lang)}
-                          className={`block w-full px-4 py-2 text-sm text-left hover:bg-gray-50 ${
-                            currentLanguage === lang
-                              ? "bg-brand/10 text-brand font-medium"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          {lang.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -226,34 +198,54 @@ export default function Header() {
               <div className="px-4 py-3 border-b border-neutral-200">
                 <AuthButton />
               </div>
-              {/* Language switcher for mobile */}
-              <div className="px-4 py-3 border-b border-neutral-200" ref={switcherMobileRef}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Язык / Language / Til</span>
-                </div>
-                <div className="flex gap-2">
-                  {(["ru", "uzb", "eng"] as Lang[]).map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => changeLanguage(lang)}
-                      className={`flex-1 px-3 py-2 text-sm rounded-md border transition-colors ${
-                        currentLanguage === lang
-                          ? "bg-brand text-white border-brand"
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      {lang.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </nav>
           )}
         </BlurReveal>
       </header>
 
+      {/* Language Switcher Bar - Below Header */}
+      <div className="fixed top-[58px] left-0 right-0 z-[998]">
+        <div className="container-section flex items-center justify-end py-1.5"
+          style={{
+            paddingLeft: "max(12px, env(safe-area-inset-left))",
+            paddingRight: "max(12px, env(safe-area-inset-right))",
+          }}
+        >
+          <div className="flex items-center gap-0.5 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50 p-0.5 shadow-sm">
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => changeLanguage(lang.code)}
+                className={`relative px-2.5 py-0.5 text-[10px] font-medium rounded-md transition-all duration-300 ${
+                  currentLanguage === lang.code
+                    ? "text-white shadow-sm"
+                    : "text-gray-500 hover:text-[#660000] hover:bg-gray-50/50"
+                }`}
+              >
+                {currentLanguage === lang.code && (
+                  <motion.div
+                    layoutId="activeLangBar"
+                    className="absolute inset-0 bg-[#660000] rounded-md"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                  />
+                )}
+                <motion.span
+                  key={currentLanguage}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative z-10"
+                >
+                  {lang.label}
+                </motion.span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Spacer */}
-      <div className="h-[68px] lg:hidden" aria-hidden />
+      <div className="h-[90px] lg:hidden" aria-hidden />
     </>
   );
 }

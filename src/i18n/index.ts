@@ -169,7 +169,7 @@ if (!i18n.isInitialized) {
     .init({
       ...getOptions('ru', ['translation', 'aboutus', 'common']),
       ns: ['translation', 'aboutus', 'common'],
-      defaultNS: 'aboutus',
+      defaultNS: 'translation',
       resources,
       detection: detectionOptions,
       supportedLngs: [...supportedLngs],
