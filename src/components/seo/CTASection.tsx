@@ -16,7 +16,7 @@ export const CTASection: React.FC<CTASectionProps> = ({
   const { t } = useTranslation('seo');
 
   // Get CTA text from translations
-  const ctaTexts = t('cta', { returnObjects: true }) as {
+  const ctaTexts = t('cta', { returnObjects: true }) as unknown as {
     buyNow: string;
     consult: string;
   };

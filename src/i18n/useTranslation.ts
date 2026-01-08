@@ -19,22 +19,6 @@ export function useTranslation(ns?: KnownNS) {
   const nsArg = (ns ?? 'translation') as unknown as Parameters<typeof useI18nTranslation>[0];
   const { t, i18n: i18nInstance, ready } = useI18nTranslation(nsArg);
   
-  // Check if resources are actually loaded for the namespace
-  // Map language codes to check both standard and legacy codes
-  const currentLang = i18nInstance.language || 'ru';
-  const langMap: Record<string, string[]> = {
-    'en': ['en', 'eng'],
-    'uz': ['uz', 'uzb'],
-    'ru': ['ru'],
-    'eng': ['eng', 'en'],
-    'uzb': ['uzb', 'uz'],
-  };
-  const langsToCheck = langMap[currentLang] || [currentLang];
-  const hasResources = langsToCheck.some(lang => 
-    i18nInstance.hasResourceBundle(lang, nsArg as string)
-  );
-  const isReady = ready && hasResources;
-  
   // Wrapper around i18n.changeLanguage to ensure we only use supported languages
   const changeLanguage = useCallback((lng: string) => {
     // Normalize language code (e.g., 'en-US' -> 'en')
@@ -56,7 +40,7 @@ export function useTranslation(ns?: KnownNS) {
     i18n: i18nInstance,
     changeLanguage,
     currentLanguage,
-    ready: isReady
+    ready
   };
 }
 
