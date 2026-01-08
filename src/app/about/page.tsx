@@ -7,7 +7,7 @@ import { BrandCard } from "./components/BrandCard";
 import { PartnersSection } from "@/components/partners/PartnersSection";
 
 export default function AboutPage() {
-  const { t } = useTranslation("aboutus");
+  const { t } = useTranslation();
   const [bootLoading, setBootLoading] = useState(true);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function AboutPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const reasons = (t("reasons", { returnObjects: true }) || {}) as Record<
+  const reasons = (t("aboutus.reasons", { returnObjects: true }) || {}) as Record<
     string,
     { title: string; text: string }
   >;
@@ -44,14 +44,14 @@ export default function AboutPage() {
           id="about-company"
           className="text-center text-3xl md:text-4xl font-extrabold tracking-tight text-[#660000]"
         >
-          {t("title")}
+          {t("aboutus.title")}
         </h1>
 
         <p className="mt-6 text-lg leading-8 max-w-3xl mx-auto text-[#660000]">
-          {t("welcome")}
+          {t("aboutus.welcome")}
         </p>
         <p className="mt-4 text-lg leading-8 max-w-3xl mx-auto text-[#660000]">
-          {t("mission")}
+          {t("aboutus.mission")}
         </p>
       </section>
 
@@ -66,7 +66,7 @@ export default function AboutPage() {
           id="about-advantages"
           className="text-center text-2xl md:text-3xl font-bold text-[#660000]"
         >
-          {t("subtitle")}
+          {t("aboutus.subtitle")}
         </h2>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -95,10 +95,10 @@ export default function AboutPage() {
         }`}
       >
         <h2 className="text-center text-2xl md:text-3xl font-bold mb-2 text-[#660000]">
-          {t("suppliers.title")}
+          {t("aboutus.suppliers.title")}
         </h2>
         <p className="text-center max-w-3xl mx-auto mb-8 text-[#660000]">
-          {t("suppliers.subtitle")}
+          {t("aboutus.suppliers.subtitle")}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">

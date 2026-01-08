@@ -13,7 +13,7 @@ declare module 'i18next' {
   }
 }
 
-type KnownNS = 'translation' | 'aboutus' | 'seo' | 'common';
+type KnownNS = 'translation' | 'seo' | 'common';
 
 export function useTranslation(ns?: KnownNS) {
   const nsArg = (ns ?? 'translation') as unknown as Parameters<typeof useI18nTranslation>[0];
