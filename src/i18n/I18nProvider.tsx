@@ -14,39 +14,34 @@ type I18nProviderProps = {
 export function I18nProvider({ children, initialLocale, messages }: I18nProviderProps) {
   const [isClient, setIsClient] = useState(false);
 
-  // Initialize i18n with the initial locale and preload messages
+  // Initialize i18n with saved language preference
   useEffect(() => {
-    if (!initialLocale) return;
+    // Check for saved language preference (client-side only)
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('i18nextLng') || 
+                       document.cookie.split(';').find(c => c.trim().startsWith('i18next='))?.split('=')[1];
+      
+      if (savedLang) {
+        // Use saved language if available
+        i18n.changeLanguage(savedLang);
+      } else if (initialLocale) {
+        // Otherwise use server-side detected locale
+        const normalizedLocale = initialLocale === 'eng' ? 'en' : initialLocale === 'uzb' ? 'uz' : initialLocale;
+        i18n.changeLanguage(normalizedLocale);
+      }
+    }
 
-    // Normalize locale: convert legacy codes to standard codes
-    const normalizedLocale = initialLocale === 'eng' ? 'en' : initialLocale === 'uzb' ? 'uz' : initialLocale;
-
-    try {
-      if (messages && Object.keys(messages).length > 0) {
-        // Inject server-loaded messages into the default namespace
+    // Inject server messages if provided
+    if (messages && Object.keys(messages).length > 0 && initialLocale) {
+      const normalizedLocale = initialLocale === 'eng' ? 'en' : initialLocale === 'uzb' ? 'uz' : initialLocale;
+      try {
         const ns = 'translation';
-        // Deep merge enabled (true, true) to not overwrite existing keys
-        // Add messages for both normalized and original locale codes for compatibility
         i18n.addResourceBundle(normalizedLocale, ns, messages, true, true);
         if (normalizedLocale !== initialLocale) {
           i18n.addResourceBundle(initialLocale, ns, messages, true, true);
         }
-      }
-      // Only change language if it's different and not already set by user interaction
-      // Check if language was manually set by checking if it matches a standard code
-      const currentLang = i18n.language?.toLowerCase() || '';
-      const isManuallySet = ['en', 'uz', 'ru'].includes(currentLang);
-      
-      if (!isManuallySet && i18n.language !== normalizedLocale) {
-        i18n.changeLanguage(normalizedLocale);
-      }
-    } catch {
-      // Fail-safe: still attempt to set language only if not manually set
-      const currentLang = i18n.language?.toLowerCase() || '';
-      const isManuallySet = ['en', 'uz', 'ru'].includes(currentLang);
-      
-      if (!isManuallySet && i18n.language !== normalizedLocale) {
-        i18n.changeLanguage(normalizedLocale);
+      } catch {
+        // Silently fail
       }
     }
   }, [initialLocale, messages]);

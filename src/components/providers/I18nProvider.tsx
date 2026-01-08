@@ -8,12 +8,21 @@ export function I18nProvider({ children, locale }: { children: React.ReactNode; 
     const [instance] = useState(() => i18n);
 
     useEffect(() => {
-        // Normalize locale: convert legacy codes to standard codes
-        const normalizedLocale = locale === 'eng' ? 'en' : locale === 'uzb' ? 'uz' : locale;
+        // Check for saved language preference first
+        const savedLang = localStorage.getItem('i18nextLng') || 
+                         document.cookie.split(';').find(c => c.trim().startsWith('i18next='))?.split('=')[1];
         
-        // Only change if different to avoid unnecessary updates
-        if (i18n.language !== normalizedLocale) {
-            i18n.changeLanguage(normalizedLocale);
+        if (savedLang && i18n.language !== savedLang) {
+            // Use saved language if available
+            i18n.changeLanguage(savedLang);
+        } else {
+            // Otherwise use server-provided locale
+            const normalizedLocale = locale === 'eng' ? 'en' : locale === 'uzb' ? 'uz' : locale;
+            
+            // Only change if different to avoid unnecessary updates
+            if (i18n.language !== normalizedLocale) {
+                i18n.changeLanguage(normalizedLocale);
+            }
         }
     }, [locale]);
 

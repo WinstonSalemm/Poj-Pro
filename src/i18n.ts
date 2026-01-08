@@ -46,6 +46,23 @@ export const resources = {
   }
 } as const;
 
+// Get saved language from localStorage/cookie before init
+const getSavedLanguage = (): string | undefined => {
+  if (typeof window === 'undefined') return undefined;
+  
+  // Try localStorage first
+  const savedLng = localStorage.getItem('i18nextLng');
+  if (savedLng) return savedLng;
+  
+  // Try cookie
+  const cookieLng = document.cookie
+    .split(';')
+    .find(c => c.trim().startsWith('i18next='))
+    ?.split('=')[1];
+  
+  return cookieLng;
+};
+
 // Initialize i18n
 i18n
   .use(LanguageDetector)
@@ -53,8 +70,8 @@ i18n
   .init({
     resources,
     
-    // Default language
-    lng: 'ru',
+    // Use saved language or default to 'ru'
+    lng: getSavedLanguage() || 'ru',
     fallbackLng: 'ru',
     supportedLngs: ['ru', 'uzb', 'eng', 'uz', 'en'],
     
