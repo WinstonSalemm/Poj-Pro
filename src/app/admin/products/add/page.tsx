@@ -179,6 +179,12 @@ export default function AddProductPage() {
       const formData = new FormData();
       const fileArray = Array.from(files);
 
+      console.log('[Frontend] Starting upload for files:', fileArray.map(f => ({
+        name: f.name,
+        size: f.size,
+        type: f.type,
+      })));
+
       fileArray.forEach((file) => {
         if (file.type.startsWith('image/')) {
           formData.append('files', file);
@@ -216,12 +222,14 @@ export default function AddProductPage() {
       }
 
       const data = await response.json();
+      console.log('[Frontend] Upload response:', data);
 
       if (!data.success) {
         throw new Error(data.message || 'Ошибка загрузки изображений');
       }
 
       const uploadedPaths = data.data?.paths || [];
+      console.log('[Frontend] Uploaded paths:', uploadedPaths);
 
       setForm((prev) => ({
         ...prev,
@@ -230,7 +238,7 @@ export default function AddProductPage() {
 
       toast.success(`Загружено ${uploadedPaths.length} изображений`);
     } catch (error) {
-      console.error('Image upload error:', error);
+      console.error('[Frontend] Image upload error:', error);
       toast.error(error instanceof Error ? error.message : 'Ошибка загрузки изображений');
     } finally {
       setUploadingImages(false);
@@ -640,10 +648,10 @@ export default function AddProductPage() {
               {form.images.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {form.images.map((img, index) => (
-                    <div key={index} className="relative group">
+                    <div key={`${img}-${index}`} className="relative group">
                       <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                         <img
-                          src={img}
+                          src={`${img}?t=${Date.now()}`}
                           alt={`Preview ${index + 1}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -658,6 +666,9 @@ export default function AddProductPage() {
                       >
                         <X className="w-4 h-4" />
                       </button>
+                      <div className="mt-1 text-xs text-gray-500 truncate" title={img}>
+                        {img.split('/').pop()}
+                      </div>
                     </div>
                   ))}
                 </div>
