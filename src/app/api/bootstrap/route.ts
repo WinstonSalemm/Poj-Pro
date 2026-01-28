@@ -29,7 +29,13 @@ export async function GET(req: NextRequest) {
     const [products, categories] = await Promise.all([
       prisma.product.findMany({
         where: { isActive: true },
-        include: { i18n: true, category: true },
+        include: { 
+          i18n: true, 
+          category: true,
+          images: {
+            orderBy: { order: 'asc' },
+          },
+        },
         orderBy: { createdAt: 'desc' },
       }),
       prisma.category.findMany({
@@ -43,7 +49,7 @@ export async function GET(req: NextRequest) {
 
     const productsData = products.map((p) => {
       const t = p.i18n.find((x) => x.locale === locale) || p.i18n.find((x) => x.locale === 'ru') || p.i18n[0];
-      const images = parseImages(p.images);
+      const images = p.images.map((img) => img.url);
       return {
         id: p.id,
         slug: p.slug,

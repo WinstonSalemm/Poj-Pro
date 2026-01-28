@@ -49,6 +49,9 @@ export const GET = withApiCache({
             certificate: { select: { id: true, title: true, href: true } },
           },
         },
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
     });
 
@@ -62,7 +65,7 @@ export const GET = withApiCache({
         price: p.price,
         stock: p.stock,
         currency: p.currency,
-        images: p.images,
+        images: p.images.map((img) => img.url),
         specs: p.specs,
         isActive: p.isActive,
         category: p.category,

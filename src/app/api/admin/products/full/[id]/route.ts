@@ -85,12 +85,28 @@ export async function PUT(req: NextRequest) {
         ...(typeof price === 'number' ? { price } : {}),
         ...(typeof stock === 'number' ? { stock } : {}),
         ...(currency ? { currency } : {}),
-        ...(Array.isArray(images) ? { images: serializeImages(images) } : {}),
+        // Images теперь обрабатываются через ProductImage таблицу
         ...(categorySlug !== undefined ? { categoryId: category?.id || null } : {}),
         ...(specs ? { specs } : {}),
       },
       include: { i18n: true },
     });
+
+    // Обновляем изображения через ProductImage таблицу
+    if (Array.isArray(images)) {
+      // Удаляем старые изображения
+      await prisma.productImage.deleteMany({ where: { productId: id } });
+      // Создаём новые изображения
+      if (images.length > 0) {
+        await prisma.productImage.createMany({
+          data: images.map((url, index) => ({
+            productId: id,
+            url,
+            order: index,
+          })),
+        });
+      }
+    }
 
     // Обновляем переводы
     if (i18n) {

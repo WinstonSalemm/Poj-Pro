@@ -63,7 +63,6 @@ export async function POST() {
           slug: `product-${ruProduct.id}`,
           price: parseFloat(ruProduct.price.replace(/\s+/g, '')),
           currency: 'UZS',
-          images: JSON.stringify([ruProduct.image]),
           specs: ruProduct.characteristics,
           categoryId: category?.id,
           isActive: true
@@ -73,7 +72,6 @@ export async function POST() {
           slug: `product-${ruProduct.id}`,
           price: parseFloat(ruProduct.price.replace(/\s+/g, '')),
           currency: 'UZS',
-          images: JSON.stringify([ruProduct.image]),
           specs: ruProduct.characteristics,
           categoryId: category?.id,
           isActive: true,
@@ -102,6 +100,19 @@ export async function POST() {
         },
         include: { i18n: true }
       });
+
+      // Создаём изображение через ProductImage таблицу
+      if (ruProduct.image) {
+        // Удаляем старые изображения и создаём новое
+        await prisma.productImage.deleteMany({ where: { productId: product.id } });
+        await prisma.productImage.create({
+          data: {
+            productId: product.id,
+            url: ruProduct.image,
+            order: 0,
+          },
+        });
+      }
 
       results.push({
         id: product.id,

@@ -53,7 +53,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       i18n: { 
         where: { locale: { in: [dbLocale, 'ru', 'eng', 'uzb'] } }, 
         select: { locale: true, title: true, summary: true },
-      } 
+      },
+      images: {
+        orderBy: { order: 'asc' },
+      },
     },
   });
 
@@ -76,11 +79,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const description = (i18n?.summary || `Купить ${title} в Ташкенте по выгодной цене.`).slice(0, 160);
 
   let mainImage: string | undefined;
-  if (typeof dbProduct.images === 'string' && dbProduct.images.trim()) {
-    try {
-      const parsed = JSON.parse(dbProduct.images);
-      if (Array.isArray(parsed) && parsed.length > 0) mainImage = normalizeImageUrl(parsed[0]);
-    } catch { mainImage = dbProduct.images; }
+  if (dbProduct.images && dbProduct.images.length > 0) {
+    mainImage = normalizeImageUrl(dbProduct.images[0].url);
   }
 
   const safeCategory = String(category || '').trim();
@@ -165,18 +165,15 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         where: { locale: { in: ['ru', 'eng', 'uzb'] } }, 
         select: { locale: true, title: true, summary: true, description: true },
       },
+      images: {
+        orderBy: { order: 'asc' },
+      },
     },
   });
 
   if (!dbProduct) notFound();
 
-  let images: string[] = [];
-  if (typeof dbProduct.images === "string" && dbProduct.images.trim()) {
-    try {
-      const parsed = JSON.parse(dbProduct.images);
-      images = Array.isArray(parsed) ? parsed.filter(Boolean) : [dbProduct.images];
-    } catch { images = [dbProduct.images]; }
-  }
+  const images = dbProduct.images.map((img) => img.url);
   const normalizedImages = images.map((u) => normalizeImageUrl(u));
   const mainImage = normalizedImages[0] || PLACEHOLDER_IMG;
 
@@ -449,9 +446,13 @@ async function RelatedProducts({ locale, categorySlug, currentSlug }: { locale: 
     },
     select: {
       slug: true,
-      images: true,
       category: { select: { slug: true } },
       i18n: { where: { locale }, select: { title: true } },
+      images: {
+        orderBy: { order: 'asc' },
+        take: 1,
+        select: { url: true },
+      },
     },
     take: 4,
     orderBy: { updatedAt: 'desc' },
@@ -466,13 +467,7 @@ async function RelatedProducts({ locale, categorySlug, currentSlug }: { locale: 
       <h2 className="text-xl font-semibold !text-[#660000] mb-4"><T k="productDetail.related" defaultValue="Похожие товары" /></h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {items.map((p) => {
-          let first: string | undefined;
-          if (typeof p.images === 'string' && p.images.trim()) {
-            try {
-              const arr = JSON.parse(p.images);
-              if (Array.isArray(arr) && arr.length) first = arr[0];
-            } catch { first = p.images; }
-          }
+          const first = p.images && p.images.length > 0 ? p.images[0].url : undefined;
           const img = norm(first) || PLACEHOLDER_IMG;
           const title = p.i18n?.[0]?.title || p.slug;
           const href = `/catalog/${p.category?.slug || categorySlug}/${p.slug}`;

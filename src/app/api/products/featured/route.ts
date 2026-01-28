@@ -97,6 +97,9 @@ export const GET = withApiCache({
           select: { title: true, summary: true, description: true },
         },
         category: { select: { id: true, slug: true, name: true } },
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
     });
 
@@ -106,7 +109,7 @@ export const GET = withApiCache({
     // Преобразуем в нужный формат
     const hydrated = products.map((p) => {
       const translation = p.i18n[0] ?? null;
-      const images = parseImages(p.images);
+      const images = p.images.map((img) => img.url);
       
       return {
         id: p.id,

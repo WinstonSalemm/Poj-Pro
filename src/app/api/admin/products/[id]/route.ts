@@ -48,6 +48,9 @@ export async function GET(req: NextRequest) {
         i18n: {
           where: { locale: { in: ['ru', 'eng', 'uzb'] } },
         },
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
     });
 
@@ -55,8 +58,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Product not found' }, { status: 404 });
     }
 
-    // Парсим изображения
-    const images = parseImages(product.images);
+    // Получаем изображения из связанной таблицы ProductImage
+    const images = product.images.map((img) => img.url);
 
     // Парсим specs
     const rawSpecs = product.specs && typeof product.specs === 'object' 
@@ -154,7 +157,7 @@ export async function PUT(req: NextRequest) {
         ...(typeof slug === 'string' ? { slug } : {}),
         ...(typeof price === 'number' ? { price } : {}),
         ...(typeof stock === 'number' ? { stock } : {}),
-        ...(Array.isArray(images) ? { images: serializeImages(images) } : {}),
+        // Images теперь обрабатываются через ProductImage таблицу
         ...(typeof isActive === 'boolean' ? { isActive } : {}),
         ...(categorySlug !== undefined ? { categoryId: category?.id ?? null } : {}),
         ...(typeof title === 'string'

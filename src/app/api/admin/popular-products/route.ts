@@ -91,9 +91,13 @@ export async function POST(request: Request) {
     }
 
     // Определяем порядок (максимальный + 1 или указанный)
-    const maxOrder = order !== undefined 
-      ? order 
-      : (await prisma.popularProduct.findFirst({ orderBy: { order: 'desc' } }))?.order ?? -1) + 1;
+    let maxOrder: number;
+    if (order !== undefined) {
+      maxOrder = order;
+    } else {
+      const lastProduct = await prisma.popularProduct.findFirst({ orderBy: { order: 'desc' } });
+      maxOrder = (lastProduct?.order ?? -1) + 1;
+    }
 
     const created = await prisma.popularProduct.create({
       data: {

@@ -164,7 +164,6 @@ async function seedProducts() {
         brand: base.brand ?? null,
         price: toFloat(base.price),
         currency: base.currency ?? null,
-        images: imagesToJSON(base.images), // <- СТРОКА
         specs: (base.specs ?? {}) as Prisma.InputJsonValue,
         isActive: true,
         ...(categoryId ? { category: { connect: { id: categoryId } } } : {}),
@@ -173,7 +172,6 @@ async function seedProducts() {
         brand: base.brand ?? null,
         price: toFloat(base.price),
         currency: base.currency ?? null,
-        images: imagesToJSON(base.images), // <- СТРОКА
         specs: (base.specs ?? {}) as Prisma.InputJsonValue,
         isActive: true,
         ...(categoryId ? { category: { connect: { id: categoryId } } } : { category: { disconnect: true } }),

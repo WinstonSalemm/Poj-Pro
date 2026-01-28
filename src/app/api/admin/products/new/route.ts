@@ -52,6 +52,9 @@ export async function GET(req: NextRequest) {
             name: true,
           },
         },
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -75,7 +78,7 @@ export async function GET(req: NextRequest) {
             name: p.category.name || p.category.slug,
           }
         : null,
-      images: parseImages(p.images),
+      images: p.images.map((img) => img.url),
     }));
 
     return NextResponse.json({

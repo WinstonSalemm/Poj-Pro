@@ -86,7 +86,6 @@ export async function POST(request: NextRequest) {
       price: typeof price === 'number' ? price : null,
       stock: typeof stock === 'number' ? stock : 0,
       currency: currency || 'UZS',
-      images: serializeImages(images),
       categoryId: category?.id || null,
       isActive: true,
     };
@@ -147,6 +146,17 @@ export async function POST(request: NextRequest) {
       },
       include: { i18n: true, category: true },
     });
+
+    // Создаём изображения через ProductImage таблицу
+    if (Array.isArray(images) && images.length > 0) {
+      await prisma.productImage.createMany({
+        data: images.map((url, index) => ({
+          productId: created.id,
+          url,
+          order: index,
+        })),
+      });
+    }
 
     return NextResponse.json(
       serializeJSON({ success: true, data: { id: created.id, slug: created.slug } }),

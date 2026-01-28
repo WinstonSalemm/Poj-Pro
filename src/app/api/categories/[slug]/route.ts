@@ -36,7 +36,13 @@ export async function GET(req: NextRequest) {
       include: {
         products: {
           where: { isActive: true },
-          include: { i18n: true, category: true },
+          include: { 
+            i18n: true, 
+            category: true,
+            images: {
+              orderBy: { order: 'asc' },
+            },
+          },
           orderBy: { createdAt: 'desc' },
         },
       },
@@ -56,7 +62,7 @@ export async function GET(req: NextRequest) {
         p.i18n.find((x) => x.locale === 'ru') ??
         p.i18n[0];
 
-      const images = parseImages(p.images);
+      const images = p.images.map((img) => img.url);
 
       return {
         id: p.id,

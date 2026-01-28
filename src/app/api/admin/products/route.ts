@@ -40,6 +40,9 @@ export async function GET() {
           select: { title: true, locale: true },
         },
         category: true,
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -52,7 +55,7 @@ export async function GET() {
       stock: (p as unknown as { stock?: number }).stock ?? 0,
       isActive: p.isActive,
       category: p.category ? { id: p.category.id, slug: p.category.slug, name: p.category.name ?? p.category.slug } : null,
-      images: parseImages(p.images),
+      images: p.images.map((img) => img.url),
     }));
 
     return NextResponse.json(serializeJSON({ success: true, data }), { status: 200 });
@@ -97,7 +100,6 @@ export async function POST(request: Request) {
         slug,
         price: typeof price === 'number' ? price : 0,
         stock: typeof stock === 'number' ? stock : 0,
-        images: serializeImages(images),
         categoryId: category?.id,
         i18n: {
           create: [{ locale: 'ru', title }],
@@ -105,6 +107,17 @@ export async function POST(request: Request) {
       },
       include: { i18n: true, category: true },
     });
+
+    // Создаём изображения через ProductImage таблицу
+    if (Array.isArray(images) && images.length > 0) {
+      await prisma.productImage.createMany({
+        data: images.map((url, index) => ({
+          productId: created.id,
+          url,
+          order: index,
+        })),
+      });
+    }
 
     return NextResponse.json(serializeJSON({ success: true, data: { id: created.id } }), { status: 201 });
   } catch (error) {

@@ -61,7 +61,6 @@ async function importProducts() {
           slug: `product-${ruProduct.id}`,
           price: parseFloat(ruProduct.price.replace(/\s+/g, '')),
           currency: 'UZS',
-          images: JSON.stringify([ruProduct.image]),
           specs: ruProduct.characteristics,
           categoryId: category?.id,
           isActive: true
@@ -71,7 +70,6 @@ async function importProducts() {
           slug: `product-${ruProduct.id}`,
           price: parseFloat(ruProduct.price.replace(/\s+/g, '')),
           currency: 'UZS',
-          images: JSON.stringify([ruProduct.image]),
           specs: ruProduct.characteristics,
           categoryId: category?.id,
           isActive: true,

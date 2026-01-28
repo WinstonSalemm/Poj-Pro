@@ -10,7 +10,10 @@ export async function GET() {
     const products = await prisma.product.findMany({
       include: {
         i18n: true,
-        category: true
+        category: true,
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
       orderBy: {
         id: 'asc'
@@ -29,7 +32,7 @@ export async function GET() {
       } : 'No category',
       price: product.price,
       isActive: product.isActive,
-      images: product.images ? JSON.parse(product.images) : []
+      images: product.images.map((img) => img.url)
     }));
 
     return NextResponse.json({ products: formattedProducts }, { status: 200 });

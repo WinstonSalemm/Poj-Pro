@@ -56,6 +56,9 @@ export async function GET(req: NextRequest) {
           where: { locale: { in: localeVariants } },
           select: { title: true, summary: true, description: true },
         },
+        images: {
+          orderBy: { order: 'asc' },
+        },
       },
     });
 
@@ -70,7 +73,7 @@ export async function GET(req: NextRequest) {
       ? product.i18n[0] 
       : null;
     
-    const images = parseImages(product.images);
+    const images = product.images.map((img) => img.url);
     const rawSpecs = product.specs && typeof product.specs === 'object'
       ? (product.specs as Record<string, unknown>)
       : {};

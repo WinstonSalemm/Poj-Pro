@@ -26,7 +26,13 @@ export async function getProductsByCategorySlug(categorySlug: string, locale: Lo
     include: {
       products: {
         where: { isActive: true },
-        include: { i18n: true, category: true },
+        include: { 
+          i18n: true, 
+          category: true,
+          images: {
+            orderBy: { order: 'asc' },
+          },
+        },
         orderBy: { createdAt: 'desc' },
       },
     },
@@ -35,7 +41,7 @@ export async function getProductsByCategorySlug(categorySlug: string, locale: Lo
   if (!category) return [];
 
   const products: Product[] = category.products.map((p) => {
-    const images = parseImages(p.images);
+    const images = p.images.map((img) => img.url);
     // Prisma Decimal -> number
     const price = p.price != null ? Number(p.price as unknown as number) : undefined;
     return {
