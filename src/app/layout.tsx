@@ -12,6 +12,7 @@ import { NonceProvider } from '@/context/NonceContext';
 import { CartProvider } from '@/context/CartContext';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
+import TopBar from '@/components/TopBar/TopBar';
 import { SITE_URL, SITE_NAME } from '@/lib/site';
 
 // Client-only widgets are rendered via ClientWidgets (client component)
@@ -286,8 +287,9 @@ export default async function RootLayout({
         <NonceProvider nonce={nonce}>
           <I18nProvider initialLocale={locale}>
             <CartProvider>
+              <TopBar />
               <Header />
-              <main id="main-content" className="flex-grow pt-[90px]">{children}</main>
+              <main id="main-content" className="flex-grow pt-[120px]">{children}</main>
               <Footer />
               <ClientWidgets />
             </CartProvider>

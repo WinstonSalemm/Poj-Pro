@@ -45,7 +45,7 @@ export default function Header() {
     if (normalized === "uz" || normalized === "uzb") return "uzb";
     return "ru";
   };
-  
+
   const currentLanguage = normalizeLangForDisplay(i18n.language || "ru");
 
   const menuLeft: MenuItem[] = [
@@ -78,12 +78,12 @@ export default function Header() {
     // Convert legacy codes to standard codes for i18n
     const uiCode = lng === "eng" ? "en" : lng === "uzb" ? "uz" : "ru";
     const backendCode = lng === "eng" ? "eng" : lng === "uzb" ? "uzb" : "ru";
-    
+
     // Небольшая задержка для плавности
     setTimeout(() => {
       // Update i18n with standard code
       i18n.changeLanguage(uiCode);
-      
+
       // Set cookies: UI uses standard codes, backend uses legacy codes
       document.cookie = `i18next=${uiCode}; path=/; max-age=31536000; SameSite=Lax`;
       document.cookie = `lang=${backendCode}; path=/; max-age=31536000; SameSite=Lax`;
@@ -109,7 +109,7 @@ export default function Header() {
       {/* Header reveal animation */}
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 right-0 z-[999] w-full
+        className={`fixed left-0 right-0 z-[999] w-full
             border-b border-neutral-200
             bg-white/80 backdrop-blur
             supports-[backdrop-filter]:bg-white/70
@@ -117,6 +117,7 @@ export default function Header() {
             ${isScrolled ? "shadow-sm" : "shadow-none"}
             `}
         style={{
+          top: "var(--topbar-height, 28px)",
           paddingTop: "max(0px, env(safe-area-inset-top))",
           WebkitTransform: "translateZ(0)",
         }}
@@ -204,7 +205,12 @@ export default function Header() {
       </header>
 
       {/* Language Switcher Bar - Below Header */}
-      <div className="fixed top-[58px] left-0 right-0 z-[998]">
+      <div
+        className="fixed left-0 right-0 z-[998]"
+        style={{
+          top: `calc(var(--topbar-height, 28px) + 58px)`,
+        }}
+      >
         <div className="container-section flex items-center justify-end py-1.5"
           style={{
             paddingLeft: "max(12px, env(safe-area-inset-left))",
@@ -216,11 +222,10 @@ export default function Header() {
               <button
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
-                className={`relative px-2.5 py-0.5 text-[10px] font-medium rounded-md transition-all duration-300 ${
-                  currentLanguage === lang.code
+                className={`relative px-2.5 py-0.5 text-[10px] font-medium rounded-md transition-all duration-300 ${currentLanguage === lang.code
                     ? "text-white shadow-sm"
                     : "text-gray-500 hover:text-[#660000] hover:bg-gray-50/50"
-                }`}
+                  }`}
               >
                 {currentLanguage === lang.code && (
                   <motion.div
