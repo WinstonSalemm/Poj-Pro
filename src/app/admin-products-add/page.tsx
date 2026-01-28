@@ -161,7 +161,7 @@ export default function AddProductPage() {
       } catch (error) {
         console.error('Load product error:', error);
         toast.error(error instanceof Error ? error.message : 'Ошибка загрузки товара');
-        router.push('/admin/products');
+        router.push('/admin-products');
       } finally {
         setLoading(false);
       }
