@@ -3,6 +3,7 @@ import path from 'path';
 import { getDictionary, type Locale } from '@/i18n/server';
 import { CATEGORIES, CATEGORY_NAMES, CATEGORY_IMAGE_MAP } from '@/constants/categories';
 import { CATEGORY_NAME_OVERRIDES } from '@/constants/categoryNameOverrides';
+import { prisma } from '@/lib/prisma';
 import CategoryGridClient from './CategoryGridClient';
 
 type Dictionary = {
@@ -50,10 +51,45 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
   const dictionary = await getDictionary(locale) as Dictionary;
   const lang = normalizeLang(String(locale));
 
+  // Нормализуем локаль для БД (в БД: 'ru', 'eng', 'uzb')
+  const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
+
+  // Загружаем категории из базы данных, которые имеют активные товары
+  const dbCategories = await prisma.category.findMany({
+    where: {
+      products: {
+        some: {
+          isActive: true,
+          i18n: {
+            some: {
+              locale: dbLocale,
+            },
+          },
+        },
+      },
+    },
+    select: {
+      slug: true,
+      name: true,
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  });
+
+  // Если категорий нет в БД, не показываем блок
+  if (dbCategories.length === 0) {
+    return null;
+  }
+
+  // Используем только категории из БД
+  const availableCategorySlugs = dbCategories.map((c) => c.slug);
+
   const labels: Record<string, string> = {};
   const missingLabels: string[] = [];
 
-  for (const slug of CATEGORIES) {
+  // Обрабатываем только категории, которые есть в БД
+  for (const slug of availableCategorySlugs) {
     // Normalize slug format for consistent lookup
     const normalizedSlug = slug.replace(/_/g, '-');
     const altSlug = slug.replace(/-/g, '_');
@@ -95,12 +131,12 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
     console.warn('[CategoryBlock] missing labels for slugs:', missingLabels);
   }
 
-  // Resolve image map
+  // Resolve image map только для категорий из БД
   const imageMap: Record<string, string> = {};
   const dir = path.join(process.cwd(), 'public', 'CatalogImage');
   const placeholderSlugs: string[] = [];
 
-  for (const slug of CATEGORIES) {
+  for (const slug of availableCategorySlugs) {
     const imageName = CATEGORY_IMAGE_MAP[slug];
     if (imageName) {
       try {
@@ -138,6 +174,7 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
       dictionary={dictionary}
       labels={labels}
       imageMap={imageMap}
+      categories={availableCategorySlugs}
     />
   );
 }
