@@ -61,9 +61,12 @@ export default function AddProductPage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [specKeys, setSpecKeys] = useState<string[]>([]);
-  const [categories, setCategories] = useState<Array<{ id: string; slug: string; name: string | null }>>([]);
+  const [categories, setCategories] = useState<Array<{ id: string; slug: string; name: string | null; image: string | null }>>([]);
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryImage, setCategoryImage] = useState<string>('');
+  const [uploadingCategoryImage, setUploadingCategoryImage] = useState(false);
+  const categoryImageInputRef = useRef<HTMLInputElement>(null);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') || '' : '';
 
@@ -169,6 +172,62 @@ export default function AddProductPage() {
 
     loadProduct();
   }, [isEditMode, productId, token, router]);
+
+  // Загрузка изображения категории
+  const uploadCategoryImage = async (file: File) => {
+    if (!file || !file.type.startsWith('image/')) {
+      toast.error('Выберите изображение для категории');
+      return;
+    }
+
+    setUploadingCategoryImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: {
+          'x-admin-token': token,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = 'Ошибка загрузки изображения категории';
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorMessage;
+        } catch {
+          // Если ответ не JSON, используем стандартное сообщение
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      if (!data.success || !data.data?.paths || data.data.paths.length === 0) {
+        throw new Error(data.message || 'Ошибка загрузки изображения категории');
+      }
+
+      setCategoryImage(data.data.paths[0]);
+      toast.success('Изображение категории загружено');
+    } catch (error) {
+      console.error('[Frontend] Category image upload error:', error);
+      toast.error(error instanceof Error ? error.message : 'Ошибка загрузки изображения категории');
+    } finally {
+      setUploadingCategoryImage(false);
+      if (categoryImageInputRef.current) {
+        categoryImageInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleCategoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    await uploadCategoryImage(files[0]);
+  };
 
   // Загрузка изображений на сервер
   const uploadFiles = async (files: FileList | File[]) => {
@@ -339,6 +398,27 @@ export default function AddProductPage() {
 
     setSubmitting(true);
     try {
+      // Если создаётся новая категория, создаём её с изображением
+      if (isCreatingNewCategory && form.categorySlug.trim()) {
+        try {
+          await fetch('/api/admin/categories', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-token': token,
+            },
+            body: JSON.stringify({
+              slug: form.categorySlug.trim(),
+              name: form.categorySlug.trim(),
+              image: categoryImage || undefined,
+            }),
+          });
+        } catch (catError) {
+          console.error('Failed to create category:', catError);
+          // Продолжаем создание товара даже если категория не создалась
+        }
+      }
+
       // Формируем specs в правильном формате
       const formattedSpecs: Record<string, Record<Language, string>> = {};
       specKeys.forEach((key) => {
@@ -517,6 +597,7 @@ export default function AddProductPage() {
                       checked={!isCreatingNewCategory}
                       onChange={() => {
                         setIsCreatingNewCategory(false);
+                        setCategoryImage('');
                         if (categories.length > 0) {
                           setForm((prev) => ({ ...prev, categorySlug: categories[0].slug }));
                         } else {
@@ -535,6 +616,7 @@ export default function AddProductPage() {
                       onChange={() => {
                         setIsCreatingNewCategory(true);
                         setForm((prev) => ({ ...prev, categorySlug: '' }));
+                        setCategoryImage('');
                       }}
                       className="text-[#660000] focus:ring-[#660000]"
                     />
@@ -566,13 +648,73 @@ export default function AddProductPage() {
                     )}
                   </select>
                 ) : (
-                  <input
-                    type="text"
-                    value={form.categorySlug}
-                    onChange={(e) => setForm((prev) => ({ ...prev, categorySlug: e.target.value }))}
-                    className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
-                    placeholder="ognetushiteli"
-                  />
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      value={form.categorySlug}
+                      onChange={(e) => setForm((prev) => ({ ...prev, categorySlug: e.target.value }))}
+                      className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
+                      placeholder="ognetushiteli"
+                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Изображение категории (опционально)
+                      </label>
+                      <div className="flex gap-3 items-start">
+                        <input
+                          ref={categoryImageInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleCategoryImageUpload}
+                          className="hidden"
+                          id="category-image-upload"
+                          disabled={uploadingCategoryImage}
+                        />
+                        <label
+                          htmlFor="category-image-upload"
+                          className={`flex-1 px-4 py-2 rounded border-2 border-dashed text-center cursor-pointer transition-colors ${
+                            uploadingCategoryImage
+                              ? 'border-gray-300 bg-gray-100 cursor-not-allowed'
+                              : categoryImage
+                              ? 'border-green-500 bg-green-50 hover:bg-green-100'
+                              : 'border-gray-300 hover:border-[#660000] hover:bg-gray-50'
+                          }`}
+                        >
+                          {uploadingCategoryImage
+                            ? 'Загрузка...'
+                            : categoryImage
+                            ? `✓ Загружено: ${categoryImage.split('/').pop()}`
+                            : 'Нажмите для загрузки изображения'}
+                        </label>
+                        {categoryImage && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCategoryImage('');
+                              if (categoryImageInputRef.current) {
+                                categoryImageInputRef.current.value = '';
+                              }
+                            }}
+                            className="px-3 py-2 rounded border border-red-300 text-red-600 hover:bg-red-50"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      {categoryImage && (
+                        <div className="mt-2">
+                          <img
+                            src={categoryImage}
+                            alt="Category preview"
+                            className="w-32 h-32 object-cover rounded border border-gray-200"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/OtherPics/product2photo.jpg';
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

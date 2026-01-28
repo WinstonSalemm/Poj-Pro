@@ -147,6 +147,7 @@ model Category {
   id       String    @id @default(cuid())
   slug     String    @unique
   name     String?   @db.VarChar(200)
+  image    String?   @db.VarChar(500)
   products Product[]
 
   @@index([slug])

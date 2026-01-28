@@ -63,16 +63,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Создаём или получаем категорию
+    // Примечание: изображение категории должно быть создано заранее через POST /api/admin/categories
     const normalizedSlug = (categorySlug ?? '').trim();
     let category = null;
     
     if (normalizedSlug) {
       try {
-        category = await prisma.category.upsert({
+        category = await prisma.category.findUnique({
           where: { slug: normalizedSlug },
-          update: {},
-          create: { slug: normalizedSlug, name: normalizedSlug },
         });
+        // Если категория не найдена, создаём её без изображения
+        if (!category) {
+          category = await prisma.category.create({
+            data: { slug: normalizedSlug, name: normalizedSlug },
+          });
+        }
       } catch (catError) {
         console.error('[admin/products/full][POST] Category upsert error:', catError);
         // Продолжаем без категории, если ошибка
