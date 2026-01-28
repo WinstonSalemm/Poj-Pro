@@ -105,11 +105,12 @@ model Product {
   categoryId   String?
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
-  orderItems   OrderItem[]
-  category     Category?            @relation(fields: [categoryId], references: [id])
-  certificates ProductCertificate[]
-  i18n         ProductI18n[]
-  images       ProductImage[]
+  orderItems      OrderItem[]
+  category        Category?            @relation(fields: [categoryId], references: [id])
+  certificates    ProductCertificate[]
+  i18n            ProductI18n[]
+  images          ProductImage[]
+  popularProducts PopularProduct?
 
   @@index([slug])
   @@index([categoryId])
@@ -166,4 +167,18 @@ model ProductCertificate {
 
   @@id([productId, certificateId])
   @@index([certificateId], map: "ProductCertificate_certificateId_fkey")
+}
+
+model PopularProduct {
+  id        String   @id @default(cuid())
+  productId String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId])
+  @@index([order])
+  @@index([productId])
+  @@map("popular_products")
 }

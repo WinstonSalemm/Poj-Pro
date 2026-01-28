@@ -1,35 +1,72 @@
 import ProductCard from "@/components/ProductCard/ProductCard";
-import data from "@/components/PopularProductsBlock/popular.json";
 import { getDictionary, type Locale } from "@/i18n/server";
+import { prisma } from "@/lib/prisma";
 import type { Product } from "@/types/product";
-
-// Define the shape of the items in the local JSON data
-type ManualItem = {
-  id: string | number;
-  slug: string;
-  category: string;
-  titles: { ru: string; en: string; uz: string };
-  image?: string;
-  price?: number | string;
-};
 
 // This is now a server component
 export default async function PopularProductsBlock({ locale }: { locale: Locale }) {
   const dictionary = await getDictionary(locale);
 
-  // Process product data on the server
-  const products: Product[] = (data as ManualItem[]).map((item) => {
-    const title = item.titles[locale] ?? item.titles.ru;
+  // Нормализуем локаль для БД (в БД: 'ru', 'eng', 'uzb')
+  const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
+
+  // Загружаем популярные товары из базы данных
+  const popularProducts = await prisma.popularProduct.findMany({
+    where: {
+      product: {
+        isActive: true,
+      },
+    },
+    include: {
+      product: {
+        include: {
+          i18n: {
+            where: { locale: dbLocale },
+            select: { locale: true, title: true, summary: true, description: true },
+          },
+          category: { select: { id: true, slug: true, name: true } },
+          images: {
+            orderBy: { order: 'asc' },
+            take: 1,
+          },
+        },
+      },
+    },
+    orderBy: { order: 'asc' },
+    take: 6, // Максимум 6 популярных товаров
+  });
+
+  // Преобразуем данные в формат Product
+  const products: Product[] = popularProducts.map((pp) => {
+    const product = pp.product;
+    const i18nTitle = product.i18n[0]?.title || product.slug;
+    
     return {
-      id: item.id,
-      slug: item.slug,
-      title,
-      name: title,
-      image: item.image || "/placeholder-product.jpg",
-      price: typeof item.price === "string" ? Number(item.price) || 0 : item.price ?? 0,
-      category: item.category,
+      id: product.id,
+      slug: product.slug,
+      title: i18nTitle,
+      name: i18nTitle,
+      image: product.images[0]?.url || undefined,
+      images: product.images.map((img) => img.url),
+      price: product.price ? Number(product.price) : 0,
+      category: product.category ? {
+        id: product.category.id,
+        slug: product.category.slug,
+        name: product.category.name || product.category.slug,
+      } : undefined,
+      i18n: product.i18n.map((i) => ({
+        locale: i.locale,
+        title: i.title,
+        summary: i.summary || undefined,
+        description: i.description || undefined,
+      })),
     } as Product;
   });
+
+  // Если нет популярных товаров, не показываем блок
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-12 bg-gray-50">
