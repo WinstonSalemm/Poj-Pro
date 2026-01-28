@@ -267,7 +267,7 @@ export default function AdminNewProductsPage() {
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2">
                           <a
-                            href={`/admin/products/add?id=${p.id}`}
+                            href={`/admin-products-add?id=${p.id}`}
                             className="inline-flex items-center gap-1 text-[#660000] hover:text-[#7a1a1a]"
                             title="Редактировать"
                           >

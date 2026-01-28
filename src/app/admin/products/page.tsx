@@ -159,7 +159,7 @@ export default function AdminProductsPage() {
               Новые товары
             </Link>
             <Link
-              href="/admin/products/add"
+              href="/admin-products-add"
               className="px-4 py-2 rounded bg-[#660000] text-white hover:bg-[#7a1a1a] transition-colors"
             >
               + Добавить товар
@@ -285,7 +285,7 @@ export default function AdminProductsPage() {
                       <td className="px-4 py-2 text-sm text-gray-600">{p.category?.name || '-'}</td>
                       <td className="px-4 py-2 text-right whitespace-nowrap">
                         <a
-                          href={`/admin/products/add?id=${p.id}`}
+                          href={`/admin-products-add?id=${p.id}`}
                           className="text-[#660000] hover:text-[#7a1a1a] mr-3"
                         >
                           Редактировать
