@@ -8,11 +8,6 @@ export default function TopBar() {
   const { t } = useTranslation();
   const pathname = usePathname();
 
-  // Скрываем TopBar на страницах логина и регистрации
-  if (pathname === "/login" || pathname === "/register") {
-    return null;
-  }
-
   useEffect(() => {
     // Устанавливаем CSS переменную для высоты TopBar
     const topbar = document.querySelector('[data-topbar]') as HTMLElement;
@@ -21,6 +16,11 @@ export default function TopBar() {
       document.documentElement.style.setProperty('--topbar-height', `${height}px`);
     }
   }, []);
+
+  // Скрываем TopBar на страницах логина и регистрации
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
 
   return (
     <div
