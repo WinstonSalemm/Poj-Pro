@@ -25,7 +25,7 @@ export default function TopBar() {
   return (
     <div
       data-topbar
-      className="fixed top-0 left-0 right-0 z-[1000] w-full bg-white/95 backdrop-blur-sm text-[#660000] py-1.5 px-3 sm:px-4 min-h-[36px] sm:min-h-[32px] flex items-center"
+      className="fixed top-0 left-0 right-0 z-[1000] w-full bg-white/95 backdrop-blur-sm text-[#660000] py-1.5 px-3 sm:px-4 min-h-[36px] sm:min-h-[32px] flex items-center max-[639px]:backdrop-blur"
       style={{
         paddingTop: "max(6px, env(safe-area-inset-top))",
       }}

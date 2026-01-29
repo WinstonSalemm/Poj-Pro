@@ -117,8 +117,8 @@ export default function Header() {
             ${isScrolled ? "shadow-sm" : "shadow-none"}
             `}
         style={{
-          top: "var(--topbar-height, 28px)",
-          paddingTop: "max(0px, env(safe-area-inset-top))",
+          top: "var(--topbar-height, 36px)",
+          paddingTop: 0,
           WebkitTransform: "translateZ(0)",
         }}
       >
@@ -223,8 +223,8 @@ export default function Header() {
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
                 className={`relative px-2.5 py-0.5 text-[10px] font-medium rounded-md transition-all duration-300 ${currentLanguage === lang.code
-                    ? "text-white shadow-sm"
-                    : "text-gray-500 hover:text-[#660000] hover:bg-gray-50/50"
+                  ? "text-white shadow-sm"
+                  : "text-gray-500 hover:text-[#660000] hover:bg-gray-50/50"
                   }`}
               >
                 {currentLanguage === lang.code && (

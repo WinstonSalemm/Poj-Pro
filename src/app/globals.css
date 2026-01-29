@@ -9,6 +9,14 @@
 
   --font-sans: Arial, Helvetica, sans-serif;
   --font-mono: monospace;
+
+  /* Совпадает с min-h TopBar: на мобилке нет зазора между TopBar и Header */
+  --topbar-height: 36px;
+}
+@media (min-width: 640px) {
+  :root {
+    --topbar-height: 32px;
+  }
 }
 
 /* ===== Remove Tailwind v4-only @theme usage (kept CSS variables) ===== */
