@@ -1,12 +1,12 @@
 "use client";
 
-import { useTranslation } from "@/i18n/useTranslation";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { useTranslation } from "@/i18n/useTranslation";
 
 export default function TopBar() {
-  const { t } = useTranslation();
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Устанавливаем CSS переменную для высоты TopBar
@@ -25,22 +25,25 @@ export default function TopBar() {
   return (
     <div
       data-topbar
-      className="fixed top-0 left-0 right-0 z-[1000] w-full bg-white text-[#660000] py-1 px-2 sm:px-4"
+      className="fixed top-0 left-0 right-0 z-[1000] w-full bg-white/95 backdrop-blur-sm text-[#660000] py-1.5 px-3 sm:px-4 min-h-[36px] sm:min-h-[32px] flex items-center"
       style={{
-        paddingTop: "max(4px, env(safe-area-inset-top))",
+        paddingTop: "max(6px, env(safe-area-inset-top))",
       }}
     >
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-end gap-1 sm:gap-2 md:gap-3 pr-12 sm:pr-20 md:pr-32">
-        {/* Анимация огнетушителя */}
+      <div className="container mx-auto flex flex-row items-center justify-center min-[900px]:justify-between gap-2 sm:gap-3 md:gap-4 pl-1 pr-14 sm:pr-20 md:pr-32 min-w-0 ml-[10px]">
+        {/* Анимация огнетушителя — всегда слева, видна на любом экране, по центру по высоте */}
         <div 
-          className="relative flex items-center justify-center mr-2 sm:mr-4" 
+          className="relative flex items-center justify-center shrink-0 w-14 min-[400px]:w-[90px] sm:w-[110px] md:w-[130px]" 
           style={{ 
-            width: '150px',
-            height: '24px',
+            height: '100%',
+            minHeight: '100%',
             position: 'relative',
             perspective: '1000px',
             perspectiveOrigin: 'center center',
-            overflow: 'visible'
+            overflow: 'visible',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           <div
@@ -48,21 +51,18 @@ export default function TopBar() {
               animation: 'extinguisherMove 8s ease-in-out infinite',
               transformStyle: 'preserve-3d',
               transformOrigin: 'center center',
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              marginLeft: '-16px',
-              marginTop: '-10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <svg
-              width="32"
-              height="20"
               viewBox="0 0 32 20"
-              className="relative z-10"
+              className="relative z-10 w-6 min-[400px]:w-7 sm:w-8 h-auto"
               style={{
                 transformStyle: 'preserve-3d',
-                filter: 'drop-shadow(3px 3px 6px rgba(102, 0, 0, 0.5))',
+                filter: 'drop-shadow(2px 2px 4px rgba(102, 0, 0, 0.4))',
+                minWidth: '24px',
               }}
             >
               {/* Тень для объёма */}
@@ -141,40 +141,42 @@ export default function TopBar() {
           </div>
         </div>
 
-        {/* Время работы - не кликабельное */}
-        <div className="text-[#660000]/90 whitespace-nowrap text-[10px] sm:text-xs">
-          {t("contacts.hours.weekdays")}, {t("contacts.hours.saturday")}
+        {/* Правая группа: контакты — график и 2 номера на широких экранах, 1 номер на узких */}
+        <div className="flex flex-row items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 min-w-0">
+          {/* График работы — только на широких экранах (>= 900px) */}
+          <div className="hidden min-[900px]:block text-[#660000]/90 whitespace-nowrap text-xs">
+            {t("contacts.hours.weekdays")}, {t("contacts.hours.saturday")}
+          </div>
+          <div className="hidden min-[900px]:block w-px h-4 bg-[#660000]/20 flex-shrink-0" aria-hidden />
+          
+          {/* Первый номер телефона — всегда виден */}
+          <a
+            href="tel:+998712536616"
+            className="text-[#660000] hover:bg-[#660000] hover:text-white active:bg-[#660000] active:text-white px-1.5 sm:px-2 py-1 rounded-md transition-colors whitespace-nowrap text-[11px] min-[400px]:text-xs sm:text-sm font-medium touch-manipulation"
+          >
+            <span className="hidden min-[400px]:inline">+998 </span>71 253 66 16
+          </a>
+          
+          {/* Второй номер телефона — только на широких экранах (>= 900px) */}
+          <a
+            href="tel:+998909791218"
+            className="hidden min-[900px]:block text-[#660000] hover:bg-[#660000] hover:text-white active:bg-[#660000] active:text-white px-1.5 sm:px-2 py-1 rounded-md transition-colors whitespace-nowrap text-xs sm:text-sm font-medium touch-manipulation"
+          >
+            +998 90 979 12 18
+          </a>
+          
+          <div className="w-px h-4 bg-[#660000]/20 flex-shrink-0" aria-hidden />
+          
+          {/* Telegram — всегда виден */}
+          <a
+            href="https://t.me/pojsystema"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#660000] hover:bg-[#660000] hover:text-white active:bg-[#660000] active:text-white px-1.5 sm:px-2 py-1 rounded-md transition-colors whitespace-nowrap text-[11px] sm:text-sm font-medium touch-manipulation"
+          >
+            Telegram
+          </a>
         </div>
-
-        {/* Разделитель */}
-        <div className="hidden sm:block w-px h-3 bg-[#660000]/30" />
-
-        {/* Номера телефонов - кликабельные */}
-        <a
-          href="tel:+998712536616"
-          className="text-[#660000] hover:bg-[#660000] hover:text-white px-1.5 sm:px-2 py-0.5 rounded transition-colors whitespace-nowrap text-[10px] sm:text-xs"
-        >
-          +998 71 253 66 16
-        </a>
-        <a
-          href="tel:+998909791218"
-          className="text-[#660000] hover:bg-[#660000] hover:text-white px-1.5 sm:px-2 py-0.5 rounded transition-colors whitespace-nowrap text-[10px] sm:text-xs"
-        >
-          +998 90 979 12 18
-        </a>
-
-        {/* Разделитель */}
-        <div className="hidden sm:block w-px h-3 bg-[#660000]/30" />
-
-        {/* Telegram - кликабельный */}
-        <a
-          href="https://t.me/pojsystema"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[#660000] hover:bg-[#660000] hover:text-white px-1.5 sm:px-2 py-0.5 rounded transition-colors whitespace-nowrap text-[10px] sm:text-xs"
-        >
-          Telegram
-        </a>
       </div>
     </div>
   );
