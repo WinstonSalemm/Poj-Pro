@@ -5,6 +5,7 @@ import { buildPageMetadata, langFromCookieHeader } from "@/lib/metadata";
 import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { SITE_URL } from "@/lib/site";
+import { AdsConversionOnMount } from "@/components/analytics/AdsConversionOnMount";
 
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
@@ -51,6 +52,9 @@ export default function ContactsPage() {
       />
 
       <ContactsClient />
+
+      {/* Google Ads: Конверсия "Контакт" (загрузка страницы контактов) */}
+      <AdsConversionOnMount type="contact" />
     </>
   );
 }

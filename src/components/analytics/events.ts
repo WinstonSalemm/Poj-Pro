@@ -77,3 +77,51 @@ export function trackPurchase(params: { transaction_id: string; value: number; c
     }
   } catch {}
 }
+
+// ---- Google Ads conversion events (page-load based) ----
+
+function fireAdsConversion(eventName: string, params?: Record<string, unknown>) {
+  try {
+    const w = window as unknown as { gtag?: GtagFn };
+    if (typeof w.gtag === 'function') {
+      // ads_conversion___X events do not require GA_ID here — we use the event name as target
+      w.gtag('event', eventName as unknown as string, params || {});
+    }
+    pushDataLayer(eventName, params || {});
+  } catch {
+    // ignore analytics errors
+  }
+}
+
+export const AdsConversions = {
+  contact: 'ads_conversion___1',
+  registration: 'ads_conversion___2',
+  meetingBooking: 'ads_conversion___3',
+  priceRequest: 'ads_conversion___4',
+  generic5: 'ads_conversion___5',
+  pageViewSpecial: 'ads_conversion___6',
+} as const;
+
+export function trackAdsContact() {
+  fireAdsConversion(AdsConversions.contact);
+}
+
+export function trackAdsRegistration() {
+  fireAdsConversion(AdsConversions.registration);
+}
+
+export function trackAdsMeetingBooking() {
+  fireAdsConversion(AdsConversions.meetingBooking);
+}
+
+export function trackAdsPriceRequest() {
+  fireAdsConversion(AdsConversions.priceRequest);
+}
+
+export function trackAdsGeneric5() {
+  fireAdsConversion(AdsConversions.generic5);
+}
+
+export function trackAdsPageViewSpecial() {
+  fireAdsConversion(AdsConversions.pageViewSpecial);
+}

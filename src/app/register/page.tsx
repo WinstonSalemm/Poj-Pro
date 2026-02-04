@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ const MotionImg = dynamic(() => import('framer-motion').then(mod => mod.motion.i
 const MotionButton = dynamic(() => import('framer-motion').then(mod => mod.motion.button));
 import { useTranslation } from '@/i18n/useTranslation';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { trackAdsRegistration } from '@/components/analytics/events';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -22,6 +23,15 @@ export default function RegisterPage() {
   // We no longer use callbackUrl for redirects after success; always go home
   const callbackUrl = '/';
   const { t } = useTranslation();
+
+  // Google Ads: конверсия "Регистрация" по загрузке страницы регистрации
+  useEffect(() => {
+    try {
+      trackAdsRegistration();
+    } catch {
+      // аналитика не должна ломать страницу
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

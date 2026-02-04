@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { trackPurchase } from "@/components/analytics/events";
+import { trackPurchase, trackAdsMeetingBooking } from "@/components/analytics/events";
 
 export default function CartSuccessPage() {
   const search = useSearchParams();
@@ -22,6 +22,20 @@ export default function CartSuccessPage() {
       sessionStorage.setItem(key, "1");
     }
   }, [orderId, total]);
+
+  // Google Ads: "Запись на встречу" — используем страницу успешного заказа как точку конверсии
+  useEffect(() => {
+    if (!orderId) return;
+    try {
+      const key = `ads_meeting_booking_${orderId}`;
+      if (!sessionStorage.getItem(key)) {
+        trackAdsMeetingBooking();
+        sessionStorage.setItem(key, "1");
+      }
+    } catch {
+      // аналитика не должна ломать страницу
+    }
+  }, [orderId]);
 
   return (
     <main className="container-section mt-[100px] py-12">

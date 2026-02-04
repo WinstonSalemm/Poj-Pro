@@ -7,7 +7,7 @@ import { useSession, SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { trackBeginCheckout } from '@/components/analytics/events';
+import { trackBeginCheckout, trackAdsPriceRequest } from '@/components/analytics/events';
 import { evRemoveFromCart } from '@/lib/analytics/dataLayer';
 
 // --- helpers ---
@@ -51,6 +51,20 @@ function CartPageContent() {
   } = useCart();
 
   const [, setCheckoutOpen] = useState(false);
+
+  // Google Ads: конверсия "Запрос цены" — по факту загрузки страницы корзины с товарами
+  useEffect(() => {
+    if (!items.length) return;
+    try {
+      const key = 'ads_price_request_fired';
+      if (typeof window !== 'undefined' && !sessionStorage.getItem(key)) {
+        trackAdsPriceRequest();
+        sessionStorage.setItem(key, '1');
+      }
+    } catch {
+      // аналитика не должна ломать страницу
+    }
+  }, [items.length]);
 
   // Localized overrides for names/images by current language
   const [localized, setLocalized] = useState<Record<string | number, { name: string; image: string }>>({});

@@ -9,6 +9,7 @@ import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
 import { SITE_URL } from "@/lib/site";
 import BlurReveal from "@/components/ui/BlurReveal";
 import MiniUpdateModal from "@/components/MiniUpdateModal/MiniUpdateModal";
+import { AdsConversionOnMount } from "@/components/analytics/AdsConversionOnMount";
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -23,6 +24,8 @@ export default async function HomePage() {
   return (
     <main>
         <MiniUpdateModal/>
+        {/* Google Ads: Просмотр страницы (home) */}
+        <AdsConversionOnMount type="pageViewSpecial" />
       {/* H1 */}
       <BlurReveal>
         <section className="container-section pt-4 md:pt-6">
