@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 function normLocale(raw?: string | null): 'ru' | 'en' | 'uz' {
   const s = (raw || '').toLowerCase();

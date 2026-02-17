@@ -70,6 +70,22 @@ export default function AddProductPage() {
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') || '' : '';
 
+  const ALLOWED_IMAGE_TYPES = new Set([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+    'image/gif',
+    'image/svg+xml',
+  ]);
+
+  const isAllowedImageFile = (file: File) => {
+    // Иногда браузер/drag&drop даёт пустой mime-type — тогда ориентируемся на расширение.
+    if (file.type && ALLOWED_IMAGE_TYPES.has(file.type)) return true;
+    const name = (file.name || '').toLowerCase();
+    return /\.(jpe?g|png|webp|avif|gif|svg)$/.test(name);
+  };
+
   // Загрузка списка категорий
   useEffect(() => {
     const loadCategories = async () => {
@@ -175,8 +191,12 @@ export default function AddProductPage() {
 
   // Загрузка изображения категории
   const uploadCategoryImage = async (file: File) => {
-    if (!file || !file.type.startsWith('image/')) {
+    if (!file) {
       toast.error('Выберите изображение для категории');
+      return;
+    }
+    if (!isAllowedImageFile(file)) {
+      toast.error('Неподдерживаемый формат. Используйте JPG/PNG/WEBP/AVIF (GIF/SVG тоже можно).');
       return;
     }
 
@@ -245,13 +265,13 @@ export default function AddProductPage() {
       })));
 
       fileArray.forEach((file) => {
-        if (file.type.startsWith('image/')) {
+        if (isAllowedImageFile(file)) {
           formData.append('files', file);
         }
       });
 
       if (formData.getAll('files').length === 0) {
-        toast.error('Выберите изображения для загрузки');
+        toast.error('Выберите изображения (JPG/PNG/WEBP/AVIF, также GIF/SVG).');
         return;
       }
 
@@ -664,7 +684,7 @@ export default function AddProductPage() {
                         <input
                           ref={categoryImageInputRef}
                           type="file"
-                          accept="image/*"
+                          accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
                           onChange={handleCategoryImageUpload}
                           className="hidden"
                           id="category-image-upload"
@@ -672,19 +692,18 @@ export default function AddProductPage() {
                         />
                         <label
                           htmlFor="category-image-upload"
-                          className={`flex-1 px-4 py-2 rounded border-2 border-dashed text-center cursor-pointer transition-colors ${
-                            uploadingCategoryImage
+                          className={`flex-1 px-4 py-2 rounded border-2 border-dashed text-center cursor-pointer transition-colors ${uploadingCategoryImage
                               ? 'border-gray-300 bg-gray-100 cursor-not-allowed'
                               : categoryImage
-                              ? 'border-green-500 bg-green-50 hover:bg-green-100'
-                              : 'border-gray-300 hover:border-[#660000] hover:bg-gray-50'
-                          }`}
+                                ? 'border-green-500 bg-green-50 hover:bg-green-100'
+                                : 'border-gray-300 hover:border-[#660000] hover:bg-gray-50'
+                            }`}
                         >
                           {uploadingCategoryImage
                             ? 'Загрузка...'
                             : categoryImage
-                            ? `✓ Загружено: ${categoryImage.split('/').pop()}`
-                            : 'Нажмите для загрузки изображения'}
+                              ? `✓ Загружено: ${categoryImage.split('/').pop()}`
+                              : 'Нажмите для загрузки изображения'}
                         </label>
                         {categoryImage && (
                           <button
@@ -704,7 +723,7 @@ export default function AddProductPage() {
                       {categoryImage && (
                         <div className="mt-2">
                           <img
-                            src={categoryImage}
+                            src={`${categoryImage}?t=${Date.now()}`}
                             alt="Category preview"
                             className="w-32 h-32 object-cover rounded border border-gray-200"
                             onError={(e) => {
@@ -737,7 +756,7 @@ export default function AddProductPage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml"
                   multiple
                   onChange={handleImageUpload}
                   className="hidden"

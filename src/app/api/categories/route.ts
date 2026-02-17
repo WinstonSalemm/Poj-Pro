@@ -4,7 +4,7 @@ import { withApiCache } from '@/lib/cacheMiddleware';
 import { cacheKeys } from '@/lib/redis';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 
