@@ -4,10 +4,17 @@ import { prisma } from '@/lib/prisma';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+type Locale = 'ru' | 'eng' | 'uzb';
+
 function isAuthed(request: Request): boolean {
   const token = request.headers.get('x-admin-token');
   const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
   return token === adminPassword;
+}
+
+function normalizeCategoryName(i18n?: Partial<Record<Locale, string>>): string | null {
+  if (!i18n) return null;
+  return i18n.ru?.trim() || i18n.eng?.trim() || i18n.uzb?.trim() || null;
 }
 
 // GET /api/admin/categories - Получить все категории для админа
@@ -22,17 +29,27 @@ export async function GET(req: NextRequest) {
         { name: 'asc' },
         { slug: 'asc' },
       ],
-      select: {
-        id: true,
-        slug: true,
-        name: true,
-        image: true,
+      include: {
+        i18n: {
+          where: { locale: { in: ['ru', 'eng', 'uzb'] } },
+          select: { locale: true, name: true },
+        },
       },
     });
 
     return NextResponse.json({
       success: true,
-      data: categories,
+      data: categories.map((category) => ({
+        id: category.id,
+        slug: category.slug,
+        name: category.name,
+        image: category.image,
+        i18n: {
+          ru: category.i18n.find((t) => t.locale === 'ru')?.name || '',
+          eng: category.i18n.find((t) => t.locale === 'eng')?.name || '',
+          uzb: category.i18n.find((t) => t.locale === 'uzb')?.name || '',
+        },
+      })),
     });
   } catch (error) {
     console.error('[admin/categories][GET] error', error);
@@ -51,10 +68,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { slug, name, image } = body as {
+    const { slug, name, image, i18n } = body as {
       slug: string;
       name?: string;
       image?: string;
+      i18n?: Partial<Record<Locale, string>>;
     };
 
     if (!slug || !slug.trim()) {
@@ -64,26 +82,97 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const normalizedSlug = slug.trim();
+    const normalizedI18n: Partial<Record<Locale, string>> = {
+      ru: i18n?.ru?.trim() || '',
+      eng: i18n?.eng?.trim() || '',
+      uzb: i18n?.uzb?.trim() || '',
+    };
+
+    const fallbackName =
+      normalizedI18n.ru ||
+      normalizedI18n.eng ||
+      normalizedI18n.uzb ||
+      name?.trim() ||
+      normalizedSlug;
+
     const category = await prisma.category.upsert({
-      where: { slug: slug.trim() },
+      where: { slug: normalizedSlug },
       update: {
-        ...(name !== undefined ? { name: name.trim() || null } : {}),
+        name: fallbackName,
         ...(image !== undefined ? { image: image.trim() || null } : {}),
       },
       create: {
-        slug: slug.trim(),
-        name: name?.trim() || slug.trim(),
+        slug: normalizedSlug,
+        name: fallbackName,
         image: image?.trim() || null,
+      },
+    });
+
+    const translations = Object.entries(normalizedI18n)
+      .filter(([, value]) => Boolean(value)) as Array<[Locale, string]>;
+
+    for (const [locale, translatedName] of translations) {
+      await prisma.categoryI18n.upsert({
+        where: {
+          categoryId_locale: {
+            categoryId: category.id,
+            locale,
+          },
+        },
+        update: { name: translatedName },
+        create: {
+          categoryId: category.id,
+          locale,
+          name: translatedName,
+        },
+      });
+    }
+
+    if (translations.length === 0 && normalizeCategoryName(i18n) === null) {
+      await prisma.categoryI18n.upsert({
+        where: {
+          categoryId_locale: {
+            categoryId: category.id,
+            locale: 'ru',
+          },
+        },
+        update: { name: fallbackName },
+        create: {
+          categoryId: category.id,
+          locale: 'ru',
+          name: fallbackName,
+        },
+      });
+    }
+
+    const categoryWithI18n = await prisma.category.findUnique({
+      where: { id: category.id },
+      include: {
+        i18n: {
+          where: { locale: { in: ['ru', 'eng', 'uzb'] } },
+          select: { locale: true, name: true },
+        },
       },
     });
 
     return NextResponse.json({
       success: true,
-      data: category,
+      data: {
+        id: categoryWithI18n?.id,
+        slug: categoryWithI18n?.slug,
+        name: categoryWithI18n?.name,
+        image: categoryWithI18n?.image,
+        i18n: {
+          ru: categoryWithI18n?.i18n.find((t) => t.locale === 'ru')?.name || '',
+          eng: categoryWithI18n?.i18n.find((t) => t.locale === 'eng')?.name || '',
+          uzb: categoryWithI18n?.i18n.find((t) => t.locale === 'uzb')?.name || '',
+        },
+      },
     });
   } catch (error) {
     console.error('[admin/categories][POST] error', error);
-    
+
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { success: false, message: 'Категория с таким slug уже существует' },

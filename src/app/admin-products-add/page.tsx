@@ -7,6 +7,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Upload, X, Plus, Trash2 } from 'lucide-react';
 
 type Language = 'ru' | 'eng' | 'uzb';
+type CategoryOption = {
+  id: string;
+  slug: string;
+  name: string | null;
+  image: string | null;
+  i18n?: { ru: string; eng: string; uzb: string };
+};
 
 interface ProductFormData {
   slug: string;
@@ -61,11 +68,13 @@ export default function AddProductPage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [specKeys, setSpecKeys] = useState<string[]>([]);
-  const [categories, setCategories] = useState<Array<{ id: string; slug: string; name: string | null; image: string | null }>>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [categoryImage, setCategoryImage] = useState<string>('');
   const [uploadingCategoryImage, setUploadingCategoryImage] = useState(false);
+  const [categoryLang, setCategoryLang] = useState<Language>('ru');
+  const [categoryI18n, setCategoryI18n] = useState<Record<Language, string>>({ ru: '', eng: '', uzb: '' });
   const categoryImageInputRef = useRef<HTMLInputElement>(null);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') || '' : '';
@@ -84,6 +93,10 @@ export default function AddProductPage() {
     if (file.type && ALLOWED_IMAGE_TYPES.has(file.type)) return true;
     const name = (file.name || '').toLowerCase();
     return /\.(jpe?g|png|webp|avif|gif|svg)$/.test(name);
+  };
+
+  const getCategoryDisplayName = (cat: CategoryOption, lang: Language): string => {
+    return cat.i18n?.[lang]?.trim() || cat.name || cat.slug;
   };
 
   // Загрузка списка категорий
@@ -312,7 +325,7 @@ export default function AddProductPage() {
 
       setForm((prev) => ({
         ...prev,
-        images: [...prev.images, ...uploadedPaths],
+        images: Array.from(new Set([...prev.images, ...uploadedPaths])),
       }));
 
       toast.success(`Загружено ${uploadedPaths.length} изображений`);
@@ -397,6 +410,11 @@ export default function AddProductPage() {
       return;
     }
 
+    if (isCreatingNewCategory && form.categorySlug.trim() && !categoryI18n.ru.trim()) {
+      toast.error('Название категории на русском обязательно');
+      return;
+    }
+
     // Проверка длины полей (максимум 191 символ для VARCHAR в MySQL)
     const maxLength = 191;
     const checkLength = (text: string, fieldName: string, lang: string) => {
@@ -421,7 +439,7 @@ export default function AddProductPage() {
       // Если создаётся новая категория, создаём её с изображением
       if (isCreatingNewCategory && form.categorySlug.trim()) {
         try {
-          await fetch('/api/admin/categories', {
+          const categoryResponse = await fetch('/api/admin/categories', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -429,13 +447,23 @@ export default function AddProductPage() {
             },
             body: JSON.stringify({
               slug: form.categorySlug.trim(),
-              name: form.categorySlug.trim(),
+              name: categoryI18n.ru.trim() || form.categorySlug.trim(),
               image: categoryImage || undefined,
+              i18n: {
+                ru: categoryI18n.ru.trim(),
+                eng: categoryI18n.eng.trim(),
+                uzb: categoryI18n.uzb.trim(),
+              },
             }),
           });
+
+          const categoryData = await categoryResponse.json().catch(() => null);
+          if (!categoryResponse.ok || !categoryData?.success) {
+            throw new Error(categoryData?.message || 'Не удалось сохранить категорию');
+          }
         } catch (catError) {
           console.error('Failed to create category:', catError);
-          // Продолжаем создание товара даже если категория не создалась
+          throw catError;
         }
       }
 
@@ -459,7 +487,7 @@ export default function AddProductPage() {
         stock: form.stock || 0,
         currency: form.currency || 'UZS',
         categorySlug: form.categorySlug.trim() || undefined,
-        images: form.images,
+        images: Array.from(new Set(form.images.filter((img) => typeof img === 'string' && img.trim()).map((img) => img.trim()))),
         i18n: {
           ru: form.i18n.ru,
           eng: form.i18n.eng,
@@ -618,6 +646,7 @@ export default function AddProductPage() {
                       onChange={() => {
                         setIsCreatingNewCategory(false);
                         setCategoryImage('');
+                        setCategoryI18n({ ru: '', eng: '', uzb: '' });
                         if (categories.length > 0) {
                           setForm((prev) => ({ ...prev, categorySlug: categories[0].slug }));
                         } else {
@@ -637,6 +666,7 @@ export default function AddProductPage() {
                         setIsCreatingNewCategory(true);
                         setForm((prev) => ({ ...prev, categorySlug: '' }));
                         setCategoryImage('');
+                        setCategoryI18n({ ru: '', eng: '', uzb: '' });
                       }}
                       className="text-[#660000] focus:ring-[#660000]"
                     />
@@ -661,7 +691,7 @@ export default function AddProductPage() {
                         <option value="">-- Выберите категорию --</option>
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.slug}>
-                            {cat.name || cat.slug}
+                            {getCategoryDisplayName(cat, categoryLang)}
                           </option>
                         ))}
                       </>
@@ -672,10 +702,42 @@ export default function AddProductPage() {
                     <input
                       type="text"
                       value={form.categorySlug}
-                      onChange={(e) => setForm((prev) => ({ ...prev, categorySlug: e.target.value }))}
+                      onChange={(e) => {
+                        const slug = e.target.value;
+                        setForm((prev) => ({ ...prev, categorySlug: slug }));
+                        setCategoryI18n((prev) => ({
+                          ...prev,
+                          ru: prev.ru || slug,
+                        }));
+                      }}
                       className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
                       placeholder="ognetushiteli"
                     />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Название категории (по языкам)</label>
+                      <div className="flex gap-2 mb-2">
+                        {(['ru', 'eng', 'uzb'] as Language[]).map((lang) => (
+                          <button
+                            key={`cat-lang-${lang}`}
+                            type="button"
+                            onClick={() => setCategoryLang(lang)}
+                            className={`px-3 py-1.5 rounded border text-sm ${categoryLang === lang ? 'bg-[#660000] text-white border-[#660000]' : 'bg-white text-gray-700 border-gray-300 hover:border-[#660000]'}`}
+                          >
+                            {lang === 'ru' ? 'Рус' : lang === 'eng' ? 'Eng' : 'Uzb'}
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        value={categoryI18n[categoryLang]}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setCategoryI18n((prev) => ({ ...prev, [categoryLang]: value }));
+                        }}
+                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
+                        placeholder={categoryLang === 'ru' ? 'Название категории' : categoryLang === 'eng' ? 'Category name' : 'Kategoriya nomi'}
+                      />
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Изображение категории (опционально)
