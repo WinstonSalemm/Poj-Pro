@@ -75,7 +75,13 @@ export async function POST(request: NextRequest) {
         // Если категория не найдена, создаём её без изображения
         if (!category) {
           category = await prisma.category.create({
-            data: { slug: normalizedSlug, name: normalizedSlug },
+            data: {
+              slug: normalizedSlug,
+              name: normalizedSlug,
+              i18n: {
+                create: { locale: 'ru', name: normalizedSlug },
+              },
+            },
           });
         }
       } catch (catError) {

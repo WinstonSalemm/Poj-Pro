@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 function normLocale(raw?: string | null): 'ru' | 'en' | 'uz' {
   const s = (raw || '').toLowerCase();
@@ -10,17 +11,25 @@ function normLocale(raw?: string | null): 'ru' | 'en' | 'uz' {
   return 'ru';
 }
 
-function parseImages(raw?: string | null): string[] {
-  if (!raw) return [];
-  try {
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.filter((x) => typeof x === 'string') : [];
-  } catch {
-    return [];
-  }
+function toDbLocale(locale: 'ru' | 'en' | 'uz'): 'ru' | 'eng' | 'uzb' {
+  if (locale === 'en') return 'eng';
+  if (locale === 'uz') return 'uzb';
+  return 'ru';
 }
 
-// ВАЖНО: сигнатура { params: { slug } }
+function resolveCategoryName(args: {
+  locale: 'ru' | 'en' | 'uz';
+  fallback: string;
+  i18n: Array<{ locale: string; name: string }>;
+}): string {
+  const dbLocale = toDbLocale(args.locale);
+  return (
+    args.i18n.find((x) => x.locale === dbLocale)?.name ||
+    args.i18n.find((x) => x.locale === 'ru')?.name ||
+    args.fallback
+  );
+}
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -36,11 +45,22 @@ export async function GET(req: NextRequest) {
     const category = await prisma.category.findUnique({
       where: { slug },
       include: {
+        i18n: {
+          where: { locale: { in: ['ru', 'eng', 'uzb'] } },
+          select: { locale: true, name: true },
+        },
         products: {
           where: { isActive: true },
-          include: { 
-            i18n: true, 
-            category: true,
+          include: {
+            i18n: true,
+            category: {
+              include: {
+                i18n: {
+                  where: { locale: { in: ['ru', 'eng', 'uzb'] } },
+                  select: { locale: true, name: true },
+                },
+              },
+            },
             images: {
               orderBy: { order: 'asc' },
             },
@@ -54,11 +74,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     }
 
-    // Нормализуем локаль для поиска в БД (в БД: 'ru', 'eng', 'uzb')
-    const dbLocale = locale === 'en' ? 'eng' : locale === 'uz' ? 'uzb' : 'ru';
-    
+    const dbLocale = toDbLocale(locale);
+
     const products = category.products.map((p) => {
-      // Ищем перевод для текущей локали в формате БД, затем fallback на русский
       const t =
         p.i18n.find((x) => x.locale === dbLocale) ??
         p.i18n.find((x) => x.locale === 'ru') ??
@@ -71,10 +89,16 @@ export async function GET(req: NextRequest) {
         slug: p.slug,
         title: t?.title || p.slug,
         description: t?.description || undefined,
-        // Prisma Decimal -> number, чтобы не падала сериализация
         price: p.price != null ? Number(p.price as unknown as number) : 0,
         category: p.category
-          ? { slug: p.category.slug, name: p.category.name ?? p.category.slug }
+          ? {
+              slug: p.category.slug,
+              name: resolveCategoryName({
+                locale,
+                fallback: p.category.name ?? p.category.slug,
+                i18n: p.category.i18n,
+              }),
+            }
           : undefined,
         images,
         image: images[0] || undefined,

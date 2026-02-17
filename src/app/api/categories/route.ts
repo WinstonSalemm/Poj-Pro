@@ -7,14 +7,31 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
-
-// Normalize supported locales
-function normalize(raw: string | null): 'ru'|'en'|'uz' {
+function normalize(raw: string | null): 'ru' | 'en' | 'uz' {
   const v = (raw ?? 'ru').toLowerCase();
   if (v === 'ru' || v === 'en' || v === 'uz') return v;
   if (v.startsWith('en')) return 'en';
   if (v.startsWith('uz')) return 'uz';
   return 'ru';
+}
+
+function toDbLocale(locale: 'ru' | 'en' | 'uz'): 'ru' | 'eng' | 'uzb' {
+  if (locale === 'en') return 'eng';
+  if (locale === 'uz') return 'uzb';
+  return 'ru';
+}
+
+function pickCategoryName(input: {
+  locale: 'ru' | 'en' | 'uz';
+  fallback: string;
+  i18n: Array<{ locale: string; name: string }>;
+}): string {
+  const dbLocale = toDbLocale(input.locale);
+  return (
+    input.i18n.find((x) => x.locale === dbLocale)?.name ||
+    input.i18n.find((x) => x.locale === 'ru')?.name ||
+    input.fallback
+  );
 }
 
 export const GET = withApiCache({
@@ -26,6 +43,7 @@ export const GET = withApiCache({
 })(async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = normalize(searchParams.get('locale'));
+  const dbLocale = toDbLocale(locale);
   const t0 = Date.now();
 
   try {
@@ -34,7 +52,7 @@ export const GET = withApiCache({
         products: {
           some: {
             isActive: true,
-            i18n: { some: { locale } }, // <-- фильтруем категории по наличию товара с локалью
+            i18n: { some: { locale: dbLocale } },
           },
         },
       },
@@ -43,17 +61,33 @@ export const GET = withApiCache({
       select: {
         id: true,
         slug: true,
-        name: true, // у Category нет i18n — используем name как есть
+        name: true,
+        image: true,
+        i18n: {
+          where: { locale: { in: ['ru', 'eng', 'uzb'] } },
+          select: { locale: true, name: true },
+        },
         products: {
-          where: { isActive: true, i18n: { some: { locale } } },
-          select: { id: true }, // не тащим весь продукт, только проверка наличия
+          where: { isActive: true, i18n: { some: { locale: dbLocale } } },
+          select: { id: true },
           take: 1,
         },
       },
     });
 
-    // можно отдать как есть; products здесь — просто индикатор наличия
-    return NextResponse.json({ categories });
+    const localizedCategories = categories.map((category) => ({
+      id: category.id,
+      slug: category.slug,
+      image: category.image,
+      name: pickCategoryName({
+        locale,
+        fallback: category.name || category.slug,
+        i18n: category.i18n,
+      }),
+      products: category.products,
+    }));
+
+    return NextResponse.json({ categories: localizedCategories });
   } catch (e: unknown) {
     const took_ms = Date.now() - t0;
     if (e instanceof Error) {

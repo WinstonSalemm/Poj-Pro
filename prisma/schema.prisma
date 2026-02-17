@@ -144,13 +144,26 @@ model ProductImage {
 }
 
 model Category {
-  id       String    @id @default(cuid())
-  slug     String    @unique
-  name     String?   @db.VarChar(200)
-  image    String?   @db.VarChar(500)
+  id       String         @id @default(cuid())
+  slug     String         @unique
+  name     String?        @db.VarChar(200)
+  image    String?        @db.VarChar(500)
   products Product[]
+  i18n     CategoryI18n[]
 
   @@index([slug])
+}
+
+model CategoryI18n {
+  id         String   @id @default(cuid())
+  categoryId String
+  locale     String   @db.VarChar(5)
+  name       String   @db.VarChar(200)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+  @@index([categoryId])
 }
 
 model Certificate {
