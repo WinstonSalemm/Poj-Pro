@@ -72,7 +72,9 @@ export default function AddProductPage() {
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [categoryImage, setCategoryImage] = useState<string>('');
+  const [categoryImageLoadError, setCategoryImageLoadError] = useState(false);
   const [uploadingCategoryImage, setUploadingCategoryImage] = useState(false);
+  const [productImageLoadErrors, setProductImageLoadErrors] = useState<Record<string, boolean>>({});
   const [categoryLang, setCategoryLang] = useState<Language>('ru');
   const [categoryI18n, setCategoryI18n] = useState<Record<Language, string>>({ ru: '', eng: '', uzb: '' });
   const categoryImageInputRef = useRef<HTMLInputElement>(null);
@@ -244,6 +246,7 @@ export default function AddProductPage() {
       }
 
       setCategoryImage(data.data.paths[0]);
+      setCategoryImageLoadError(false);
       toast.success('Изображение категории загружено');
     } catch (error) {
       console.error('[Frontend] Category image upload error:', error);
@@ -371,10 +374,20 @@ export default function AddProductPage() {
   };
 
   const removeImage = (index: number) => {
-    setForm((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    setForm((prev) => {
+      const target = prev.images[index];
+      if (target) {
+        setProductImageLoadErrors((old) => {
+          const next = { ...old };
+          delete next[target];
+          return next;
+        });
+      }
+      return {
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      };
+    });
   };
 
   // Управление характеристиками
@@ -646,6 +659,7 @@ export default function AddProductPage() {
                       onChange={() => {
                         setIsCreatingNewCategory(false);
                         setCategoryImage('');
+                        setCategoryImageLoadError(false);
                         setCategoryI18n({ ru: '', eng: '', uzb: '' });
                         if (categories.length > 0) {
                           setForm((prev) => ({ ...prev, categorySlug: categories[0].slug }));
@@ -666,6 +680,7 @@ export default function AddProductPage() {
                         setIsCreatingNewCategory(true);
                         setForm((prev) => ({ ...prev, categorySlug: '' }));
                         setCategoryImage('');
+                        setCategoryImageLoadError(false);
                         setCategoryI18n({ ru: '', eng: '', uzb: '' });
                       }}
                       className="text-[#660000] focus:ring-[#660000]"
@@ -772,6 +787,7 @@ export default function AddProductPage() {
                             type="button"
                             onClick={() => {
                               setCategoryImage('');
+                              setCategoryImageLoadError(false);
                               if (categoryImageInputRef.current) {
                                 categoryImageInputRef.current.value = '';
                               }
@@ -788,11 +804,16 @@ export default function AddProductPage() {
                             src={`${categoryImage}?t=${Date.now()}`}
                             alt="Category preview"
                             className="w-32 h-32 object-cover rounded border border-gray-200"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/OtherPics/product2photo.jpg';
+                            onError={() => {
+                              setCategoryImageLoadError((prev) => (prev ? prev : true));
                             }}
                           />
                         </div>
+                      )}
+                      {categoryImage && categoryImageLoadError && (
+                        <p className="mt-2 text-xs text-red-600">
+                          Не удалось загрузить превью по пути: {categoryImage}. Проверьте, что файл реально сохранён в /public/ProductImages.
+                        </p>
                       )}
                     </div>
                   </div>
@@ -872,13 +893,13 @@ export default function AddProductPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {form.images.map((img, index) => (
                     <div key={`${img}-${index}`} className="relative group">
-                      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                      <div className={`aspect-square bg-gray-100 rounded-lg overflow-hidden border ${productImageLoadErrors[img] ? 'border-red-400' : 'border-gray-200'}`}>
                         <img
                           src={`${img}?t=${Date.now()}`}
                           alt={`Preview ${index + 1}`}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/OtherPics/product2photo.jpg';
+                          onError={() => {
+                            setProductImageLoadErrors((prev) => (prev[img] ? prev : { ...prev, [img]: true }));
                           }}
                         />
                       </div>
@@ -889,9 +910,12 @@ export default function AddProductPage() {
                       >
                         <X className="w-4 h-4" />
                       </button>
-                      <div className="mt-1 text-xs text-gray-500 truncate" title={img}>
+                      <div className={`mt-1 text-xs truncate ${productImageLoadErrors[img] ? 'text-red-600' : 'text-gray-500'}`} title={img}>
                         {img.split('/').pop()}
                       </div>
+                      {productImageLoadErrors[img] && (
+                        <div className="text-[11px] text-red-600">Не удалось открыть превью (без подмены картинки)</div>
+                      )}
                     </div>
                   ))}
                 </div>
