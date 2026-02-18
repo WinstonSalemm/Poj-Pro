@@ -72,7 +72,13 @@ export async function PUT(req: NextRequest) {
       ? await prisma.category.upsert({
           where: { slug: normalizedSlug },
           update: {},
-          create: { slug: normalizedSlug, name: normalizedSlug },
+          create: {
+            slug: normalizedSlug,
+            name: normalizedSlug,
+            i18n: {
+              create: { locale: 'ru', name: normalizedSlug },
+            },
+          },
         })
       : null;
 

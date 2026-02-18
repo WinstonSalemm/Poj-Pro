@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import sharp from 'sharp';
 
@@ -113,19 +114,13 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Генерируем уникальное имя файла с индексом для гарантии уникальности
-      const timestamp = Date.now();
-      const randomStr = Math.random().toString(36).substring(2, 15); // Увеличил длину
-      const fileName = `${timestamp}-${i}-${randomStr}.${outputExt}`;
+      // Генерируем уникальное имя файла без зависимости от исходного имени
+      const fileName = `${Date.now()}-${randomUUID()}.${outputExt}`;
       const filePath = join(uploadDir, fileName);
 
       console.log(`[upload] Writing file to: ${filePath}, size: ${outputBuffer.length} bytes`);
       await writeFile(filePath, outputBuffer);
-      
-      // Небольшая задержка между файлами для гарантии уникальности timestamp
-      if (i < files.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 10));
-      }
+
 
       // Возвращаем путь для использования в форме
       const publicPath = `/ProductImages/${fileName}`;
