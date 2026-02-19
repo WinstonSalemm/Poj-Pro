@@ -82,8 +82,14 @@ export default function AddProductPage() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') || '' : '';
 
   // Глобальное хранилище для base64 данных изображений
-  if (typeof window !== 'undefined' && !(window as any).__uploadedImagesData) {
-    (window as any).__uploadedImagesData = {};
+  if (typeof window !== 'undefined') {
+    const w = window as typeof window & {
+      __uploadedImagesData?: Record<string, string>;
+      __categoryImageData?: string;
+    };
+    if (!w.__uploadedImagesData) {
+      w.__uploadedImagesData = {};
+    }
   }
 
   const ALLOWED_IMAGE_TYPES = new Set([
@@ -258,9 +264,10 @@ export default function AddProductPage() {
       setCategoryImage(imageUrl);
       
       // Сохраняем base64 данные для последующей записи в БД
-      if (typeof window !== 'undefined') {
-        (window as any).__categoryImageData = imageData;
-      }
+      const w = window as typeof window & {
+        __categoryImageData?: string;
+      };
+      w.__categoryImageData = imageData;
 
       setCategoryImageLoadError(false);
       toast.success('Изображение категории загружено');
@@ -349,11 +356,14 @@ export default function AddProductPage() {
       }));
 
       // Сохраняем base64 данные во временное хранилище для последующей записи в БД
-      if (!window.__uploadedImagesData) {
-        window.__uploadedImagesData = {};
+      const w = window as typeof window & {
+        __uploadedImagesData?: Record<string, string>;
+      };
+      if (!w.__uploadedImagesData) {
+        w.__uploadedImagesData = {};
       }
       uploadedImages.forEach((img: { url: string; data: string }) => {
-        window.__uploadedImagesData[img.url] = img.data;
+        w.__uploadedImagesData![img.url] = img.data;
       });
 
       toast.success(`Загружено ${uploadedImages.length} изображений`);
@@ -488,9 +498,10 @@ export default function AddProductPage() {
       // Если создаётся новая категория, создаём её с изображением
       if (isCreatingNewCategory && form.categorySlug.trim()) {
         try {
-          const categoryImageData = typeof window !== 'undefined' 
-            ? (window as any).__categoryImageData 
-            : undefined;
+          const w = window as typeof window & {
+            __categoryImageData?: string;
+          };
+          const categoryImageData = w.__categoryImageData;
 
           const categoryResponse = await fetch('/api/admin/categories', {
             method: 'POST',
@@ -535,8 +546,11 @@ export default function AddProductPage() {
       const hasSpecs = Object.keys(formattedSpecs).length > 0;
 
       // Собираем base64 данные для изображений
+      const w = window as typeof window & {
+        __uploadedImagesData?: Record<string, string>;
+      };
       const imagesWithBase64 = form.images.map((imgUrl) => {
-        const base64Data = (window as any).__uploadedImagesData?.[imgUrl] || '';
+        const base64Data = w.__uploadedImagesData?.[imgUrl] || '';
         return {
           url: imgUrl,
           data: base64Data,

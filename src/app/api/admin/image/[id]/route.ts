@@ -23,7 +23,8 @@ export async function GET(
     });
 
     if (productImage?.data) {
-      const buffer = Buffer.from(productImage.data, 'base64');
+      // Prisma возвращает Uint8Array для Bytes полей
+      const buffer = Buffer.from(productImage.data);
       const contentType = getContentType(productImage.url || '');
       
       return new NextResponse(buffer, {
@@ -41,7 +42,7 @@ export async function GET(
     });
 
     if (categoryImage?.imageData) {
-      const buffer = Buffer.from(categoryImage.imageData, 'base64');
+      const buffer = Buffer.from(categoryImage.imageData);
       const contentType = getContentType(categoryImage.image || '');
       
       return new NextResponse(buffer, {
