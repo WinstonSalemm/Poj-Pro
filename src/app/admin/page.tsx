@@ -82,7 +82,35 @@ function AdminDashboardInner() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-      
+
+      {/* Навигация */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <a
+          href="/admin-categories-add"
+          className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+        >
+          ➕ Категории
+        </a>
+        <a
+          href="/admin-products-add"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+        >
+          ➕ Продукты
+        </a>
+        <a
+          href="/admin-products"
+          className="bg-green-500 hover:bg-green-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+        >
+          📦 Список продуктов
+        </a>
+        <a
+          href="/admin-popular-products"
+          className="bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+        >
+          ⭐ Популярное
+        </a>
+      </div>
+
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
         <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
           <h2 className="text-lg leading-6 font-medium text-gray-900">Users</h2>

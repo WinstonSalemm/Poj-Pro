@@ -213,3 +213,49 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+// DELETE /api/admin/categories - Удалить категорию
+export async function DELETE(req: NextRequest) {
+  try {
+    if (!isAuthed(req)) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: 'Category ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Проверяем, есть ли продукты в этой категории
+    const productsCount = await prisma.product.count({
+      where: { categoryId: id },
+    });
+
+    if (productsCount > 0) {
+      return NextResponse.json(
+        { success: false, message: `Нельзя удалить категорию: в ней ${productsCount} продукт(ов). Сначала удалите продукты.` },
+        { status: 400 }
+      );
+    }
+
+    await prisma.category.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Категория удалена',
+    });
+  } catch (error) {
+    console.error('[admin/categories][DELETE] error', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to delete category', error: String(error) },
+      { status: 500 }
+    );
+  }
+}
