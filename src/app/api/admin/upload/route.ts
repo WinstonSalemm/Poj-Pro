@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { writeFile, mkdir, access } from 'fs/promises';
+import { join, resolve } from 'path';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import sharp from 'sharp';
@@ -50,16 +50,34 @@ export async function POST(request: NextRequest) {
     }
 
     const uploadedPaths: string[] = [];
-    const uploadDir = join(process.cwd(), 'public', 'ProductImages');
+    // Используем process.cwd() для получения корня проекта
+    const publicDir = join(process.cwd(), 'public');
+    const uploadDir = join(publicDir, 'ProductImages');
 
-    // Создаём папку, если её нет
+    console.log('[upload] Public directory:', publicDir);
+    console.log('[upload] Upload directory:', uploadDir);
+
+    // Проверяем существование public директории
+    try {
+      await access(publicDir);
+      console.log('[upload] Public directory exists');
+    } catch (err) {
+      console.error('[upload] Public directory does not exist:', err);
+      return NextResponse.json(
+        { success: false, message: 'Директория public не найдена' },
+        { status: 500 }
+      );
+    }
+
+    // Создаём папку ProductImages, если её нет
     if (!existsSync(uploadDir)) {
+      console.log('[upload] Creating upload directory:', uploadDir);
       await mkdir(uploadDir, { recursive: true });
     }
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      
+
       // Проверяем тип файла
       if (!file.type.startsWith('image/')) {
         console.log(`[upload] Skipping non-image file: ${file.name}`);
@@ -75,7 +93,7 @@ export async function POST(request: NextRequest) {
       // Конвертируем File в Buffer
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      
+
       // Валидация формата: некоторые "image/*" (например HEIC) часто не отображаются в браузере
       // и/или не поддерживаются на сервере. Чтобы не было ощущения, что "загрузился баннер",
       // приводим растровые изображения к webp (кроме gif/svg), либо отклоняем загрузку.
@@ -121,8 +139,17 @@ export async function POST(request: NextRequest) {
       console.log(`[upload] Writing file to: ${filePath}, size: ${outputBuffer.length} bytes`);
       await writeFile(filePath, outputBuffer);
 
+      // Проверяем что файл действительно записался
+      try {
+        await access(filePath);
+        console.log('[upload] File written successfully:', filePath);
+      } catch (accessErr) {
+        console.error('[upload] Failed to verify file after write:', accessErr);
+        throw new Error(`Не удалось сохранить файл: ${fileName}`);
+      }
 
       // Возвращаем путь для использования в форме
+      // Используем resolve для уверенности в правильности пути
       const publicPath = `/ProductImages/${fileName}`;
       uploadedPaths.push(publicPath);
       console.log(`[upload] File saved successfully: ${publicPath}`);
@@ -138,11 +165,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: { paths: uploadedPaths },
+      message: `Загружено файлов: ${uploadedPaths.length}`,
     });
   } catch (error) {
     console.error('[admin/upload][POST] error', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to upload files', error: String(error) },
+      { 
+        success: false, 
+        message: 'Failed to upload files', 
+        error: String(error),
+        details: error instanceof Error ? { message: error.message, stack: error.stack } : undefined
+      },
       { status: 500 }
     );
   }

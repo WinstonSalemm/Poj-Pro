@@ -423,9 +423,20 @@ export default function AddProductPage() {
       return;
     }
 
-    if (isCreatingNewCategory && form.categorySlug.trim() && !categoryI18n.ru.trim()) {
-      toast.error('Название категории на русском обязательно');
-      return;
+    // Валидация новой категории
+    if (isCreatingNewCategory) {
+      if (!form.categorySlug.trim()) {
+        toast.error('Slug категории обязателен');
+        return;
+      }
+      if (!/^[a-z0-9_-]+$/.test(form.categorySlug.trim())) {
+        toast.error('Slug должен содержать только латинские буквы, цифры, дефис и подчёркивание');
+        return;
+      }
+      if (!categoryI18n.ru.trim()) {
+        toast.error('Название категории на русском обязательно');
+        return;
+      }
     }
 
     // Проверка длины полей (максимум 191 символ для VARCHAR в MySQL)
@@ -714,22 +725,30 @@ export default function AddProductPage() {
                   </select>
                 ) : (
                   <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={form.categorySlug}
-                      onChange={(e) => {
-                        const slug = e.target.value;
-                        setForm((prev) => ({ ...prev, categorySlug: slug }));
-                        setCategoryI18n((prev) => ({
-                          ...prev,
-                          ru: prev.ru || slug,
-                        }));
-                      }}
-                      className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
-                      placeholder="ognetushiteli"
-                    />
+                    {/* Slug категории (технический идентификатор) */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Название категории (по языкам)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Slug (URL идентификатор) <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={form.categorySlug}
+                        onChange={(e) => {
+                          const slug = e.target.value;
+                          setForm((prev) => ({ ...prev, categorySlug: slug }));
+                        }}
+                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
+                        placeholder="ognetushiteli"
+                        required
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Латиницей, без пробелов (например: ognetushiteli, shchitki, rukava)</p>
+                    </div>
+
+                    {/* Названия категории по языкам */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Название категории <span className="text-red-500">*</span>
+                      </label>
                       <div className="flex gap-2 mb-2">
                         {(['ru', 'eng', 'uzb'] as Language[]).map((lang) => (
                           <button
@@ -750,8 +769,12 @@ export default function AddProductPage() {
                           setCategoryI18n((prev) => ({ ...prev, [categoryLang]: value }));
                         }}
                         className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
-                        placeholder={categoryLang === 'ru' ? 'Название категории' : categoryLang === 'eng' ? 'Category name' : 'Kategoriya nomi'}
+                        placeholder={categoryLang === 'ru' ? 'Например: Огнетушители' : categoryLang === 'eng' ? 'For example: Fire extinguishers' : 'Masalan: Ochirgichlar'}
+                        required={categoryLang === 'ru'}
                       />
+                      {categoryLang === 'ru' && !categoryI18n.ru && (
+                        <p className="text-xs text-red-500 mt-1">Название на русском обязательно</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -801,19 +824,29 @@ export default function AddProductPage() {
                       {categoryImage && (
                         <div className="mt-2">
                           <img
-                            src={`${categoryImage}?t=${Date.now()}`}
+                            src={categoryImage}
                             alt="Category preview"
                             className="w-32 h-32 object-cover rounded border border-gray-200"
-                            onError={() => {
-                              setCategoryImageLoadError((prev) => (prev ? prev : true));
+                            loading="lazy"
+                            onError={(e) => {
+                              console.error(`[Category Preview Error] Failed to load image: ${categoryImage}`);
+                              console.error(`[Category Preview Error] Full path attempt: ${typeof window !== 'undefined' ? window.location.origin + categoryImage : 'N/A'}`);
+                              setCategoryImageLoadError(true);
                             }}
                           />
                         </div>
                       )}
                       {categoryImage && categoryImageLoadError && (
-                        <p className="mt-2 text-xs text-red-600">
-                          Не удалось загрузить превью по пути: {categoryImage}. Проверьте, что файл реально сохранён в /public/ProductImages.
-                        </p>
+                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                          <p className="font-semibold mb-1">⚠️ Не удалось загрузить превью</p>
+                          <p className="break-all">Путь: {categoryImage}</p>
+                          <p className="mt-1">Проверьте:</p>
+                          <ul className="list-disc list-inside ml-2 mt-1 space-y-0.5">
+                            <li>Файл существует в /public/ProductImages/</li>
+                            <li>Сервер запущен и раздаёт статические файлы</li>
+                            <li>Нет проблем с правами доступа</li>
+                          </ul>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -891,33 +924,53 @@ export default function AddProductPage() {
               {/* Превью изображений */}
               {form.images.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {form.images.map((img, index) => (
-                    <div key={`${img}-${index}`} className="relative group">
-                      <div className={`aspect-square bg-gray-100 rounded-lg overflow-hidden border ${productImageLoadErrors[img] ? 'border-red-400' : 'border-gray-200'}`}>
-                        <img
-                          src={`${img}?t=${Date.now()}`}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={() => {
-                            setProductImageLoadErrors((prev) => (prev[img] ? prev : { ...prev, [img]: true }));
-                          }}
-                        />
+                  {form.images.map((img, index) => {
+                    const hasError = productImageLoadErrors[img];
+                    const fileName = img.split('/').pop() || img;
+                    
+                    return (
+                      <div key={`${img}-${index}`} className="relative group">
+                        <div className={`aspect-square bg-gray-100 rounded-lg overflow-hidden border ${hasError ? 'border-red-400' : 'border-gray-200'}`}>
+                          {hasError ? (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-center p-2">
+                              <div className="text-red-500 text-2xl mb-1">⚠️</div>
+                              <div className="text-[10px] text-red-600 break-all">
+                                Файл не найден:<br/>{fileName}
+                              </div>
+                            </div>
+                          ) : (
+                            <img
+                              src={img}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                              onError={(e) => {
+                                console.error(`[Preview Error] Failed to load image: ${img}`);
+                                console.error(`[Preview Error] Full path attempt: ${typeof window !== 'undefined' ? window.location.origin + img : 'N/A'}`);
+                                setProductImageLoadErrors((prev) => ({ ...prev, [img]: true }));
+                              }}
+                            />
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Удалить изображение"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                        <div className={`mt-1 text-xs truncate ${hasError ? 'text-red-600' : 'text-gray-500'}`} title={img}>
+                          {fileName}
+                        </div>
+                        {hasError && (
+                          <div className="text-[10px] text-gray-500 mt-0.5">
+                            Проверьте консоль браузера и сервера для деталей
+                          </div>
+                        )}
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                      <div className={`mt-1 text-xs truncate ${productImageLoadErrors[img] ? 'text-red-600' : 'text-gray-500'}`} title={img}>
-                        {img.split('/').pop()}
-                      </div>
-                      {productImageLoadErrors[img] && (
-                        <div className="text-[11px] text-red-600">Не удалось открыть превью (без подмены картинки)</div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
