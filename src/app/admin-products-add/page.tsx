@@ -81,6 +81,11 @@ export default function AddProductPage() {
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') || '' : '';
 
+  // Глобальное хранилище для base64 данных изображений
+  if (typeof window !== 'undefined' && !(window as any).__uploadedImagesData) {
+    (window as any).__uploadedImagesData = {};
+  }
+
   const ALLOWED_IMAGE_TYPES = new Set([
     'image/jpeg',
     'image/png',
@@ -241,11 +246,22 @@ export default function AddProductPage() {
       }
 
       const data = await response.json();
-      if (!data.success || !data.data?.paths || data.data.paths.length === 0) {
+      if (!data.success || !data.data?.images || data.data.images.length === 0) {
         throw new Error(data.message || 'Ошибка загрузки изображения категории');
       }
 
-      setCategoryImage(data.data.paths[0]);
+      // Берём первое изображение и сохраняем URL + base64 данные
+      const uploadedImage = data.data.images[0];
+      const imageUrl = uploadedImage.url;
+      const imageData = uploadedImage.data;
+
+      setCategoryImage(imageUrl);
+      
+      // Сохраняем base64 данные для последующей записи в БД
+      if (typeof window !== 'undefined') {
+        (window as any).__categoryImageData = imageData;
+      }
+
       setCategoryImageLoadError(false);
       toast.success('Изображение категории загружено');
     } catch (error) {
@@ -323,15 +339,24 @@ export default function AddProductPage() {
         throw new Error(data.message || 'Ошибка загрузки изображений');
       }
 
-      const uploadedPaths = data.data?.paths || [];
-      console.log('[Frontend] Uploaded paths:', uploadedPaths);
+      // Новый API возвращает { images: [{ url, data }] }
+      const uploadedImages = data.data?.images || [];
+      console.log('[Frontend] Uploaded images:', uploadedImages);
 
       setForm((prev) => ({
         ...prev,
-        images: Array.from(new Set([...prev.images, ...uploadedPaths])),
+        images: Array.from(new Set([...prev.images, ...uploadedImages.map((img: { url: string }) => img.url)])),
       }));
 
-      toast.success(`Загружено ${uploadedPaths.length} изображений`);
+      // Сохраняем base64 данные во временное хранилище для последующей записи в БД
+      if (!window.__uploadedImagesData) {
+        window.__uploadedImagesData = {};
+      }
+      uploadedImages.forEach((img: { url: string; data: string }) => {
+        window.__uploadedImagesData[img.url] = img.data;
+      });
+
+      toast.success(`Загружено ${uploadedImages.length} изображений`);
     } catch (error) {
       console.error('[Frontend] Image upload error:', error);
       toast.error(error instanceof Error ? error.message : 'Ошибка загрузки изображений');
@@ -463,6 +488,10 @@ export default function AddProductPage() {
       // Если создаётся новая категория, создаём её с изображением
       if (isCreatingNewCategory && form.categorySlug.trim()) {
         try {
+          const categoryImageData = typeof window !== 'undefined' 
+            ? (window as any).__categoryImageData 
+            : undefined;
+
           const categoryResponse = await fetch('/api/admin/categories', {
             method: 'POST',
             headers: {
@@ -473,6 +502,7 @@ export default function AddProductPage() {
               slug: form.categorySlug.trim(),
               name: categoryI18n.ru.trim() || form.categorySlug.trim(),
               image: categoryImage || undefined,
+              imageData: categoryImageData,
               i18n: {
                 ru: categoryI18n.ru.trim(),
                 eng: categoryI18n.eng.trim(),
@@ -504,6 +534,15 @@ export default function AddProductPage() {
       // Удаляем specs из payload, если он пустой
       const hasSpecs = Object.keys(formattedSpecs).length > 0;
 
+      // Собираем base64 данные для изображений
+      const imagesWithBase64 = form.images.map((imgUrl) => {
+        const base64Data = (window as any).__uploadedImagesData?.[imgUrl] || '';
+        return {
+          url: imgUrl,
+          data: base64Data,
+        };
+      });
+
       const payload = {
         slug: form.slug.trim(),
         brand: form.brand.trim() || undefined,
@@ -511,7 +550,7 @@ export default function AddProductPage() {
         stock: form.stock || 0,
         currency: form.currency || 'UZS',
         categorySlug: form.categorySlug.trim() || undefined,
-        images: Array.from(new Set(form.images.filter((img) => typeof img === 'string' && img.trim()).map((img) => img.trim()))),
+        images: imagesWithBase64,
         i18n: {
           ru: form.i18n.ru,
           eng: form.i18n.eng,
@@ -946,7 +985,6 @@ export default function AddProductPage() {
                               loading="lazy"
                               onError={(e) => {
                                 console.error(`[Preview Error] Failed to load image: ${img}`);
-                                console.error(`[Preview Error] Full path attempt: ${typeof window !== 'undefined' ? window.location.origin + img : 'N/A'}`);
                                 setProductImageLoadErrors((prev) => ({ ...prev, [img]: true }));
                               }}
                             />

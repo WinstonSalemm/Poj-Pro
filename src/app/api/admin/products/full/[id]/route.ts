@@ -7,14 +7,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-function serializeImages(images?: unknown): string {
-  if (!images) return JSON.stringify([]);
-  if (Array.isArray(images)) {
-    return JSON.stringify(images.filter((x) => typeof x === 'string'));
-  }
-  return JSON.stringify([]);
-}
-
 function isAuthed(request: Request): boolean {
   const token = request.headers.get('x-admin-token');
   const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
@@ -49,7 +41,7 @@ export async function PUT(req: NextRequest) {
       price?: number;
       stock?: number;
       currency?: string;
-      images?: string[];
+      images?: Array<{ url: string; data: string }>;
       categorySlug?: string;
       i18n?: {
         ru?: { title: string; summary?: string; description?: string };
@@ -66,7 +58,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Создаём или получаем категорию
     const normalizedSlug = (categorySlug ?? '').trim();
     const category = normalizedSlug
       ? await prisma.category.upsert({
@@ -91,7 +82,6 @@ export async function PUT(req: NextRequest) {
         ...(typeof price === 'number' ? { price } : {}),
         ...(typeof stock === 'number' ? { stock } : {}),
         ...(currency ? { currency } : {}),
-        // Images теперь обрабатываются через ProductImage таблицу
         ...(categorySlug !== undefined ? { categoryId: category?.id || null } : {}),
         ...(specs ? { specs } : {}),
       },
@@ -102,21 +92,25 @@ export async function PUT(req: NextRequest) {
     if (Array.isArray(images)) {
       // Удаляем старые изображения
       await prisma.productImage.deleteMany({ where: { productId: id } });
-      // Создаём новые изображения
+      // Создаём новые изображения с base64 данными
       if (images.length > 0) {
+        const imageRecords = images.map((img, index) => ({
+          productId: id,
+          url: img.url,
+          data: img.data ? Buffer.from(img.data, 'base64') : null,
+          order: index,
+        }));
+
         await prisma.productImage.createMany({
-          data: images.map((url, index) => ({
-            productId: id,
-            url,
-            order: index,
-          })),
+          data: imageRecords,
         });
+
+        console.log(`[admin/products/full/[id]][PUT] Saved ${images.length} images to database`);
       }
     }
 
     // Обновляем переводы
     if (i18n) {
-      // Функция для обрезки текста до 191 символа (ограничение VARCHAR в MySQL)
       const truncateText = (text: string | null | undefined, maxLength: number = 191): string | null => {
         if (!text) return null;
         const trimmed = text.trim();
@@ -185,7 +179,7 @@ export async function PUT(req: NextRequest) {
     );
   } catch (error) {
     console.error('[admin/products/full/[id]][PUT] error', error);
-    
+
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { success: false, message: 'Товар с таким slug уже существует' },
@@ -199,4 +193,3 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-

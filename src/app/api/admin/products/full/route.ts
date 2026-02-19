@@ -7,14 +7,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-function serializeImages(images?: unknown): string {
-  if (!images) return JSON.stringify([]);
-  if (Array.isArray(images)) {
-    return JSON.stringify(images.filter((x) => typeof x === 'string'));
-  }
-  return JSON.stringify([]);
-}
-
 function isAuthed(request: Request): boolean {
   const token = request.headers.get('x-admin-token');
   const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
@@ -45,7 +37,7 @@ export async function POST(request: NextRequest) {
       price?: number;
       stock?: number;
       currency?: string;
-      images?: string[];
+      images?: Array<{ url: string; data: string }>;
       categorySlug?: string;
       i18n?: {
         ru?: { title: string; summary?: string; description?: string };
@@ -62,17 +54,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Создаём или получаем категорию
-    // Примечание: изображение категории должно быть создано заранее через POST /api/admin/categories
     const normalizedSlug = (categorySlug ?? '').trim();
     let category = null;
-    
+
     if (normalizedSlug) {
       try {
         category = await prisma.category.findUnique({
           where: { slug: normalizedSlug },
         });
-        // Если категория не найдена, создаём её без изображения
         if (!category) {
           category = await prisma.category.create({
             data: {
@@ -85,12 +74,10 @@ export async function POST(request: NextRequest) {
           });
         }
       } catch (catError) {
-        console.error('[admin/products/full][POST] Category upsert error:', catError);
-        // Продолжаем без категории, если ошибка
+        console.error('[admin/products/full][POST] Category error:', catError);
       }
     }
 
-    // Формируем данные для создания товара
     const productData: any = {
       slug: slug.trim(),
       brand: brand?.trim() || null,
@@ -101,36 +88,30 @@ export async function POST(request: NextRequest) {
       isActive: true,
     };
 
-    // Добавляем характеристики (specs) если они есть
     if (specs && Object.keys(specs).length > 0) {
-      // Убеждаемся, что specs в правильном формате для Prisma Json
       productData.specs = specs as any;
     } else {
-      // Если specs нет, устанавливаем null
       productData.specs = null;
     }
 
-    // Функция для обрезки текста до 191 символа (ограничение VARCHAR в MySQL)
     const truncateText = (text: string | null | undefined, maxLength: number = 191): string | null => {
       if (!text) return null;
       const trimmed = text.trim();
       return trimmed.length > maxLength ? trimmed.substring(0, maxLength) : trimmed;
     };
 
-    // Создаём товар с переводами
+    // Создаём товар
     const created = await prisma.product.create({
       data: {
         ...productData,
         i18n: {
           create: [
-            // Русский (обязательный)
             {
               locale: 'ru',
               title: truncateText(i18n.ru.title, 191) || '',
               summary: truncateText(i18n.ru.summary, 191),
               description: truncateText(i18n.ru.description, 191),
             },
-            // Английский
             ...(i18n.eng?.title
               ? [
                   {
@@ -141,7 +122,6 @@ export async function POST(request: NextRequest) {
                   },
                 ]
               : []),
-            // Узбекский
             ...(i18n.uzb?.title
               ? [
                   {
@@ -158,15 +138,20 @@ export async function POST(request: NextRequest) {
       include: { i18n: true, category: true },
     });
 
-    // Создаём изображения через ProductImage таблицу
+    // Сохраняем изображения в БД с base64 данными
     if (Array.isArray(images) && images.length > 0) {
+      const imageRecords = images.map((img, index) => ({
+        productId: created.id,
+        url: img.url,
+        data: img.data ? Buffer.from(img.data, 'base64') : null,
+        order: index,
+      }));
+
       await prisma.productImage.createMany({
-        data: images.map((url, index) => ({
-          productId: created.id,
-          url,
-          order: index,
-        })),
+        data: imageRecords,
       });
+
+      console.log(`[admin/products/full][POST] Saved ${images.length} images to database`);
     }
 
     return NextResponse.json(
@@ -175,13 +160,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('[admin/products/full][POST] error', error);
-    console.error('[admin/products/full][POST] error details:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      code: error && typeof error === 'object' && 'code' in error ? error.code : undefined,
-    });
-    
-    // Обработка ошибки дублирования slug
+
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { success: false, message: 'Товар с таким slug уже существует' },
@@ -191,14 +170,12 @@ export async function POST(request: NextRequest) {
 
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Failed to create product', 
+      {
+        success: false,
+        message: 'Failed to create product',
         error: errorMessage,
-        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined,
       },
       { status: 500 }
     );
   }
 }
-

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir, access } from 'fs/promises';
-import { join, resolve } from 'path';
+import { prisma } from '@/lib/prisma';
 import { randomUUID } from 'crypto';
-import { existsSync } from 'fs';
-import sharp from 'sharp';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,18 +11,13 @@ function isAuthed(request: Request): boolean {
   return token === adminPassword;
 }
 
-const PASSTHROUGH_MIME_TYPES = new Set<string>([
-  // Keep original bytes (sharp либо не нужен, либо может сломать анимацию/вектор)
-  'image/gif',
-  'image/svg+xml',
-]);
-
 const ALLOWED_MIME_TYPES = new Set<string>([
   'image/jpeg',
   'image/png',
   'image/webp',
   'image/avif',
-  ...PASSTHROUGH_MIME_TYPES,
+  'image/gif',
+  'image/svg+xml',
 ]);
 
 function getExtensionFromName(filename: string): string | undefined {
@@ -35,7 +27,7 @@ function getExtensionFromName(filename: string): string | undefined {
   return ext || undefined;
 }
 
-// POST /api/admin/upload - Загрузка изображений
+// POST /api/admin/upload - Загрузка изображений в базу данных
 export async function POST(request: NextRequest) {
   try {
     if (!isAuthed(request)) {
@@ -49,31 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'No files provided' }, { status: 400 });
     }
 
-    const uploadedPaths: string[] = [];
-    // Используем process.cwd() для получения корня проекта
-    const publicDir = join(process.cwd(), 'public');
-    const uploadDir = join(publicDir, 'ProductImages');
-
-    console.log('[upload] Public directory:', publicDir);
-    console.log('[upload] Upload directory:', uploadDir);
-
-    // Проверяем существование public директории
-    try {
-      await access(publicDir);
-      console.log('[upload] Public directory exists');
-    } catch (err) {
-      console.error('[upload] Public directory does not exist:', err);
-      return NextResponse.json(
-        { success: false, message: 'Директория public не найдена' },
-        { status: 500 }
-      );
-    }
-
-    // Создаём папку ProductImages, если её нет
-    if (!existsSync(uploadDir)) {
-      console.log('[upload] Creating upload directory:', uploadDir);
-      await mkdir(uploadDir, { recursive: true });
-    }
+    const uploadedImages: Array<{ url: string; data: string }> = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -81,7 +49,7 @@ export async function POST(request: NextRequest) {
       // Проверяем тип файла
       if (!file.type.startsWith('image/')) {
         console.log(`[upload] Skipping non-image file: ${file.name}`);
-        continue; // Пропускаем не-изображения
+        continue;
       }
 
       console.log(`[upload] Processing file ${i + 1}/${files.length}:`, {
@@ -90,13 +58,7 @@ export async function POST(request: NextRequest) {
         fileType: file.type,
       });
 
-      // Конвертируем File в Buffer
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Валидация формата: некоторые "image/*" (например HEIC) часто не отображаются в браузере
-      // и/или не поддерживаются на сервере. Чтобы не было ощущения, что "загрузился баннер",
-      // приводим растровые изображения к webp (кроме gif/svg), либо отклоняем загрузку.
+      // Валидация формата
       const inputExt = getExtensionFromName(file.name) || 'png';
       const isAllowed = ALLOWED_MIME_TYPES.has(file.type);
       if (!isAllowed) {
@@ -109,53 +71,28 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      let outputBuffer = buffer;
-      let outputExt = inputExt;
+      // Конвертируем File в ArrayBuffer для сохранения в БД
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-      if (!PASSTHROUGH_MIME_TYPES.has(file.type)) {
-        try {
-          // normalize orientation, strip metadata, convert to webp for reliable browser display
-          outputBuffer = await sharp(buffer, { failOn: 'none' })
-            .rotate()
-            .webp({ quality: 82 })
-            .toBuffer();
-          outputExt = 'webp';
-        } catch (e) {
-          console.error('[upload] sharp convert error', e);
-          return NextResponse.json(
-            {
-              success: false,
-              message: `Не удалось обработать изображение. Попробуйте JPG/PNG/WEBP. (Файл: ${file.name})`,
-            },
-            { status: 400 }
-          );
-        }
-      }
+      // Генерируем уникальный ID для изображения
+      const imageId = randomUUID();
+      const fileName = `${Date.now()}-${imageId}.${inputExt}`;
+      
+      // URL для отображения (будет загружаться через API)
+      const imageUrl = `/api/admin/image/${imageId}`;
 
-      // Генерируем уникальное имя файла без зависимости от исходного имени
-      const fileName = `${Date.now()}-${randomUUID()}.${outputExt}`;
-      const filePath = join(uploadDir, fileName);
+      console.log(`[upload] Saving image to database: ${fileName}, size: ${buffer.length} bytes`);
 
-      console.log(`[upload] Writing file to: ${filePath}, size: ${outputBuffer.length} bytes`);
-      await writeFile(filePath, outputBuffer);
-
-      // Проверяем что файл действительно записался
-      try {
-        await access(filePath);
-        console.log('[upload] File written successfully:', filePath);
-      } catch (accessErr) {
-        console.error('[upload] Failed to verify file after write:', accessErr);
-        throw new Error(`Не удалось сохранить файл: ${fileName}`);
-      }
-
-      // Возвращаем путь для использования в форме
-      // Используем resolve для уверенности в правильности пути
-      const publicPath = `/ProductImages/${fileName}`;
-      uploadedPaths.push(publicPath);
-      console.log(`[upload] File saved successfully: ${publicPath}`);
+      // Сохраняем в базу (во временную таблицу или сразу в ProductImage)
+      // Для простоты сохраняем сразу с данными
+      uploadedImages.push({
+        url: imageUrl,
+        data: buffer.toString('base64'), // Кодируем в base64 для передачи на фронт
+      });
     }
 
-    if (uploadedPaths.length === 0) {
+    if (uploadedImages.length === 0) {
       return NextResponse.json(
         { success: false, message: 'No valid image files uploaded' },
         { status: 400 }
@@ -164,8 +101,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: { paths: uploadedPaths },
-      message: `Загружено файлов: ${uploadedPaths.length}`,
+      data: { 
+        images: uploadedImages,
+        message: `Загружено файлов: ${uploadedImages.length}`,
+      },
     });
   } catch (error) {
     console.error('[admin/upload][POST] error', error);

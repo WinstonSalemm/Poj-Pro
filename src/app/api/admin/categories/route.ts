@@ -68,10 +68,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { slug, name, image, i18n } = body as {
+    const { slug, name, image, imageData, i18n } = body as {
       slug: string;
       name?: string;
       image?: string;
+      imageData?: string; // base64
       i18n?: Partial<Record<Locale, string>>;
     };
 
@@ -101,11 +102,13 @@ export async function POST(req: NextRequest) {
       update: {
         name: fallbackName,
         ...(image !== undefined ? { image: image.trim() || null } : {}),
+        ...(imageData !== undefined ? { imageData: imageData ? Buffer.from(imageData, 'base64') : null } : {}),
       },
       create: {
         slug: normalizedSlug,
         name: fallbackName,
         image: image?.trim() || null,
+        imageData: imageData ? Buffer.from(imageData, 'base64') : null,
       },
     });
 
