@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'No files provided' }, { status: 400 });
     }
 
-    const uploadedImages: Array<{ url: string; data: string }> = [];
+    const uploadedImages: Array<{ id: string; url: string; data: string }> = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -84,11 +84,23 @@ export async function POST(request: NextRequest) {
 
       console.log(`[upload] Saving image to database: ${fileName}, size: ${buffer.length} bytes`);
 
-      // Сохраняем в базу (во временную таблицу или сразу в ProductImage)
-      // Для простоты сохраняем сразу с данными
+      // Сохраняем в базу данных сразу (без productId, привяжем позже при сохранении товара)
+      await prisma.productImage.create({
+        data: {
+          id: imageId,
+          url: imageUrl,
+          data: buffer,
+          order: 0,
+          // productId не указываем - привяжем при сохранении товара
+        },
+      });
+
+      console.log(`[upload] Image saved to DB with ID: ${imageId}`);
+
       uploadedImages.push({
+        id: imageId,
         url: imageUrl,
-        data: buffer.toString('base64'), // Кодируем в base64 для передачи на фронт
+        data: buffer.toString('base64'), // Кодируем в base64 для превью на фронте
       });
     }
 

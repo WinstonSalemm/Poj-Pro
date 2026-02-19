@@ -88,25 +88,51 @@ export async function PUT(req: NextRequest) {
       include: { i18n: true },
     });
 
-    // Обновляем изображения через ProductImage таблицу
+    // Обновляем изображения
     if (Array.isArray(images)) {
-      // Удаляем старые изображения
-      await prisma.productImage.deleteMany({ where: { productId: id } });
-      // Создаём новые изображения с base64 данными
-      if (images.length > 0) {
-        const imageRecords = images.map((img, index) => ({
-          productId: id,
-          url: img.url,
-          data: img.data ? Buffer.from(img.data, 'base64') : null,
-          order: index,
-        }));
+      // Получаем текущие изображения товара
+      const existingImages = await prisma.productImage.findMany({
+        where: { productId: id },
+        select: { id: true },
+      });
 
-        await prisma.productImage.createMany({
-          data: imageRecords,
+      // Создаём Set из ID новых изображений
+      const newImageIds = new Set(
+        images.map((img) => img.url.split('/').pop() || '')
+      );
+
+      // Удаляем изображения которые не вошли в новый список
+      const imagesToDelete = existingImages.filter((img) => !newImageIds.has(img.id));
+      if (imagesToDelete.length > 0) {
+        await prisma.productImage.deleteMany({
+          where: {
+            id: { in: imagesToDelete.map((img) => img.id) },
+          },
         });
-
-        console.log(`[admin/products/full/[id]][PUT] Saved ${images.length} images to database`);
       }
+
+      // Обновляем или создаём новые изображения
+      const updatePromises = images.map((img, index) => {
+        const imageId = img.url.split('/').pop() || '';
+        
+        return prisma.productImage.upsert({
+          where: { id: imageId },
+          update: {
+            productId: id,
+            order: index,
+          },
+          create: {
+            id: imageId,
+            productId: id,
+            url: img.url,
+            data: img.data ? Buffer.from(img.data, 'base64') : null,
+            order: index,
+          },
+        });
+      });
+
+      await Promise.all(updatePromises);
+      console.log(`[admin/products/full/[id]][PUT] Linked ${images.length} images to product ${id}`);
     }
 
     // Обновляем переводы

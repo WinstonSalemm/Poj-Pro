@@ -346,13 +346,13 @@ export default function AddProductPage() {
         throw new Error(data.message || 'Ошибка загрузки изображений');
       }
 
-      // Новый API возвращает { images: [{ url, data }] }
+      // Новый API возвращает { images: [{ id, url, data }] }
       const uploadedImages = data.data?.images || [];
       console.log('[Frontend] Uploaded images:', uploadedImages);
 
       setForm((prev) => ({
         ...prev,
-        images: Array.from(new Set([...prev.images, ...uploadedImages.map((img: { url: string }) => img.url)])),
+        images: Array.from(new Set([...prev.images, ...uploadedImages.map((img: { id: string; url: string }) => img.url)])),
       }));
 
       // Сохраняем base64 данные во временное хранилище для последующей записи в БД
@@ -362,7 +362,7 @@ export default function AddProductPage() {
       if (!w.__uploadedImagesData) {
         w.__uploadedImagesData = {};
       }
-      uploadedImages.forEach((img: { url: string; data: string }) => {
+      uploadedImages.forEach((img: { id: string; url: string; data: string }) => {
         w.__uploadedImagesData![img.url] = img.data;
       });
 

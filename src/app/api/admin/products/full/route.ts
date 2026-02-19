@@ -138,20 +138,24 @@ export async function POST(request: NextRequest) {
       include: { i18n: true, category: true },
     });
 
-    // Сохраняем изображения в БД с base64 данными
+    // Сохраняем изображения в БД
     if (Array.isArray(images) && images.length > 0) {
-      const imageRecords = images.map((img, index) => ({
-        productId: created.id,
-        url: img.url,
-        data: img.data ? Buffer.from(img.data, 'base64') : null,
-        order: index,
-      }));
-
-      await prisma.productImage.createMany({
-        data: imageRecords,
+      // Изображения уже сохранены в БД при загрузке, нужно только обновить productId и order
+      const updatePromises = images.map((img, index) => {
+        // Извлекаем ID из URL: /api/admin/image/{id} -> {id}
+        const imageId = img.url.split('/').pop() || '';
+        
+        return prisma.productImage.update({
+          where: { id: imageId },
+          data: {
+            productId: created.id,
+            order: index,
+          },
+        });
       });
 
-      console.log(`[admin/products/full][POST] Saved ${images.length} images to database`);
+      await Promise.all(updatePromises);
+      console.log(`[admin/products/full][POST] Linked ${images.length} images to product ${created.id}`);
     }
 
     return NextResponse.json(
