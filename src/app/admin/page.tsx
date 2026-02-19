@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, SessionProvider } from 'next-auth/react';
+import Link from 'next/link';
 
 type User = {
   id: string;
@@ -85,30 +86,30 @@ function AdminDashboardInner() {
 
       {/* Навигация */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <a
+        <Link
           href="/admin-categories-add"
-          className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+          className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow block"
         >
           ➕ Категории
-        </a>
-        <a
+        </Link>
+        <Link
           href="/admin-products-add"
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow block"
         >
           ➕ Продукты
-        </a>
-        <a
+        </Link>
+        <Link
           href="/admin-products"
-          className="bg-green-500 hover:bg-green-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+          className="bg-green-500 hover:bg-green-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow block"
         >
           📦 Список продуктов
-        </a>
-        <a
+        </Link>
+        <Link
           href="/admin-popular-products"
-          className="bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow"
+          className="bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-4 text-center font-medium transition-colors shadow block"
         >
           ⭐ Популярное
-        </a>
+        </Link>
       </div>
 
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
