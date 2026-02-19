@@ -145,10 +145,17 @@ export async function POST(request: NextRequest) {
         // Извлекаем ID из URL: /api/admin/image/{id} -> {id}
         const imageId = img.url.split('/').pop() || '';
         
-        return prisma.productImage.update({
+        return prisma.productImage.upsert({
           where: { id: imageId },
-          data: {
+          update: {
             productId: created.id,
+            order: index,
+          },
+          create: {
+            id: imageId,
+            productId: created.id,
+            url: img.url,
+            data: img.data ? Buffer.from(img.data, 'base64') : null,
             order: index,
           },
         });
