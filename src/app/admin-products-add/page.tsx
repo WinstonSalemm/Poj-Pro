@@ -7,6 +7,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Upload, X, Plus, Trash2 } from 'lucide-react';
 
 type Language = 'ru' | 'eng' | 'uzb';
+type CategoryOption = {
+  id: string;
+  slug: string;
+  name: string | null;
+  image: string | null;
+  i18n?: { ru: string; eng: string; uzb: string };
+};
 
 interface ProductFormData {
   slug: string;
@@ -61,11 +68,15 @@ export default function AddProductPage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [specKeys, setSpecKeys] = useState<string[]>([]);
-  const [categories, setCategories] = useState<Array<{ id: string; slug: string; name: string | null; image: string | null }>>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [categoryImage, setCategoryImage] = useState<string>('');
+  const [categoryImageLoadError, setCategoryImageLoadError] = useState(false);
   const [uploadingCategoryImage, setUploadingCategoryImage] = useState(false);
+  const [productImageLoadErrors, setProductImageLoadErrors] = useState<Record<string, boolean>>({});
+  const [categoryLang, setCategoryLang] = useState<Language>('ru');
+  const [categoryI18n, setCategoryI18n] = useState<Record<Language, string>>({ ru: '', eng: '', uzb: '' });
   const categoryImageInputRef = useRef<HTMLInputElement>(null);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') || '' : '';
@@ -84,6 +95,26 @@ export default function AddProductPage() {
     if (file.type && ALLOWED_IMAGE_TYPES.has(file.type)) return true;
     const name = (file.name || '').toLowerCase();
     return /\.(jpe?g|png|webp|avif|gif|svg)$/.test(name);
+  };
+
+  const waitForImageAvailability = async (publicPath: string, retries: number = 6) => {
+    for (let attempt = 0; attempt < retries; attempt += 1) {
+      try {
+        const res = await fetch(`${publicPath}?v=${Date.now()}&attempt=${attempt}`, {
+          method: 'HEAD',
+          cache: 'no-store',
+        });
+        if (res.ok) return true;
+      } catch {
+        // ignore and retry
+      }
+      await new Promise((resolve) => setTimeout(resolve, 180));
+    }
+    return false;
+  };
+
+  const getCategoryDisplayName = (cat: CategoryOption, lang: Language): string => {
+    return cat.i18n?.[lang]?.trim() || cat.name || cat.slug;
   };
 
   // Загрузка списка категорий
@@ -230,7 +261,14 @@ export default function AddProductPage() {
         throw new Error(data.message || 'Ошибка загрузки изображения категории');
       }
 
-      setCategoryImage(data.data.paths[0]);
+      const uploadedPath = data.data.paths[0] as string;
+      setCategoryImage(uploadedPath);
+      setCategoryImageLoadError(false);
+      const isPreviewAvailable = await waitForImageAvailability(uploadedPath);
+      if (!isPreviewAvailable) {
+        setCategoryImageLoadError(true);
+        toast.error('Файл загружен, но превью пока недоступно. Проверьте путь и обновите страницу.');
+      }
       toast.success('Изображение категории загружено');
     } catch (error) {
       console.error('[Frontend] Category image upload error:', error);
@@ -310,10 +348,13 @@ export default function AddProductPage() {
       const uploadedPaths = data.data?.paths || [];
       console.log('[Frontend] Uploaded paths:', uploadedPaths);
 
+      // Важно: при новой загрузке заменяем список изображений,
+      // чтобы в БД уходили именно только что загруженные файлы, а не старые пути.
       setForm((prev) => ({
         ...prev,
-        images: [...prev.images, ...uploadedPaths],
+        images: Array.from(new Set(uploadedPaths)),
       }));
+      setProductImageLoadErrors({});
 
       toast.success(`Загружено ${uploadedPaths.length} изображений`);
     } catch (error) {
@@ -358,10 +399,20 @@ export default function AddProductPage() {
   };
 
   const removeImage = (index: number) => {
-    setForm((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    setForm((prev) => {
+      const target = prev.images[index];
+      if (target) {
+        setProductImageLoadErrors((old) => {
+          const next = { ...old };
+          delete next[target];
+          return next;
+        });
+      }
+      return {
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      };
+    });
   };
 
   // Управление характеристиками
@@ -397,6 +448,11 @@ export default function AddProductPage() {
       return;
     }
 
+    if (isCreatingNewCategory && form.categorySlug.trim() && !categoryI18n.ru.trim()) {
+      toast.error('Название категории на русском обязательно');
+      return;
+    }
+
     // Проверка длины полей (максимум 191 символ для VARCHAR в MySQL)
     const maxLength = 191;
     const checkLength = (text: string, fieldName: string, lang: string) => {
@@ -421,7 +477,7 @@ export default function AddProductPage() {
       // Если создаётся новая категория, создаём её с изображением
       if (isCreatingNewCategory && form.categorySlug.trim()) {
         try {
-          await fetch('/api/admin/categories', {
+          const categoryResponse = await fetch('/api/admin/categories', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -429,13 +485,23 @@ export default function AddProductPage() {
             },
             body: JSON.stringify({
               slug: form.categorySlug.trim(),
-              name: form.categorySlug.trim(),
+              name: categoryI18n.ru.trim() || form.categorySlug.trim(),
               image: categoryImage || undefined,
+              i18n: {
+                ru: categoryI18n.ru.trim(),
+                eng: categoryI18n.eng.trim(),
+                uzb: categoryI18n.uzb.trim(),
+              },
             }),
           });
+
+          const categoryData = await categoryResponse.json().catch(() => null);
+          if (!categoryResponse.ok || !categoryData?.success) {
+            throw new Error(categoryData?.message || 'Не удалось сохранить категорию');
+          }
         } catch (catError) {
           console.error('Failed to create category:', catError);
-          // Продолжаем создание товара даже если категория не создалась
+          throw catError;
         }
       }
 
@@ -459,7 +525,7 @@ export default function AddProductPage() {
         stock: form.stock || 0,
         currency: form.currency || 'UZS',
         categorySlug: form.categorySlug.trim() || undefined,
-        images: form.images,
+        images: Array.from(new Set(form.images.filter((img) => typeof img === 'string' && img.trim()).map((img) => img.trim()))),
         i18n: {
           ru: form.i18n.ru,
           eng: form.i18n.eng,
@@ -618,6 +684,8 @@ export default function AddProductPage() {
                       onChange={() => {
                         setIsCreatingNewCategory(false);
                         setCategoryImage('');
+                        setCategoryImageLoadError(false);
+                        setCategoryI18n({ ru: '', eng: '', uzb: '' });
                         if (categories.length > 0) {
                           setForm((prev) => ({ ...prev, categorySlug: categories[0].slug }));
                         } else {
@@ -637,6 +705,8 @@ export default function AddProductPage() {
                         setIsCreatingNewCategory(true);
                         setForm((prev) => ({ ...prev, categorySlug: '' }));
                         setCategoryImage('');
+                        setCategoryImageLoadError(false);
+                        setCategoryI18n({ ru: '', eng: '', uzb: '' });
                       }}
                       className="text-[#660000] focus:ring-[#660000]"
                     />
@@ -661,7 +731,7 @@ export default function AddProductPage() {
                         <option value="">-- Выберите категорию --</option>
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.slug}>
-                            {cat.name || cat.slug}
+                            {getCategoryDisplayName(cat, categoryLang)}
                           </option>
                         ))}
                       </>
@@ -672,10 +742,42 @@ export default function AddProductPage() {
                     <input
                       type="text"
                       value={form.categorySlug}
-                      onChange={(e) => setForm((prev) => ({ ...prev, categorySlug: e.target.value }))}
+                      onChange={(e) => {
+                        const slug = e.target.value;
+                        setForm((prev) => ({ ...prev, categorySlug: slug }));
+                        setCategoryI18n((prev) => ({
+                          ...prev,
+                          ru: prev.ru || slug,
+                        }));
+                      }}
                       className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
                       placeholder="ognetushiteli"
                     />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Название категории (по языкам)</label>
+                      <div className="flex gap-2 mb-2">
+                        {(['ru', 'eng', 'uzb'] as Language[]).map((lang) => (
+                          <button
+                            key={`cat-lang-${lang}`}
+                            type="button"
+                            onClick={() => setCategoryLang(lang)}
+                            className={`px-3 py-1.5 rounded border text-sm ${categoryLang === lang ? 'bg-[#660000] text-white border-[#660000]' : 'bg-white text-gray-700 border-gray-300 hover:border-[#660000]'}`}
+                          >
+                            {lang === 'ru' ? 'Рус' : lang === 'eng' ? 'Eng' : 'Uzb'}
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        value={categoryI18n[categoryLang]}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setCategoryI18n((prev) => ({ ...prev, [categoryLang]: value }));
+                        }}
+                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-[#660000] !text-[#660000] focus:ring-2 focus:ring-[#660000]/20"
+                        placeholder={categoryLang === 'ru' ? 'Название категории' : categoryLang === 'eng' ? 'Category name' : 'Kategoriya nomi'}
+                      />
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Изображение категории (опционально)
@@ -710,6 +812,7 @@ export default function AddProductPage() {
                             type="button"
                             onClick={() => {
                               setCategoryImage('');
+                              setCategoryImageLoadError(false);
                               if (categoryImageInputRef.current) {
                                 categoryImageInputRef.current.value = '';
                               }
@@ -723,14 +826,19 @@ export default function AddProductPage() {
                       {categoryImage && (
                         <div className="mt-2">
                           <img
-                            src={`${categoryImage}?t=${Date.now()}`}
+                            src={categoryImage}
                             alt="Category preview"
                             className="w-32 h-32 object-cover rounded border border-gray-200"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/OtherPics/product2photo.jpg';
+                            onError={() => {
+                              setCategoryImageLoadError((prev) => (prev ? prev : true));
                             }}
                           />
                         </div>
+                      )}
+                      {categoryImage && categoryImageLoadError && (
+                        <p className="mt-2 text-xs text-red-600">
+                          Не удалось загрузить превью по пути: {categoryImage}. Проверьте, что файл реально сохранён в /public/ProductImages.
+                        </p>
                       )}
                     </div>
                   </div>
@@ -810,13 +918,13 @@ export default function AddProductPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {form.images.map((img, index) => (
                     <div key={`${img}-${index}`} className="relative group">
-                      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                      <div className={`aspect-square bg-gray-100 rounded-lg overflow-hidden border ${productImageLoadErrors[img] ? 'border-red-400' : 'border-gray-200'}`}>
                         <img
-                          src={`${img}?t=${Date.now()}`}
+                          src={img}
                           alt={`Preview ${index + 1}`}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/OtherPics/product2photo.jpg';
+                          onError={() => {
+                            setProductImageLoadErrors((prev) => (prev[img] ? prev : { ...prev, [img]: true }));
                           }}
                         />
                       </div>
@@ -827,9 +935,12 @@ export default function AddProductPage() {
                       >
                         <X className="w-4 h-4" />
                       </button>
-                      <div className="mt-1 text-xs text-gray-500 truncate" title={img}>
+                      <div className={`mt-1 text-xs truncate ${productImageLoadErrors[img] ? 'text-red-600' : 'text-gray-500'}`} title={img}>
                         {img.split('/').pop()}
                       </div>
+                      {productImageLoadErrors[img] && (
+                        <div className="text-[11px] text-red-600">Не удалось открыть превью (без подмены картинки)</div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -991,4 +1102,3 @@ export default function AddProductPage() {
     </AdminGate>
   );
 }
-
