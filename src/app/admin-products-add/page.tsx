@@ -503,6 +503,14 @@ export default function AddProductPage() {
           };
           const categoryImageData = w.__categoryImageData;
 
+          console.log('[AddProduct] Creating category:', {
+            slug: form.categorySlug.trim(),
+            name: categoryI18n.ru.trim(),
+            image: categoryImage,
+            imageData: categoryImageData ? `base64 (${categoryImageData.length} chars)` : 'undefined',
+            i18n: categoryI18n,
+          });
+
           const categoryResponse = await fetch('/api/admin/categories', {
             method: 'POST',
             headers: {

@@ -76,6 +76,14 @@ export async function POST(req: NextRequest) {
       i18n?: Partial<Record<Locale, string>>;
     };
 
+    console.log('[admin/categories][POST] Received:', {
+      slug,
+      name,
+      image,
+      imageData: imageData ? `base64 (${imageData.length} chars)` : 'undefined',
+      i18n,
+    });
+
     if (!slug || !slug.trim()) {
       return NextResponse.json(
         { success: false, message: 'slug is required' },
@@ -97,20 +105,36 @@ export async function POST(req: NextRequest) {
       name?.trim() ||
       normalizedSlug;
 
-    const category = await prisma.category.upsert({
+    // Проверяем существует ли категория
+    const existingCategory = await prisma.category.findUnique({
       where: { slug: normalizedSlug },
-      update: {
-        name: fallbackName,
-        ...(image !== undefined ? { image: image.trim() || null } : {}),
-        ...(imageData !== undefined ? { imageData: imageData ? Buffer.from(imageData, 'base64') : null } : {}),
-      },
-      create: {
-        slug: normalizedSlug,
-        name: fallbackName,
-        image: image?.trim() || null,
-        imageData: imageData ? Buffer.from(imageData, 'base64') : null,
-      },
     });
+
+    let category;
+
+    if (existingCategory) {
+      // Обновляем существующую категорию
+      console.log('[admin/categories][POST] Updating existing category:', existingCategory.id);
+      category = await prisma.category.update({
+        where: { slug: normalizedSlug },
+        data: {
+          name: fallbackName,
+          ...(image !== undefined ? { image: image.trim() || null } : {}),
+          ...(imageData !== undefined && imageData !== null ? { imageData: Buffer.from(imageData, 'base64') } : {}),
+        },
+      });
+    } else {
+      // Создаём новую категорию
+      console.log('[admin/categories][POST] Creating new category');
+      category = await prisma.category.create({
+        data: {
+          slug: normalizedSlug,
+          name: fallbackName,
+          image: image?.trim() || null,
+          imageData: imageData ? Buffer.from(imageData, 'base64') : null,
+        },
+      });
+    }
 
     const translations = Object.entries(normalizedI18n)
       .filter(([, value]) => Boolean(value)) as Array<[Locale, string]>;
