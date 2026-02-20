@@ -12,7 +12,8 @@ export interface Category {
   slug: string;
   name: string;
   description?: string;
-  image?: string;
+  image?: string; // URL изображения
+  imageData?: string; // Base64 encoded image data (для отображения из базы)
   parentId: string | null;
   order: number;
   isActive: boolean;

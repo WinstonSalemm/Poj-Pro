@@ -335,17 +335,46 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
                 <div className="bg-white rounded-2xl border border-[#f0f0f0] shadow-[0_4px_20px_rgba(0,0,0,0.08)] px-3 py-4 flex flex-col items-center justify-between min-h-[260px] text-center transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_8px_32px_rgba(34,41,47,0.15),_0_3px_12px_rgba(34,41,47,0.07)] hover:border-neutral-200">
                   <div className="w-full h-[150px] bg-white rounded-xl border border-[#f0f0f0] shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex items-center justify-center p-3 mb-3 overflow-hidden">
                     <div className="relative w-full h-full">
-                      <Image
-                        src={imgPath(cat.slug)} // Assuming image name matches slug
-                        alt={categoryLabels[cat.slug] || fallbackName(cat.slug)}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 180px"
-                        priority={idx < 4} // Prioritize first 4 images
-                        className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
-                        quality={80}
-                        fetchPriority={idx < 4 ? "high" : "auto"}
-                        loading={idx < 4 ? undefined : "lazy"}
-                      />
+                      {cat.imageData ? (
+                        // Используем base64 imageData из API
+                        <Image
+                          src={`data:image/png;base64,${cat.imageData}`}
+                          alt={categoryLabels[cat.slug] || fallbackName(cat.slug)}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 180px"
+                          priority={idx < 4}
+                          className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
+                          quality={80}
+                          fetchPriority={idx < 4 ? "high" : "auto"}
+                          loading={idx < 4 ? undefined : "lazy"}
+                        />
+                      ) : cat.image ? (
+                        // Используем URL изображения из базы
+                        <Image
+                          src={cat.image}
+                          alt={categoryLabels[cat.slug] || fallbackName(cat.slug)}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 180px"
+                          priority={idx < 4}
+                          className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
+                          quality={80}
+                          fetchPriority={idx < 4 ? "high" : "auto"}
+                          loading={idx < 4 ? undefined : "lazy"}
+                        />
+                      ) : (
+                        // Fallback на файл
+                        <Image
+                          src={imgPath(cat.slug)}
+                          alt={categoryLabels[cat.slug] || fallbackName(cat.slug)}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 180px"
+                          priority={idx < 4}
+                          className="object-contain transition-transform duration-300 group-hover:scale-[1.08]"
+                          quality={80}
+                          fetchPriority={idx < 4 ? "high" : "auto"}
+                          loading={idx < 4 ? undefined : "lazy"}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="text-[0.95rem] font-semibold text-[#222] leading-tight tracking-[0.01em] px-2 min-h-[2.6em] flex items-center justify-center">

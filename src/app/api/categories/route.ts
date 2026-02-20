@@ -48,14 +48,6 @@ export const GET = withApiCache({
 
   try {
     const categories = await prisma.category.findMany({
-      where: {
-        products: {
-          some: {
-            isActive: true,
-            i18n: { some: { locale: dbLocale } },
-          },
-        },
-      },
       orderBy: { name: 'asc' },
       take: 200,
       select: {
@@ -63,6 +55,7 @@ export const GET = withApiCache({
         slug: true,
         name: true,
         image: true,
+        imageData: true, // Добавляем imageData для проверки
         i18n: {
           where: { locale: { in: ['ru', 'eng', 'uzb'] } },
           select: { locale: true, name: true },
@@ -75,17 +68,30 @@ export const GET = withApiCache({
       },
     });
 
-    const localizedCategories = categories.map((category) => ({
-      id: category.id,
-      slug: category.slug,
-      image: category.image,
-      name: pickCategoryName({
-        locale,
-        fallback: category.name || category.slug,
-        i18n: category.i18n,
-      }),
-      products: category.products,
-    }));
+    const localizedCategories = categories.map((category) => {
+      // Конвертируем imageData в base64 для передачи на клиент
+      let imageDataBase64: string | undefined;
+      if (category.imageData) {
+        try {
+          imageDataBase64 = Buffer.from(category.imageData).toString('base64');
+        } catch (e) {
+          console.error('[api/categories] Failed to encode imageData:', e);
+        }
+      }
+
+      return {
+        id: category.id,
+        slug: category.slug,
+        image: category.image,
+        imageData: imageDataBase64, // Передаем как base64 строку
+        name: pickCategoryName({
+          locale,
+          fallback: category.name || category.slug,
+          i18n: category.i18n,
+        }),
+        products: category.products,
+      };
+    });
 
     return NextResponse.json({ categories: localizedCategories });
   } catch (e: unknown) {
