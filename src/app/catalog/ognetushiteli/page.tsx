@@ -183,32 +183,6 @@ export default async function FireExtinguishersCategoryPage() {
   });
 
   const faq = faqJsonLd(faqs);
-  const POPULAR_MODELS_LABEL: Record<'ru' | 'en' | 'uz', string> = {
-    ru: 'Популярные модели:',
-    en: 'Popular models:',
-    uz: 'Ommabop modellari:',
-  };
-  const popularModelsLabel = POPULAR_MODELS_LABEL[locale] || POPULAR_MODELS_LABEL.ru;
-  const POPULAR_MODELS_ARIA: Record<'ru' | 'en' | 'uz', string> = {
-    ru: 'Популярные модели',
-    en: 'Popular models',
-    uz: 'Ommabop modellari',
-  };
-  const popularModelsAria = POPULAR_MODELS_ARIA[locale] || POPULAR_MODELS_ARIA.ru;
-  const PM_LABELS: Record<'ru' | 'en' | 'uz', { op2: string; op3: string; op5: string; ou5: string; ou10: string; ou25: string }> = {
-    ru: { op2: 'ОП‑2', op3: 'ОП‑3', op5: 'ОП‑5', ou5: 'ОУ‑5', ou10: 'ОУ‑10', ou25: 'ОУ‑25' },
-    en: { op2: 'OP-2', op3: 'OP-3', op5: 'OP-5', ou5: 'OU-5', ou10: 'OU-10', ou25: 'OU-25' },
-    uz: { op2: 'OP-2', op3: 'OP-3', op5: 'OP-5', ou5: 'OU-5', ou10: 'OU-10', ou25: 'OU-25' },
-  };
-  const pm = PM_LABELS[locale] || PM_LABELS.ru;
-  const popularLinks = [
-    { href: '/catalog/ognetushiteli/ognetushiteli-1', label: pm.op2 },
-    { href: '/catalog/ognetushiteli/ognetushiteli-2', label: pm.op3 },
-    { href: '/catalog/ognetushiteli/ognetushiteli-4', label: pm.op5 },
-    { href: '/catalog/ognetushiteli/ognetushiteli-16', label: pm.ou5 },
-    { href: '/catalog/ognetushiteli/ognetushiteli-18', label: pm.ou10 },
-    { href: '/catalog/ognetushiteli/ognetushiteli-19', label: pm.ou25 },
-  ] as const;
   // Localized H1 and consistent long description via centralized builder
   const TITLE_BY_LANG: Record<'ru' | 'en' | 'uz', string> = {
     ru: 'Огнетушители в Ташкенте',
@@ -236,20 +210,6 @@ export default async function FireExtinguishersCategoryPage() {
 
       {/* H1 */}
       <h1 className="text-2xl font-semibold text-[#660000] mb-3">{h1Title}</h1>
-
-      {/* Popular models internal links (OP and OU series) */}
-      <nav aria-label={popularModelsAria} className="mb-4">
-        <ul className="flex flex-wrap gap-2 text-sm">
-          <li>
-            <span className="text-gray-600 mr-1">{popularModelsLabel}</span>
-          </li>
-          {popularLinks.map((l) => (
-            <li key={l.href}>
-              <Link href={l.href} className="underline hover:no-underline text-[#660000] hover:text-[#660000] visited:text-[#660000]">{l.label}</Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
 
       {(() => {
         const text = (p1 || '').toString();

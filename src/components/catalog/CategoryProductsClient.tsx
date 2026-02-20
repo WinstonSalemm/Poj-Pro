@@ -48,6 +48,23 @@ export default function CategoryProductsClient({
   const [sort, setSort] = useState<SortKey>("relevance");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [bootLoading, setBootLoading] = useState(true);
+  const [existingCategories, setExistingCategories] = useState<string[]>([]);
+
+  // Load existing categories from API (categories that have active products)
+  useEffect(() => {
+    const loadExistingCategories = async () => {
+      try {
+        const res = await fetch(`/api/categories?locale=${lang}`);
+        const data = await res.json();
+        if (data?.categories && Array.isArray(data.categories)) {
+          setExistingCategories(data.categories.map((c: { slug: string }) => c.slug));
+        }
+      } catch (e) {
+        console.error('Failed to load existing categories:', e);
+      }
+    };
+    loadExistingCategories();
+  }, [lang]);
 
   useEffect(() => {
     const t = setTimeout(() => setBootLoading(false), 500);
@@ -130,21 +147,16 @@ export default function CategoryProductsClient({
       if (filters.type === 'recharge') return /(перезаряд|перезаряж|заправк)/i.test(text) || /(recharg|refill)/i.test(text) || /(qayta\s*zaryad|to['’`]?ldir)/i.test(text);
       return true;
     });
-    // Placeholder for volumes/classes filtering (best-effort parsing)
+    // Placeholder for volumes filtering (best-effort parsing)
     const byVolume = byType.filter((p) => {
       if (!filters.volumes || filters.volumes.length === 0) return true;
       const text = `${p.slug} ${p.title || ''} ${p.name || ''}`.toLowerCase();
       return filters.volumes.some((v) => new RegExp(`\\b${v}\\b`).test(text));
     });
-    const byClasses = byVolume.filter((p) => {
-      if (!filters.classes || filters.classes.length === 0) return true;
-      const text = `${p.description || ''}`.toUpperCase();
-      return filters.classes.every((c) => text.includes(c));
-    });
 
     // Category-specific filters
     const textOf = (p: Product) => `${p.slug} ${p.title || ''} ${p.name || ''} ${p.description || ''}`.toLowerCase();
-    let byCat = byClasses;
+    let byCat = byVolume;
     if (showHoses) {
       byCat = byCat.filter((p) => {
         const t = textOf(p);
@@ -259,76 +271,76 @@ export default function CategoryProductsClient({
     []
   );
 
-  // Sync URL with filters
+  // Sync URL with filters (debounced to avoid re-render on every click)
   useEffect(() => {
-    const onlyType = !!filters.type && !filters.minPrice && !filters.maxPrice && !filters.availability && (!filters.volumes || filters.volumes.length === 0) && (!filters.classes || filters.classes.length === 0) && !searchQuery && sort === 'relevance';
-    const isOnTypeRoute = pathname?.startsWith('/catalog/ognetushiteli/type/');
-    const current = pathname + ((searchParams && searchParams.toString()) ? `?${searchParams.toString()}` : '');
-    if (rawCategory === 'ognetushiteli' && onlyType) {
-      const target = `/catalog/ognetushiteli/type/${filters.type}`;
-      if (current !== target) {
-        router.replace(target);
-      }
-      // If already at the target, skip query param sync to avoid bouncing back to base path
-      return;
-    } else if (rawCategory === 'ognetushiteli' && isOnTypeRoute) {
-      // if user adds filters or clears type while on /type/:type, go back to base category path
-      const base = `/catalog/${encodeURIComponent(rawCategory)}`;
-      const paramsBack = new URLSearchParams();
-      if (filters.type) paramsBack.set('type', filters.type);
-      if (filters.minPrice != null) paramsBack.set('min', String(filters.minPrice));
-      if (filters.maxPrice != null) paramsBack.set('max', String(filters.maxPrice));
-      if (filters.availability) paramsBack.set('avail', filters.availability);
-      if (searchQuery) paramsBack.set('q', searchQuery);
-      const hrefBack = paramsBack.toString() ? `${base}?${paramsBack.toString()}` : base;
-      if (current !== hrefBack) {
-        router.replace(hrefBack);
+    const timeoutId = setTimeout(() => {
+      const onlyType = !!filters.type && !filters.minPrice && !filters.maxPrice && !filters.availability && (!filters.volumes || filters.volumes.length === 0) && !searchQuery && sort === 'relevance';
+      const isOnTypeRoute = pathname?.startsWith('/catalog/ognetushiteli/type/');
+      const current = pathname + ((searchParams && searchParams.toString()) ? `?${searchParams.toString()}` : '');
+      if (rawCategory === 'ognetushiteli' && onlyType) {
+        const target = `/catalog/ognetushiteli/type/${filters.type}`;
+        if (current !== target) {
+          router.replace(target);
+        }
         return;
+      } else if (rawCategory === 'ognetushiteli' && isOnTypeRoute) {
+        const base = `/catalog/${encodeURIComponent(rawCategory)}`;
+        const paramsBack = new URLSearchParams();
+        if (filters.type) paramsBack.set('type', filters.type);
+        if (filters.minPrice != null) paramsBack.set('min', String(filters.minPrice));
+        if (filters.maxPrice != null) paramsBack.set('max', String(filters.maxPrice));
+        if (filters.availability) paramsBack.set('avail', filters.availability);
+        if (searchQuery) paramsBack.set('q', searchQuery);
+        const hrefBack = paramsBack.toString() ? `${base}?${paramsBack.toString()}` : base;
+        if (current !== hrefBack) {
+          router.replace(hrefBack);
+          return;
+        }
       }
-    }
 
-    // Reflect filters in query params for all categories
-    const params = new URLSearchParams(searchParams?.toString() || '');
-    // write minimal params
-    if (showExtinguisherType && filters.type) params.set('type', filters.type);
-    else params.delete('type');
-    if (filters.minPrice != null) params.set('min', String(filters.minPrice)); else params.delete('min');
-    if (filters.maxPrice != null) params.set('max', String(filters.maxPrice)); else params.delete('max');
-    if (filters.availability) params.set('avail', filters.availability); else params.delete('avail');
-    if (searchQuery) params.set('q', searchQuery); else params.delete('q');
-    // Per-category params
-    if (showHoses) {
-      if (filters.diameters && filters.diameters.length > 0) params.set('dia', filters.diameters.join(',')); else params.delete('dia');
-      if (filters.lengths && filters.lengths.length > 0) params.set('len', filters.lengths.join(',')); else params.delete('len');
-    } else {
-      params.delete('dia');
-      params.delete('len');
-    }
-    if (showCabinets) {
-      if (filters.mounts && filters.mounts.length > 0) params.set('mount', filters.mounts.join(',')); else params.delete('mount');
-      if (filters.sections && filters.sections.length > 0) params.set('sec', filters.sections.join(',')); else params.delete('sec');
-      if (filters.window) params.set('win', '1'); else params.delete('win');
-    } else {
-      params.delete('mount');
-      params.delete('sec');
-      params.delete('win');
-    }
-    if (showPPE) {
-      if (filters.ppeKinds && filters.ppeKinds.length > 0) params.set('ppe', filters.ppeKinds.join(',')); else params.delete('ppe');
-    } else {
-      params.delete('ppe');
-    }
-    if (showAlarms) {
-      if (filters.alarmKinds && filters.alarmKinds.length > 0) params.set('alarm', filters.alarmKinds.join(',')); else params.delete('alarm');
-    } else {
-      params.delete('alarm');
-    }
-    const q = params.toString();
-    const base = `/catalog/${encodeURIComponent(rawCategory)}`;
-    const href = q ? `${base}?${q}` : base;
-    if (current !== href) router.replace(href);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, searchQuery, sort, rawCategory, pathname, showExtinguisherType]);
+      // Reflect filters in query params for all categories
+      const params = new URLSearchParams(searchParams?.toString() || '');
+      if (showExtinguisherType && filters.type) params.set('type', filters.type);
+      else params.delete('type');
+      if (filters.minPrice != null) params.set('min', String(filters.minPrice)); else params.delete('min');
+      if (filters.maxPrice != null) params.set('max', String(filters.maxPrice)); else params.delete('max');
+      if (filters.availability) params.set('avail', filters.availability); else params.delete('avail');
+      if (searchQuery) params.set('q', searchQuery); else params.delete('q');
+      // Per-category params
+      if (showHoses) {
+        if (filters.diameters && filters.diameters.length > 0) params.set('dia', filters.diameters.join(',')); else params.delete('dia');
+        if (filters.lengths && filters.lengths.length > 0) params.set('len', filters.lengths.join(',')); else params.delete('len');
+      } else {
+        params.delete('dia');
+        params.delete('len');
+      }
+      if (showCabinets) {
+        if (filters.mounts && filters.mounts.length > 0) params.set('mount', filters.mounts.join(',')); else params.delete('mount');
+        if (filters.sections && filters.sections.length > 0) params.set('sec', filters.sections.join(',')); else params.delete('sec');
+        if (filters.window) params.set('win', '1'); else params.delete('win');
+      } else {
+        params.delete('mount');
+        params.delete('sec');
+        params.delete('win');
+      }
+      if (showPPE) {
+        if (filters.ppeKinds && filters.ppeKinds.length > 0) params.set('ppe', filters.ppeKinds.join(',')); else params.delete('ppe');
+      } else {
+        params.delete('ppe');
+      }
+      if (showAlarms) {
+        if (filters.alarmKinds && filters.alarmKinds.length > 0) params.set('alarm', filters.alarmKinds.join(',')); else params.delete('alarm');
+      } else {
+        params.delete('alarm');
+      }
+      const q = params.toString();
+      const base = `/catalog/${encodeURIComponent(rawCategory)}`;
+      const href = q ? `${base}?${q}` : base;
+      if (current !== href) router.replace(href);
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [filters, searchQuery, sort, rawCategory, pathname, showExtinguisherType, showHoses, showCabinets, showPPE, showAlarms, router, searchParams]);
 
   return (
     <>
@@ -517,19 +529,21 @@ export default function CategoryProductsClient({
           {/* Related categories */}
           {(() => {
             const key = resolveCategoryKey(rawCategory.replace(/_/g, '-')) || rawCategory.replace(/_/g, '-');
-            const keys = Object.keys(CATEGORY_NAMES).filter((k) => k !== key);
-            const related = keys.slice(0, 6);
-            if (related.length === 0) return null;
+            // Filter only existing categories (that have active products) and exclude current category
+            const existingRelated = existingCategories
+              .filter((k) => k !== key && k !== rawCategory)
+              .slice(0, 6);
+            
+            // If no existing categories loaded yet or no related categories, don't show
+            if (existingRelated.length === 0) return null;
             return (
               <section className="mt-10">
                 <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">{t('catalog.relatedTitle', 'Смотрите также')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                  {related.map((k) => {
+                  {existingRelated.map((k) => {
                     const label = CATEGORY_NAMES[k]?.[lang] || fallbackName(k);
                     const img = CATEGORY_IMAGE_MAP[k] ? `/CatalogImage/${CATEGORY_IMAGE_MAP[k]}` : "/OtherPics/logo.png";
-                    const preferred = (CATEGORY_SEO as Record<string, { alias?: string[] }>)[k]?.alias?.[0];
-                    const hrefSlug = preferred || k;
-                    const href = `/catalog/${hrefSlug}`;
+                    const href = `/catalog/${k}`;
                     return (
                       <Link key={k} href={href} className="block group border border-gray-200 rounded-xl bg-white hover:shadow transition">
                         <div className="aspect-square rounded-t-xl overflow-hidden bg-gray-100 relative">
