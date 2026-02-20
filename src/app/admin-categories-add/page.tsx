@@ -193,6 +193,11 @@ export default function AdminCategoriesAddPage() {
         },
       };
 
+      console.log('[admin-categories-add] Sending payload:', {
+        ...payload,
+        imageData: payload.imageData ? `base64 (${payload.imageData.length} chars)` : null,
+      });
+
       const res = await fetch('/api/admin/categories', {
         method: 'POST',
         headers: {
@@ -202,7 +207,11 @@ export default function AdminCategoriesAddPage() {
         body: JSON.stringify(payload),
       });
 
+      console.log('[admin-categories-add] Response status:', res.status);
+
       const json = await res.json();
+
+      console.log('[admin-categories-add] Response JSON:', json);
 
       if (!res.ok || !json.success) {
         throw new Error(json.message || 'Ошибка при создании категории');

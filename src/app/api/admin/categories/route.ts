@@ -112,28 +112,49 @@ export async function POST(req: NextRequest) {
 
     let category;
 
+    // Подготовка данных для категории
+    const categoryData: {
+      slug: string;
+      name: string;
+      image?: string | null;
+      imageData?: Buffer | null;
+    } = {
+      slug: normalizedSlug,
+      name: fallbackName,
+    };
+
+    // Добавляем image только если значение определено
+    if (image !== undefined) {
+      categoryData.image = image?.trim() || null;
+    }
+
+    // Добавляем imageData только если есть валидные base64 данные
+    if (imageData && typeof imageData === 'string' && imageData.length > 0 && imageData !== 'null') {
+      try {
+        categoryData.imageData = Buffer.from(imageData, 'base64');
+      } catch (bufferError) {
+        console.error('[admin/categories][POST] Failed to decode imageData:', bufferError);
+        // Игнорируем невалидные imageData и продолжаем без изображения
+      }
+    }
+
     if (existingCategory) {
       // Обновляем существующую категорию
       console.log('[admin/categories][POST] Updating existing category:', existingCategory.id);
       category = await prisma.category.update({
         where: { slug: normalizedSlug },
-        data: {
-          name: fallbackName,
-          ...(image !== undefined ? { image: image.trim() || null } : {}),
-          ...(imageData !== undefined && imageData !== null ? { imageData: Buffer.from(imageData, 'base64') } : {}),
-        },
+        data: categoryData,
       });
     } else {
       // Создаём новую категорию
       console.log('[admin/categories][POST] Creating new category');
+      
+      // Используем createMany для атомарности с i18n
       category = await prisma.category.create({
-        data: {
-          slug: normalizedSlug,
-          name: fallbackName,
-          image: image?.trim() || null,
-          imageData: imageData ? Buffer.from(imageData, 'base64') : null,
-        },
+        data: categoryData,
       });
+      
+      console.log('[admin/categories][POST] Category created with ID:', category.id);
     }
 
     const translations = Object.entries(normalizedI18n)
@@ -199,6 +220,15 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('[admin/categories][POST] error', error);
+    
+    // Логируем детали ошибки для отладки
+    if (error && typeof error === 'object') {
+      console.error('[admin/categories][POST] Error details:', {
+        message: 'message' in error ? error.message : 'unknown',
+        code: 'code' in error ? error.code : 'unknown',
+        meta: 'meta' in error ? error.meta : 'unknown',
+      });
+    }
 
     if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
@@ -208,7 +238,11 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, message: 'Failed to create category', error: String(error) },
+      { 
+        success: false, 
+        message: 'Failed to create category', 
+        error: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }
