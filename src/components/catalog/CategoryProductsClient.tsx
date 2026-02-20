@@ -31,11 +31,13 @@ export default function CategoryProductsClient({
   products,
   rawCategory,
   lang,
+  categoryName, // Добавляем prop для названия категории
   initialFilters,
 }: {
   products: Product[];
   rawCategory: string;
   lang: "ru" | "en" | "uz";
+  categoryName?: string; // Опциональное название категории
   initialFilters?: FiltersState;
 }) {
   const { t } = useTranslation('translation');
@@ -85,6 +87,10 @@ export default function CategoryProductsClient({
   }, []);
 
   const categoryTitle = useMemo(() => {
+    // Если передано categoryName из родителя, используем его
+    if (categoryName) return categoryName;
+    
+    // Иначе вычисляем сами (fallback для обратной совместимости)
     const dict = t("categories", { returnObjects: true, defaultValue: {} }) as unknown as
       | Record<string, string>
       | undefined;
@@ -101,7 +107,7 @@ export default function CategoryProductsClient({
       CATEGORY_NAMES[altSlug]?.[l];
     const dictName = dict?.[rawCategory] || dict?.[normalizedSlug] || dict?.[altSlug];
     return override?.[l] || constName || dictName || fallbackName(rawCategory);
-  }, [t, rawCategory, lang]);
+  }, [t, rawCategory, lang, categoryName]);
 
   // Show/enable extinguishers-specific "type" filtering only on the extinguishers category
   const showExtinguisherType = useMemo(() => {

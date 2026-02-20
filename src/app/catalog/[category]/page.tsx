@@ -338,38 +338,13 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
 
       {showBanner && <PreOrderBanner />}
 
-      <div className="container-section section-y">
-        {/* H1 only; move descriptive text below grid */}
-        <h1 className="text-2xl font-semibold text-[#660000] mb-3">{h1Title}</h1>
-        {(() => {
-          const text = (localizedIntro && localizedIntro.length ? localizedIntro[0] : '').toString();
-          const plain = text.replace(/<[^>]+>/g, '');
-          const short = plain.length > 200 ? plain.slice(0, 200).trim() + '…' : plain;
-          const moreLabel = lang === 'en' ? 'Read more' : (lang === 'uz' ? 'Batafsil' : 'Подробнее');
-          if (!short) return null;
-          const policy = (
-            lang === 'en'
-              ? 'POJ PRO: supplier — we sell and consult, no installation. Turnkey delivery on prepayment. Free in Tashkent from 5,000,000 UZS.'
-              : (lang === 'uz'
-                ? "POJ PRO: ta’minotchi — sotamiz va maslahat beramiz, montaj qilmaymiz. Oldindan to‘lov bilan yetkazib berish. Toshkent bo‘yicha 5 000 000 so‘mdan bepul."
-                : 'POJ PRO: поставщик — продаём и консультируем, без монтажа. Доставка под ключ по предоплате. По Ташкенту бесплатно от 5 000 000 сум.')
-          );
-          return (
-            <div className="mb-4">
-              <div className="rounded-xl border border-neutral-200 bg-white p-3 md:p-4 flex items-start justify-between gap-3">
-                <p className="m-0 text-[15px] text-[#660000] leading-snug">
-                  {short}
-                  <span className="block text-xs text-gray-600 mt-1">{policy}</span>
-                </p>
-                <a href="#category-description" className="shrink-0 btn-ghost whitespace-nowrap">{moreLabel}</a>
-              </div>
-            </div>
-          );
-        })()}
-      </div>
-
-      {/* Products grid */}
-      <CategoryProductsClient products={products} rawCategory={rawCategory} lang={locale} />
+      {/* Products grid с названием категории */}
+      <CategoryProductsClient 
+        products={products} 
+        rawCategory={rawCategory} 
+        lang={locale}
+        categoryName={categoryName}
+      />
 
       {/* New Products Block */}
       <NewProductsBlock type="new" limit={6} />

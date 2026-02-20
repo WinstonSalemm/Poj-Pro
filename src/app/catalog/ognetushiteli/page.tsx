@@ -241,7 +241,12 @@ export default async function FireExtinguishersCategoryPage() {
       })()}
 
       {/* Products grid (CSR client for filters, but rendered in page) */}
-      <CategoryProductsClient products={products} rawCategory={'ognetushiteli'} lang={locale} />
+      <CategoryProductsClient 
+        products={products} 
+        rawCategory={'ognetushiteli'} 
+        lang={locale}
+        categoryName={NAME_BY_LANG[locale] || NAME_BY_LANG.ru}
+      />
 
       {/* Collapsible SEO/intro content below grid */}
       {(() => {

@@ -184,6 +184,13 @@ export default async function CategoryTypePage({ params }: { params: Promise<{ t
     recharge: 'Перезарядка огнетушителей',
   };
 
+  const NAME_MAP: Record<TypeKey, string> = {
+    op: 'Огнетушители ОП',
+    ou: 'Огнетушители ОУ',
+    mpp: 'Модули МПП',
+    recharge: 'Перезарядка огнетушителей',
+  };
+
   return (
     <main className="container-section section-y">
       {/* JSON-LD */}
@@ -192,7 +199,13 @@ export default async function CategoryTypePage({ params }: { params: Promise<{ t
 
       <h1 className="text-2xl font-semibold text-[#660000] mb-3">{H1_MAP[type]}</h1>
 
-      <CategoryProductsClient products={products} rawCategory={'ognetushiteli'} lang={locale} initialFilters={{ type }} />
+      <CategoryProductsClient 
+        products={products} 
+        rawCategory={'ognetushiteli'} 
+        lang={locale} 
+        initialFilters={{ type }}
+        categoryName={NAME_MAP[type] || H1_MAP[type]}
+      />
     </main>
   );
 }
