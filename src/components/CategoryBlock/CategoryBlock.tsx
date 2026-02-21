@@ -71,6 +71,8 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
     select: {
       slug: true,
       name: true,
+      image: true,
+      imageData: true,
     },
     orderBy: {
       name: 'asc',
@@ -136,7 +138,30 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
   const dir = path.join(process.cwd(), 'public', 'CatalogImage');
   const placeholderSlugs: string[] = [];
 
+  // Создаём мапу slug -> category для доступа к imageData
+  const categoryMap = new Map(dbCategories.map((c) => [c.slug, c]));
+
   for (const slug of availableCategorySlugs) {
+    const category = categoryMap.get(slug);
+    
+    // Приоритет 1: imageData из базы (конвертируем в base64)
+    if (category?.imageData) {
+      try {
+        const base64 = Buffer.from(category.imageData).toString('base64');
+        imageMap[slug] = `data:image/png;base64,${base64}`;
+        continue;
+      } catch (e) {
+        console.error(`[CategoryBlock] Failed to encode imageData for ${slug}:`, e);
+      }
+    }
+    
+    // Приоритет 2: image URL из базы
+    if (category?.image) {
+      imageMap[slug] = category.image;
+      continue;
+    }
+    
+    // Приоритет 3: файл из CatalogImage по slug
     const imageName = CATEGORY_IMAGE_MAP[slug];
     if (imageName) {
       try {
@@ -145,21 +170,21 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
         continue;
       } catch {}
     }
-    
+
     // Try slug-based assets
     try {
       await fs.access(path.join(dir, `${slug}.webp`));
       imageMap[slug] = `/CatalogImage/${slug}.webp`;
       continue;
     } catch {}
-    
+
     try {
       await fs.access(path.join(dir, `${slug}.png`));
       imageMap[slug] = `/CatalogImage/${slug}.png`;
       continue;
     } catch {}
 
-    // Fallback to remote placeholder with label text; client will render as-is
+    // Fallback to remote placeholder with label text
     const label = labels[slug] || prettyFromSlug(slug);
     imageMap[slug] = `https://placehold.co/160x160?text=${encodeURIComponent(label)}`;
     placeholderSlugs.push(slug);
