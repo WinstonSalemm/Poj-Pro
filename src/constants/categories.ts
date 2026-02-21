@@ -143,6 +143,12 @@ export const CATEGORY_NAMES: Record<string, Record<string, string>> = {
     en: 'Stands and Brackets',
     uz: 'Tayanchlar va shteynlar',
   },
+  // Противопожарное полотно
+  'protivopojarnoe-polotno': {
+    ru: 'Противопожарное полотно',
+    en: 'Fire Blanket',
+    uz: 'Yongʻinga qarshi matolar',
+  },
 };
 
 // Mapping from category slug to image filename
@@ -173,6 +179,8 @@ export const CATEGORY_IMAGE_MAP: Record<string, string> = {
   // Подставки и кронштейны (точный slug из БД)
   'podstandkronsht': 'furnitura_dlya_ognetushiteley.png',
   'podstavki-i-kronshteyny': 'furnitura_dlya_ognetushiteley.png',
+  // Противопожарное полотно
+  'protivopojarnoe-polotno': 'furnitura_dlya_ognetushiteley.png',
 };
 
 // Category descriptions for SEO

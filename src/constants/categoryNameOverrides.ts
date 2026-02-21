@@ -145,5 +145,11 @@ export const CATEGORY_NAME_OVERRIDES: Record<
     ru: 'Комплекты СИЗ',
     en: 'PPE Kits',
     uz: 'SIZ toʻplamlari',
+  },
+  // Fire blankets
+  'protivopojarnoe-polotno': {
+    ru: 'Противопожарное полотно',
+    en: 'Fire Blanket',
+    uz: 'Yongʻinga qarshi matolar',
   }
 };

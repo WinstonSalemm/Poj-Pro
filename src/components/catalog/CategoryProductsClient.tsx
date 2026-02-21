@@ -537,9 +537,9 @@ export default function CategoryProductsClient({
             const key = resolveCategoryKey(rawCategory.replace(/_/g, '-')) || rawCategory.replace(/_/g, '-');
             // Filter only existing categories (that have active products) and exclude current category
             const existingRelated = existingCategories
-              .filter((k) => k !== key && k !== rawCategory)
+              .filter((k) => k !== key && k !== rawCategory && k !== rawCategory.replace(/_/g, '-'))
               .slice(0, 6);
-            
+
             // If no existing categories loaded yet or no related categories, don't show
             if (existingRelated.length === 0) return null;
             return (

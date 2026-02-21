@@ -158,10 +158,10 @@ function toSlug(s: string) {
     .split('')
     .map((ch) => tr[ch] ?? ch)
     .join('')
-    .replace(/[\s\-–—]+/g, '_')
-    .replace(/[^a-z0-9_]/g, '')
-    .replace(/_+/g, '_')
-    .replace(/^_+|_+$/g, '');
+    .replace(/[\s\-–—]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | 'uz') {
