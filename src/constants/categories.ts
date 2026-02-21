@@ -132,8 +132,8 @@ export const CATEGORY_NAMES: Record<string, Record<string, string>> = {
     en: 'Fire Protection Systems',
     uz: 'Yong\'indan himoya tizimlari',
   },
-  // Подставки и кронштейны
-  'podstandkronshten': {
+  // Подставки и кронштейны (точный slug из БД)
+  'podstandkronsht': {
     ru: 'Подставки и кронштейны',
     en: 'Stands and Brackets',
     uz: 'Tayanchlar va shteynlar',
@@ -170,8 +170,8 @@ export const CATEGORY_IMAGE_MAP: Record<string, string> = {
   'fire-trucks': 'monitory_i_krepleniya.png',
   'fire-pumps': 'istochniki_pitaniya.png',
   'breathing-apparatus': 'siz.png',
-  // Подставки и кронштейны
-  'podstandkronshten': 'furnitura_dlya_ognetushiteley.png',
+  // Подставки и кронштейны (точный slug из БД)
+  'podstandkronsht': 'furnitura_dlya_ognetushiteley.png',
   'podstavki-i-kronshteyny': 'furnitura_dlya_ognetushiteley.png',
 };
 
