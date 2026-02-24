@@ -44,6 +44,15 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const altSlug = rawCategory.replace(/-/g, '_');
   const lang = locale as 'ru' | 'en' | 'uz';
 
+  // Try to get category name from database first
+  let categoryNameFromDb: string | undefined;
+  try {
+    const categoryInfo = await getCategoryInfo(normalizedSlug, lang);
+    categoryNameFromDb = categoryInfo?.name;
+  } catch {
+    // Ignore errors, fallback to local constants
+  }
+
   const override =
     (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<typeof lang, string>>>)[rawCategory] ||
     CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
@@ -57,7 +66,8 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     getNestedValue(dict, `categories.${normalizedSlug}`) ||
     getNestedValue(dict, `categories.${altSlug}`);
 
-  const categoryName = override?.[lang] || constName || dictName || fallbackName(rawCategory);
+  // Priority: DB name > current language > Russian fallback > dictionary > fallbackName
+  const categoryName = categoryNameFromDb || override?.[lang] || constName || override?.ru || dictName || fallbackName(rawCategory);
 
   // Prefer predefined meta for specific categories
   const meta = getCategoryMeta(normalizedSlug, lang);
@@ -193,6 +203,19 @@ async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | '
   return sortProductsAsc(formatted);
 }
 
+// Get category info from API to get the actual name from database
+async function getCategoryInfo(categorySlug: string, locale: 'ru' | 'en' | 'uz') {
+  try {
+    const url = `/api/categories/${encodeURIComponent(categorySlug)}?locale=${locale}`;
+    const response = await fetch(url, { cache: 'force-cache', next: { revalidate: 60 } });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.category || null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function CatalogCategoryPage({ params }: { params: Promise<{ category: string }> }) {
   // Ensure cookies are accessed to bind locale correctly in server context
   await cookies();
@@ -202,6 +225,10 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
   const locale = await getLocale();
   const lang = (locale as 'ru' | 'en' | 'uz');
   const dict = await getDictionary(locale);
+
+  // Get category info from database first
+  const categoryInfo = await getCategoryInfo(categorySlug, locale);
+  const categoryNameFromDb = categoryInfo?.name;
 
   const products = categorySlug
     ? await getCategoryProducts(categorySlug, locale)
@@ -214,7 +241,7 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
   const seo: CategorySEO | undefined = seoKey ? CATEGORY_SEO[seoKey] : undefined;
   const faqs = seo?.faqs || [];
 
-  // Compute localized category display name (same logic as in generateMetadata)
+  // Fallback: Compute localized category display name if DB doesn't have it
   const fallbackName = (key: string): string =>
     key
       .replace(/[-_]/g, ' ')
@@ -247,7 +274,8 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
     getNestedValueLocal(dict, `categories.${rawCategory}`) ||
     getNestedValueLocal(dict, `categories.${normalizedSlug}`) ||
     getNestedValueLocal(dict, `categories.${altSlug}`);
-  const categoryName = override?.[lang] || constName || dictName || fallbackName(rawCategory);
+  // Priority: DB name > current language > Russian fallback > dictionary > fallbackName
+  const categoryName = categoryNameFromDb || override?.[lang] || constName || override?.ru || dictName || fallbackName(rawCategory);
 
   const categoryPathHyphen = categorySlug.replace(/_/g, '-');
   const canonical = `${SITE_URL}/catalog/${categoryPathHyphen}`;
@@ -339,12 +367,24 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
       {showBanner && <PreOrderBanner />}
 
       {/* Products grid с названием категории */}
-      <CategoryProductsClient 
-        products={products} 
-        rawCategory={rawCategory} 
-        lang={locale}
-        categoryName={categoryName}
-      />
+      {(() => {
+        // Debug: log category name resolution
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[CatalogCategoryPage] Passing categoryName:', {
+            rawCategory,
+            categoryName,
+            lang,
+          });
+        }
+        return (
+          <CategoryProductsClient
+            products={products}
+            rawCategory={rawCategory}
+            lang={locale}
+            categoryName={categoryName}
+          />
+        );
+      })()}
 
       {/* New Products Block */}
       <NewProductsBlock type="new" limit={6} />

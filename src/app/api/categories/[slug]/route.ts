@@ -76,6 +76,13 @@ export async function GET(req: NextRequest) {
 
     const dbLocale = toDbLocale(locale);
 
+    // Resolve category name for the requested locale
+    const categoryName = resolveCategoryName({
+      locale,
+      fallback: category.name ?? category.slug,
+      i18n: category.i18n,
+    });
+
     const products = category.products.map((p) => {
       const t =
         p.i18n.find((x) => x.locale === dbLocale) ??
@@ -106,7 +113,15 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { products },
+      {
+        category: {
+          id: category.id,
+          slug: category.slug,
+          name: categoryName,
+          image: category.image,
+        },
+        products,
+      },
       {
         status: 200,
         headers: {
