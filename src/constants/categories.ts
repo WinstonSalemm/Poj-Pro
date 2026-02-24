@@ -181,29 +181,6 @@ export const CATEGORY_IMAGE_MAP: Record<string, string> = {
   'podstavki-i-kronshteyny': 'furnitura_dlya_ognetushiteley.png',
   // Противопожарное полотно
   'protivopojarnoe-polotno': 'furnitura_dlya_ognetushiteley.png',
-  // DB slugs (transliterated Russian) - mapping to actual image files
-  'siz': 'siz.png',
-  'ballony': 'ballony.png',
-  'rukava_i_pozharnaya_armatura': 'rukava_i_pozharnaya_armatura.png',
-  'ognetushiteli': 'ognetushiteli.png',
-  'pozharnye_shkafy': 'pozharnye_shkafy.png',
-  'audiosistema_i_opoveschenie': 'audiosistema_i_opoveschenie.png',
-  'dinamiki_potolochnye': 'dinamiki_potolochnye.png',
-  'furnitura_dlya_ognetushiteley': 'furnitura_dlya_ognetushiteley.png',
-  'istochniki_pitaniya': 'istochniki_pitaniya.png',
-  'kontrolnye_paneli_adresnye_pozharno_ohrannye': 'kontrolnye_paneli_adresnye_pozharno_ohrannye.png',
-  'metakom': 'metakom.png',
-  'monitory_i_krepleniya': 'monitory_i_krepleniya.png',
-  'oborudovanie_kontrolya_dostupa': 'oborudovanie_kontrolya_dostupa.png',
-  'oborudovanie_proizvodstva_npo_bolid_rossiya': 'oborudovanie_proizvodstva_npo_bolid_rossiya.png',
-  'paneli_gsm_i_besprovodnye_sistemy_ipro': 'paneli_gsm_i_besprovodnye_sistemy_ipro.png',
-  'pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva': 'pozharnaya_signalizatsiya_i_svetozvukovye_ustroystva.png',
-  'sistemy_opovescheniya_o_pozhare_dsppa_abk': 'sistemy_opovescheniya_o_pozhare_dsppa_abk.png',
-  'sistemy_pozharotusheniya_sprinkler': 'sistemy_pozharotusheniya_sprinkler.png',
-  'tsifral': 'tsifral.png',
-  'usiliteli': 'usiliteli.png',
-  'videoregistratory_usiliteli_signala_haby': 'videoregistratory_usiliteli_signala_haby.png',
-  'zamki_i_aksessuary': 'zamki_i_aksessuary.png',
 };
 
 // Category descriptions for SEO

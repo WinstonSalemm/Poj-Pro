@@ -32,42 +32,21 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const rawCategory = decodeURIComponent(category || '');
   const sp: Record<string, string | string[] | undefined> = (await (searchParams || Promise.resolve({} as Record<string, string | string[] | undefined>))) || {};
 
-  function fallbackName(key: string): string {
-    return key
-      .replace(/[-_]/g, ' ')
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
   const normalizedSlug = rawCategory.replace(/_/g, '-');
-  const altSlug = rawCategory.replace(/-/g, '_');
   const lang = locale as 'ru' | 'en' | 'uz';
 
-  // Try to get category name from database first
-  let categoryNameFromDb: string | undefined;
+  // Get category name from API (source of truth)
+  let categoryNameFromApi: string | undefined;
   try {
-    const categoryInfo = await getCategoryInfo(normalizedSlug, lang);
-    categoryNameFromDb = categoryInfo?.name;
+    const url = `/api/categories/${encodeURIComponent(normalizedSlug)}?locale=${lang}`;
+    const data = await fetchAPI<{ category?: { name?: string } }>(url, { cache: 'force-cache', next: { revalidate: 60 } });
+    categoryNameFromApi = data.category?.name;
   } catch {
-    // Ignore errors, fallback to local constants
+    // Ignore errors
   }
 
-  const override =
-    (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<typeof lang, string>>>)[rawCategory] ||
-    CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
-    CATEGORY_NAME_OVERRIDES[altSlug];
-  const constName =
-    (CATEGORY_NAMES as Record<string, Partial<Record<typeof lang, string>>>)[rawCategory]?.[lang] ||
-    CATEGORY_NAMES[normalizedSlug]?.[lang] ||
-    CATEGORY_NAMES[altSlug]?.[lang];
-  const dictName =
-    getNestedValue(dict, `categories.${rawCategory}`) ||
-    getNestedValue(dict, `categories.${normalizedSlug}`) ||
-    getNestedValue(dict, `categories.${altSlug}`);
-
-  // Priority: DB name > current language > Russian fallback > dictionary > fallbackName
-  const categoryName = categoryNameFromDb || override?.[lang] || constName || override?.ru || dictName || fallbackName(rawCategory);
+  // Use DB name or fallback to slug-based name
+  const categoryName = categoryNameFromApi || rawCategory.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   // Prefer predefined meta for specific categories
   const meta = getCategoryMeta(normalizedSlug, lang);
@@ -177,6 +156,7 @@ function toSlug(s: string) {
 async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | 'uz') {
   const url = `/api/categories/${encodeURIComponent(categorySlug)}?locale=${locale}`;
   const data = await fetchAPI<{
+    category?: { name?: string };
     products: Array<{
       id: string | number;
       slug: string;
@@ -199,21 +179,9 @@ async function getCategoryProducts(categorySlug: string, locale: 'ru' | 'en' | '
     description: item.description,
     short_description: item.description,
   }));
-  // Apply domain-specific ordering: OP → OU → MPP → recharge → others
-  return sortProductsAsc(formatted);
-}
-
-// Get category info from API to get the actual name from database
-async function getCategoryInfo(categorySlug: string, locale: 'ru' | 'en' | 'uz') {
-  try {
-    const url = `/api/categories/${encodeURIComponent(categorySlug)}?locale=${locale}`;
-    const response = await fetch(url, { cache: 'force-cache', next: { revalidate: 60 } });
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data.category || null;
-  } catch {
-    return null;
-  }
+  // Return category name from API response
+  const categoryName = data.category?.name;
+  return { products: sortProductsAsc(formatted), categoryName };
 }
 
 export default async function CatalogCategoryPage({ params }: { params: Promise<{ category: string }> }) {
@@ -221,18 +189,16 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
   await cookies();
   const { category } = await params;
   const rawCategory = decodeURIComponent(category || '');
-  const categorySlug = toSlug(rawCategory);
+  const categorySlug = rawCategory.replace(/_/g, '-');
   const locale = await getLocale();
   const lang = (locale as 'ru' | 'en' | 'uz');
   const dict = await getDictionary(locale);
 
-  // Get category info from database first
-  const categoryInfo = await getCategoryInfo(categorySlug, locale);
-  const categoryNameFromDb = categoryInfo?.name;
+  // Get products and category name from API (single request)
+  const { products, categoryName: categoryNameFromApi } = await getCategoryProducts(categorySlug, locale);
 
-  const products = categorySlug
-    ? await getCategoryProducts(categorySlug, locale)
-    : [];
+  // Use DB name or fallback to slug-based name
+  const categoryName = categoryNameFromApi || rawCategory.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   const showBanner = ['siz', 'ballony'].includes(category);
 
@@ -240,42 +206,6 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
   const seoKey = resolveCategoryKey(categorySlug.replace(/_/g, '-'));
   const seo: CategorySEO | undefined = seoKey ? CATEGORY_SEO[seoKey] : undefined;
   const faqs = seo?.faqs || [];
-
-  // Fallback: Compute localized category display name if DB doesn't have it
-  const fallbackName = (key: string): string =>
-    key
-      .replace(/[-_]/g, ' ')
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-      .replace(/\s+/g, ' ')
-      .trim();
-  const normalizedSlug = rawCategory.replace(/_/g, '-');
-  const altSlug = rawCategory.replace(/-/g, '_');
-  const override =
-    (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<typeof lang, string>>>)[rawCategory] ||
-    CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
-    CATEGORY_NAME_OVERRIDES[altSlug];
-  const constName =
-    (CATEGORY_NAMES as Record<string, Partial<Record<typeof lang, string>>>)[rawCategory]?.[lang] ||
-    CATEGORY_NAMES[normalizedSlug]?.[lang] ||
-    CATEGORY_NAMES[altSlug]?.[lang];
-  // Helper to get nested translation
-  function getNestedValueLocal(obj: unknown, path: string): string | undefined {
-    let current: unknown = obj;
-    for (const key of path.split('.')) {
-      if (current && typeof current === 'object' && key in (current as Record<string, unknown>)) {
-        current = (current as Record<string, unknown>)[key];
-      } else {
-        return undefined;
-      }
-    }
-    return typeof current === 'string' ? current : undefined;
-  }
-  const dictName =
-    getNestedValueLocal(dict, `categories.${rawCategory}`) ||
-    getNestedValueLocal(dict, `categories.${normalizedSlug}`) ||
-    getNestedValueLocal(dict, `categories.${altSlug}`);
-  // Priority: DB name > current language > Russian fallback > dictionary > fallbackName
-  const categoryName = categoryNameFromDb || override?.[lang] || constName || override?.ru || dictName || fallbackName(rawCategory);
 
   const categoryPathHyphen = categorySlug.replace(/_/g, '-');
   const canonical = `${SITE_URL}/catalog/${categoryPathHyphen}`;
@@ -367,24 +297,12 @@ export default async function CatalogCategoryPage({ params }: { params: Promise<
       {showBanner && <PreOrderBanner />}
 
       {/* Products grid с названием категории */}
-      {(() => {
-        // Debug: log category name resolution
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[CatalogCategoryPage] Passing categoryName:', {
-            rawCategory,
-            categoryName,
-            lang,
-          });
-        }
-        return (
-          <CategoryProductsClient
-            products={products}
-            rawCategory={rawCategory}
-            lang={locale}
-            categoryName={categoryName}
-          />
-        );
-      })()}
+      <CategoryProductsClient 
+        products={products} 
+        rawCategory={rawCategory} 
+        lang={locale}
+        categoryName={categoryName}
+      />
 
       {/* New Products Block */}
       <NewProductsBlock type="new" limit={6} />

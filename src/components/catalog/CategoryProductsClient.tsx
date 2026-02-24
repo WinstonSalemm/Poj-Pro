@@ -87,40 +87,14 @@ export default function CategoryProductsClient({
   }, []);
 
   const categoryTitle = useMemo(() => {
-    // Всегда используем categoryName из родителя, если передано
+    // Всегда используем categoryName из родителя (из БД), если передано
     if (categoryName && categoryName.trim()) {
       return categoryName;
     }
 
-    // Fallback: вычисляем сами (для обратной совместимости)
-    const l = (lang as Lang) || "ru";
-    const normalizedSlug = rawCategory.replace(/_/g, '-');
-    const altSlug = rawCategory.replace(/-/g, '_');
-    const override =
-      (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<Lang, string>>>)[rawCategory] ||
-      CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
-      CATEGORY_NAME_OVERRIDES[altSlug];
-    const constName =
-      (CATEGORY_NAMES as Record<string, Partial<Record<Lang, string>>>)[rawCategory]?.[l] ||
-      CATEGORY_NAMES[normalizedSlug]?.[l] ||
-      CATEGORY_NAMES[altSlug]?.[l];
-    
-    // Используем перевод для текущего языка, или русский как fallback, или fallbackName
-    const result = override?.[l] || constName || override?.ru || fallbackName(rawCategory);
-    
-    // Debug: log when fallback is used
-    if (!override?.[l] && !constName) {
-      console.warn('[CategoryProductsClient] No translation found for category:', {
-        rawCategory,
-        normalizedSlug,
-        altSlug,
-        lang,
-        result,
-      });
-    }
-    
-    return result;
-  }, [rawCategory, lang, categoryName]);
+    // Fallback: только если categoryName не передано (крайний случай)
+    return rawCategory.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }, [rawCategory, categoryName]);
 
   // Show/enable extinguishers-specific "type" filtering only on the extinguishers category
   const showExtinguisherType = useMemo(() => {
@@ -560,23 +534,8 @@ export default function CategoryProductsClient({
                 <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">{t('catalog.relatedTitle', 'Смотрите также')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                   {existingRelated.map((k) => {
-                    // Get category name with proper fallbacks (same logic as categoryTitle)
-                    const normalizedSlug = k.replace(/_/g, '-');
-                    const altSlug = k.replace(/-/g, '_');
-                    const override =
-                      (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<Lang, string>>>)[k] ||
-                      CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
-                      CATEGORY_NAME_OVERRIDES[altSlug];
-                    const constName =
-                      (CATEGORY_NAMES as Record<string, Partial<Record<Lang, string>>>)[k]?.[lang] ||
-                      CATEGORY_NAMES[normalizedSlug]?.[lang] ||
-                      CATEGORY_NAMES[altSlug]?.[lang];
-                    // Use current language, or Russian fallback, or fallbackName
-                    const label = override?.[lang] || constName || override?.ru || fallbackName(k);
-                    
-                    // Get image from CATEGORY_IMAGE_MAP
-                    const imgKey = normalizedSlug;
-                    const img = CATEGORY_IMAGE_MAP[imgKey] ? `/CatalogImage/${CATEGORY_IMAGE_MAP[imgKey]}` : "/OtherPics/logo.png";
+                    const label = CATEGORY_NAMES[k]?.[lang] || fallbackName(k);
+                    const img = CATEGORY_IMAGE_MAP[k] ? `/CatalogImage/${CATEGORY_IMAGE_MAP[k]}` : "/OtherPics/logo.png";
                     const href = `/catalog/${k}`;
                     return (
                       <Link key={k} href={href} className="block group border border-gray-200 rounded-xl bg-white hover:shadow transition">
