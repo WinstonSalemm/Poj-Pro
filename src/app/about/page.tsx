@@ -5,6 +5,13 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { suppliers } from "./suppliers";
 import { BrandCard } from "./components/BrandCard";
 import { PartnersSection } from "@/components/partners/PartnersSection";
+import dynamic from "next/dynamic";
+import AboutPhotoMosaic from "@/components/AboutPhotoMosaic/AboutPhotoMosaic";
+
+const MapSection = dynamic(() => import("@/components/MapSection/MapSection"), {
+  ssr: false,
+  loading: () => <div className="w-full h-[400px] rounded-xl shimmer mx-auto my-8" />,
+});
 
 export default function AboutPage() {
   const { t } = useTranslation();
@@ -36,9 +43,8 @@ export default function AboutPage() {
       {/* Hero */}
       <section
         aria-labelledby="about-company"
-        className={`relative overflow-hidden w-full mx-auto rounded-2xl border border-gray-200 bg-white shadow-sm p-6 md:p-10 transition-opacity duration-500 ${
-          bootLoading ? "opacity-0" : "opacity-100"
-        }`}
+        className={`relative overflow-hidden w-full mx-auto rounded-2xl border border-gray-200 bg-white shadow-sm p-6 md:p-10 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
+          }`}
       >
         <h1
           id="about-company"
@@ -58,9 +64,8 @@ export default function AboutPage() {
       {/* Advantages */}
       <section
         aria-labelledby="about-advantages"
-        className={`relative w-full mx-auto mt-8 md:mt-12 rounded-2xl border border-gray-200 bg-gray-100 p-5 md:p-8 transition-opacity duration-500 ${
-          bootLoading ? "opacity-0" : "opacity-100"
-        }`}
+        className={`relative w-full mx-auto mt-8 md:mt-12 rounded-2xl border border-gray-200 bg-gray-100 p-5 md:p-8 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
+          }`}
       >
         <h2
           id="about-advantages"
@@ -88,11 +93,26 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Map Section */}
+      <section
+        className={`relative w-full mx-auto mt-8 md:mt-12 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
+          }`}
+      >
+        <MapSection />
+      </section>
+
+      {/* Photo Mosaic */}
+      <section
+        className={`relative w-full mx-auto mt-8 md:mt-12 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
+          }`}
+      >
+        <AboutPhotoMosaic />
+      </section>
+
       {/* Suppliers */}
       <section
-        className={`relative w-full mx-auto mt-8 md:mt-12 transition-opacity duration-500 ${
-          bootLoading ? "opacity-0" : "opacity-100"
-        }`}
+        className={`relative w-full mx-auto mt-8 md:mt-12 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"
+          }`}
       >
         <h2 className="text-center text-2xl md:text-3xl font-bold mb-2 text-[#660000]">
           {t("aboutus.suppliers.title")}
@@ -125,7 +145,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      
+
 
       {/* Partners Section */}
       <PartnersSection />

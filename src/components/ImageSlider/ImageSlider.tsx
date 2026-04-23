@@ -4,13 +4,13 @@ import Image from "next/image";
 import { HERO_IMAGES } from "@/components/ImageSlider/images";
 
 const IMAGES: string[] = HERO_IMAGES?.length
-  ? HERO_IMAGES
-  : [
-      "/OtherPics/product1photo.png",
-      "/OtherPics/product2photo.jpg",
-      "/OtherPics/product3photo.png",
-      "/OtherPics/product5photo.png",
-      "/OtherPics/product6photo.png",
+    ? HERO_IMAGES
+    : [
+        "/OtherPics/product1photo.png",
+        "/OtherPics/product2photo.jpg",
+        "/OtherPics/product3photo.png",
+        "/OtherPics/product5photo.png",
+        "/OtherPics/product6photo.png",
     ];
 
 type SliderVariant = "default" | "overlay";

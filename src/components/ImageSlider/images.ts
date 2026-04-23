@@ -1,7 +1,7 @@
 export const HERO_IMAGES: string[] = [
-  "/OtherPics/product1photo.avif",
-  "/OtherPics/product2photo.avif",
-  "/OtherPics/product3photo.avif",
-  "/OtherPics/product5photo.avif",
-  "/OtherPics/product6photo.avif",
+  "/OtherPics/photo_2026-04-22_22-53-29.jpg",
+  "/OtherPics/secondpgoto.jpg",
+  "/OtherPics/thirdphoto.jpg",
+  "/OtherPics/fourthphoto.jpg",
+  "/OtherPics/fifthphoto.jpg",
 ];

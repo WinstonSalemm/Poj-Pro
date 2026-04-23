@@ -242,13 +242,22 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
     return 10_000 + (slug.charCodeAt(0) || 0);
   };
 
-  // Create a mapping of category slugs to their translated names (prefer constants/overrides)
+  // Create a mapping of category slugs to their translated names
+  // Priority: DB name (from API) > constants/overrides > dictionary > fallback
   const categoryLabels = safeCategories.reduce((acc, category) => {
     const slug = (category?.slug ?? '').toString();
+    
+    // 1) FIRST: Use name from database (API already returns localized name)
+    // The API /api/categories returns localized 'name' based on locale
+    if (category.name && category.name.trim()) {
+      acc[slug] = category.name.trim();
+      return acc;
+    }
+
     const normalizedSlug = slug.replace(/_/g, '-');
     const altSlug = slug.replace(/-/g, '_');
 
-    // 1) Manual overrides first (check both formats)
+    // 2) Manual overrides (check both formats)
     const override = pickByLang(
       (CATEGORY_NAME_OVERRIDES as Record<string, Partial<Record<Lang, string>>>)[slug] ||
       CATEGORY_NAME_OVERRIDES[normalizedSlug] ||
@@ -260,29 +269,22 @@ export default function CatalogView({ categories, dictionary, locale }: CatalogV
       return acc;
     }
 
-    // 2) General constants dictionary
+    // 3) General constants dictionary
     const constantName = (CATEGORY_NAMES as Record<string, Record<string, string>>)[slug]?.[lang];
     if (constantName) {
       acc[slug] = String(constantName).trim();
       return acc;
     }
 
-    // 3) i18n dictionary from runtime dictionary.categories
+    // 4) i18n dictionary from runtime dictionary.categories
     const dictName = (dictionary as any)?.categories?.[slug];
     if (dictName) {
       acc[slug] = String(dictName).trim();
       return acc;
     }
 
-    // 4) API translation field
-    const translation = (category as any).translations?.[locale];
-    if (translation?.name) {
-      acc[slug] = String(translation.name).trim();
-      return acc;
-    }
-
-    // 5) Fallback to pretty slug or backend name
-    acc[slug] = fallbackName((category as any).name || slug);
+    // 5) Fallback to pretty slug
+    acc[slug] = fallbackName(slug);
     return acc;
   }, {} as Record<string, string>);
 
