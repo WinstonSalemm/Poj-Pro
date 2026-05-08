@@ -90,11 +90,13 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({
-  children
+  children,
+  params
 }: {
   children: React.ReactNode;
-  params: { locale?: string };
+  params: Promise<{ locale?: string }>;
 }) {
+  const { locale: paramsLocale } = await params;
   const hdrs = await headers();
   const nonce = hdrs.get('x-nonce') || undefined;
   // Read persisted locale from cookies for SSR (falls back to 'ru')
