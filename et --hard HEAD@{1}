@@ -1,0 +1,59 @@
+[33m00fb4cd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: pull: Fast-forward
+[33mfe487c4[m HEAD@{1}: commit: tututu1 bugun april
+[33m2a81ffa[m HEAD@{2}: commit: tututu2 24.02
+[33mfa7102c[m HEAD@{3}: commit: tututu1 24.02
+[33meb48ebf[m HEAD@{4}: commit: tututu1 21.02
+[33mf891d3c[m HEAD@{5}: commit: fix: исправлен slug для категории подставок и кронштейнов
+[33m3dea1ff[m HEAD@{6}: commit: fix: добавлены переводы для категории podstandkronshten
+[33m3bc5ddc[m HEAD@{7}: commit: fix: отображение изображений категорий на главной странице
+[33m0d505cd[m HEAD@{8}: commit: fix: отображение названия категории на выбранном языке
+[33m2122bee[m HEAD@{9}: commit: fix: отображение изображений категорий из базы данных
+[33m9aa1504[m HEAD@{10}: commit: tututu1 20.02.2026
+[33m1593302[m HEAD@{11}: commit: fix: улучшена обработка ошибок при создании категории
+[33m657ff6b[m HEAD@{12}: commit: tututu5 категория админка 19.02.2026
+[33mcb0faff[m HEAD@{13}: commit: tututu5 категория админка 19.02.2026
+[33m27864e0[m HEAD@{14}: commit: tututu4 19.02.2026
+[33mcef04c8[m HEAD@{15}: commit: fix: корректное сохранение imageData для категории
+[33mbbe8e86[m HEAD@{16}: commit: fix: использовать upsert для привязки изображений к товару
+[33meebfe05[m HEAD@{17}: commit: tututu3 19.02.2026
+[33m89f73e3[m HEAD@{18}: commit: tututu2 19.02.2026
+[33maf24cf8[m HEAD@{19}: commit: tututu2 19.02.2026
+[33m985ab7c[m HEAD@{20}: commit: tututu1 19.02.2026
+[33m1a3e3fe[m HEAD@{21}: reset: moving to origin/main
+[33m8ad498e[m HEAD@{22}: checkout: moving from main to main
+[33m8ad498e[m HEAD@{23}: commit: tututu1 19.02.2026
+[33ma6144e8[m HEAD@{24}: commit: tututu1 17.02.2026
+[33m3753d80[m HEAD@{25}: commit: feat(analytics): add Google Ads conversion events
+[33me5498be[m HEAD@{26}: commit: tututu1 30.01
+[33m725d117[m HEAD@{27}: commit: Improve TopBar: add schedule and 2 phones on wide screens, remove border between TopBar and Header, center animation vertically
+[33m9ffb990[m HEAD@{28}: commit: Fix React Hooks order in TopBar component
+[33mfe41963[m HEAD@{29}: commit: Add TopBar with animated fire extinguisher, update admin products page, add category image support
+[33ma9cb488[m HEAD@{30}: commit: tututu4 28.01
+[33mffed6a4[m HEAD@{31}: commit: tututu3 28.01
+[33m24779f6[m HEAD@{32}: commit: tututu3 28.01
+[33ma9797ca[m HEAD@{33}: commit: tututu3 28.01
+[33mefc03f3[m HEAD@{34}: commit: tututu2 28.01
+[33m224aee1[m HEAD@{35}: commit: tututu2 28.01
+[33m2a2ccb5[m HEAD@{36}: commit: tututu2 28.01
+[33m22d1af8[m HEAD@{37}: commit: tututu1 28.01
+[33m1d5c072[m HEAD@{38}: commit: tututu1 13.1.2026
+[33mdff8911[m HEAD@{39}: commit: tututu1 last change 8.01.2026
+[33m3b53e18[m HEAD@{40}: commit: tututu1 little changes 8.01.2026
+[33m13e1973[m HEAD@{41}: commit: tututu1 little changes 8.01.2026
+[33m71110f6[m HEAD@{42}: commit: tututu1 8.01.2026
+[33m3ac5d08[m HEAD@{43}: commit: tututu1 8.01.2026
+[33m376f20a[m HEAD@{44}: commit: tututu1 8.01.2026
+[33mf681da0[m HEAD@{45}: commit: tututu1 7.01.2026
+[33mc4f2392[m HEAD@{46}: commit: tututu4 6.01.2026
+[33m4cda215[m HEAD@{47}: commit: tututu3 6.01.2026
+[33mc5f7c5a[m HEAD@{48}: commit: tututu3 6.01.2026
+[33mec042ec[m HEAD@{49}: commit: tututu2 6.01.2026
+[33m59e3e8b[m HEAD@{50}: commit: tututu1 6.01.2026
+[33m021a2c9[m HEAD@{51}: commit: tututu2 01.2026
+[33m1f9d826[m HEAD@{52}: commit: tututu2 01.2026
+[33m5282e3f[m HEAD@{53}: commit: tututu1 01.2026
+[33m77c1b00[m HEAD@{54}: commit: tututu1 24.12
+[33m414693c[m HEAD@{55}: commit: tututu2 last time
+[33m0e09a89[m HEAD@{56}: commit: tututu2 last time
+[33m9443488[m HEAD@{57}: commit: tututu 1 last time
+[33m0ee8b38[m HEAD@{58}: clone: from https://github.com/WinstonSalemm/Poj-Pro
