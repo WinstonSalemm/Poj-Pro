@@ -8,12 +8,5 @@
             "Mijozlar uchun maxsus takliflar"
         ]
     },
-    "goToCatalog": "Katalogga o'tish",
-    "creator": {
-        "title": "Sayt yoqdimi?",
-        "description": "Men bu saytni o'zim yaratdim. Agar sizga sayt yoki veb-yechim kerak bo'lsa, men bilan to'g'ridan-to'g'ri bog'lanishingiz mumkin.",
-        "email": "Email",
-        "phone": "Telefon",
-        "telegram": "Telegram"
-    }
+    "goToCatalog": "Katalogga o'tish"
 }

@@ -134,7 +134,7 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   return (
     <div
       onClick={() => onClick?.(product)}
-      className={`group relative bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-[border-color,background-color,box-shadow] duration-300 ${highlightCls}`}
+      className={`group relative flex h-full flex-col bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-[border-color,background-color,box-shadow] duration-300 ${highlightCls}`}
     >
       {/* изображение */}
       <div className="relative w-full overflow-hidden rounded-xl bg-gray-100 aspect-square">
@@ -144,7 +144,7 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
           fill
           priority={priority}
           sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-300 transform-gpu group-hover:scale-105"
+          className="object-contain p-2 transition-transform duration-300 transform-gpu group-hover:scale-105"
           loading={priority ? undefined : "lazy"}
           placeholder="blur"
           blurDataURL={BLUR_DATA}
@@ -176,7 +176,7 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
       </div>
 
       {/* действия */}
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="mt-auto flex flex-col gap-2 pt-3">
         {showDetailsLink && (
           <Link
             href={detailsHref}

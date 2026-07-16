@@ -22,6 +22,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!post) return {};
   const alternates = getPostAlternates(slug);
   const canonical = `${SITE_URL}/uz/blog/${post.slug}`;
+  const languages: Record<string, string> = Object.fromEntries(
+    Object.entries(alternates).map(([locale, path]) => [locale, `${SITE_URL}${path}`])
+  );
+  languages['x-default'] = `${SITE_URL}${alternates.en ?? alternates.uz ?? `/uz/blog/${post.slug}`}`;
   const keywords = [
     post.frontmatter.title,
     'yong\'in xavfsizligi',
@@ -36,12 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     keywords,
     alternates: {
       canonical,
-      languages: {
-        'ru-RU': alternates.ru ? `${SITE_URL}${alternates.ru}` : `${SITE_URL}/blog/${post.slug}`,
-        'en-US': alternates.en ? `${SITE_URL}${alternates.en}` : `${SITE_URL}/en/blog/${post.slug}`,
-        'uz-UZ': alternates.uz ? `${SITE_URL}${alternates.uz}` : canonical,
-        'x-default': canonical,
-      },
+      languages,
     },
     robots: {
       index: true,

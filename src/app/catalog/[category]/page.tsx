@@ -65,15 +65,6 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const canonical = `${SITE_URL}/catalog/${normalizedSlug}`;
   const filterKeys = Object.keys(sp || {}).filter((k) => sp[k] != null);
 
-  // Generate proper hreflang URLs
-  const basePath = `/catalog/${normalizedSlug}`;
-  const hreflangUrls = {
-    'ru': `${SITE_URL}${basePath}`,
-    'en': `${SITE_URL}/en${basePath}`,
-    'uz': `${SITE_URL}/uz${basePath}`,
-    'x-default': `${SITE_URL}${basePath}`,
-  };
-
   // Generate keywords
   const keywords = [
     categoryName,
@@ -89,9 +80,8 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     keywords,
     alternates: {
       canonical,
-      languages: hreflangUrls,
     },
-    robots: filterKeys.length > 1
+    robots: filterKeys.length > 0
       ? { index: false, follow: true }
       : {
         index: true,

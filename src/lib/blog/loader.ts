@@ -15,8 +15,13 @@ import { autoLinkHTML } from './autolink';
 
 const ROOT = process.cwd();
 const CONTENT_ROOT = path.join(ROOT, 'content', 'articles');
+const PUBLIC_BLOG_LOCALES: readonly Locale[] = ['en', 'uz'];
 
 export function getLocales(): Locale[] { return ['ru','uz','en']; }
+
+export function getPublicBlogLocales(): readonly Locale[] {
+  return PUBLIC_BLOG_LOCALES;
+}
 
 export function postsDir(locale: Locale) {
   return path.join(CONTENT_ROOT, locale);
@@ -70,7 +75,7 @@ export function getAllPosts(locale: Locale): Post[] {
 
 export function getPostAlternates(slug: string): Partial<Record<Locale, string>> {
   const result: Partial<Record<Locale, string>> = {};
-  for (const loc of getLocales()) {
+  for (const loc of getPublicBlogLocales()) {
     const dir = postsDir(loc);
     const mdx = path.join(dir, `${slug}.mdx`);
     const md = path.join(dir, `${slug}.md`);
@@ -82,7 +87,7 @@ export function getPostAlternates(slug: string): Partial<Record<Locale, string>>
 
 export function getAllPostsAllLocales(): { locale: Locale; post: Post }[] {
   const out: { locale: Locale; post: Post }[] = [];
-  for (const loc of getLocales()) {
+  for (const loc of getPublicBlogLocales()) {
     for (const p of getAllPosts(loc)) out.push({ locale: loc, post: p });
   }
   return out;

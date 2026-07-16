@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import type { FiltersState, SortKey } from "./FiltersSidebar";
 import { resolveCategoryKey } from "@/constants/categorySeo";
@@ -31,6 +31,20 @@ export default function MobileFiltersDrawer({
   const showPPE = categoryKey === 'ppe';
   const showAlarms = categoryKey === 'fire-alarms';
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open, onClose]);
+
   return (
     <div className={`fixed inset-0 z-[70] ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
       {/* backdrop */}
@@ -40,6 +54,7 @@ export default function MobileFiltersDrawer({
       />
       {/* panel */}
       <div
+        id="mobile-filters"
         className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-xl border-l border-gray-200 transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}
         role="dialog"
         aria-modal="true"

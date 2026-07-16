@@ -60,22 +60,8 @@ export function buildPageMetadata(opts: { titleKey?: string; descriptionKey?: st
   const description = (opts.descriptionKey ? (getLocalized(opts.descriptionKey, lang) || undefined) : undefined) || opts.defaultDescription;
   const canonical = `${SITE_URL}${opts.path.startsWith('/') ? opts.path : `/${opts.path}`}`;
   
-  // Generate hreflang URLs
-  const basePath = opts.path.startsWith('/') ? opts.path : `/${opts.path}`;
-  const localeMap: Record<Lang, string> = { ru: 'ru', eng: 'en', uzb: 'uz' };
-  const currentLocale = localeMap[lang];
-  const hreflangUrls: Record<string, string> = {
-    'x-default': canonical,
-  };
-  
-  // Add hreflang for all supported locales
-  ['ru', 'en', 'uz'].forEach((loc) => {
-    if (loc === 'ru') {
-      hreflangUrls['ru'] = `${SITE_URL}${basePath}`;
-    } else {
-      hreflangUrls[loc] = `${SITE_URL}/${loc}${basePath}`;
-    }
-  });
+  // The storefront language is selected with a cookie, not with locale URLs.
+  // Do not advertise /en/* or /uz/* as alternates unless that route really exists.
   
   // Generate keywords
   const defaultKeywords = ['POJ PRO', 'пожарная безопасность', 'Ташкент'];
@@ -89,7 +75,6 @@ export function buildPageMetadata(opts: { titleKey?: string; descriptionKey?: st
     keywords,
     alternates: {
       canonical,
-      languages: hreflangUrls,
     },
     robots: opts.noIndex
       ? { index: false, follow: true }

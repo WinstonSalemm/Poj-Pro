@@ -109,6 +109,25 @@ export function consentGrantAll(): void {
   if (debug) console.log("[consent.update]", state);
 }
 
+export function consentDenyOptional(): void {
+  if (typeof window === "undefined") return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const w = window as any;
+  const state: ConsentState = {
+    ad_storage: "denied",
+    analytics_storage: "denied",
+    functionality_storage: "granted",
+    personalization_storage: "denied",
+    security_storage: "granted",
+  };
+  if (typeof w.gtag === "function") {
+    w.gtag("consent", "update", state as unknown as Record<string, string>);
+  } else {
+    ensureDL().push({ event: "consent", "consent.update": state });
+  }
+  if (debug) console.log("[consent.update]", state);
+}
+
 // Safe loader ping
 export function gtmIsConfigured(): boolean {
   return !!GTM_ID;

@@ -1,54 +1,90 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
-import { consentGrantAll } from "@/lib/analytics/dataLayer";
+import { consentDenyOptional, consentGrantAll } from "@/lib/analytics/dataLayer";
+
+const copy = {
+  ru: {
+    title: "Настройки cookie",
+    message: "Мы используем необходимые cookie для языка и корзины, а дополнительные cookie - для аналитики.",
+    accept: "Принять все",
+    essentialOnly: "Только необходимые",
+  },
+  eng: {
+    title: "Cookie settings",
+    message: "We use necessary cookies for language and cart, and optional cookies for analytics.",
+    accept: "Accept all",
+    essentialOnly: "Necessary only",
+  },
+  uzb: {
+    title: "Cookie sozlamalari",
+    message: "Til va savat uchun zarur cookie-fayllardan, tahlil uchun esa ixtiyoriy cookie-fayllardan foydalanamiz.",
+    accept: "Hammasini qabul qilish",
+    essentialOnly: "Faqat zarurlari",
+  },
+} as const;
 
 export default function CookieConsentModal() {
-  const { t } = useTranslation();
+  const { currentLanguage } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const lang = currentLanguage === "en" ? "eng" : currentLanguage === "uz" ? "uzb" : currentLanguage;
+  const text = lang === "eng" || lang === "uzb" ? copy[lang] : copy.ru;
 
   useEffect(() => {
-    // Check if user has already accepted cookies
-    const hasAccepted = document.cookie
-      .split('; ')
-      .some(row => row.startsWith('cookiesAccepted='));
-    
-    if (!hasAccepted) {
+    const hasDecision = document.cookie
+      .split("; ")
+      .some((row) => row.startsWith("cookieConsent=") || row.startsWith("cookiesAccepted="));
+
+    if (!hasDecision) {
       setVisible(true);
     }
   }, []);
 
-  const acceptCookies = () => {
-    // Set cookie to expire in 1 year
+  const saveDecision = (analyticsAllowed: boolean) => {
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    
-    document.cookie = `cookiesAccepted=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
-    // Update Consent Mode to granted
-    try { consentGrantAll(); } catch {}
+    const value = analyticsAllowed ? "all" : "essential";
+
+    document.cookie = `cookieConsent=${value}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+
+    try {
+      if (analyticsAllowed) {
+        consentGrantAll();
+      } else {
+        consentDenyOptional();
+      }
+    } catch {}
+
     setVisible(false);
   };
 
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl bg-white shadow-lg rounded-xl border border-gray-200 p-4 z-50 flex flex-col sm:flex-row items-center gap-4">
-      <p className="text-sm text-gray-700 flex-1">
-        {t('cookieConsent.message', 'Мы используем cookie для хранения языка и содержимого корзины. Продолжая использовать сайт, вы соглашаетесь на их использование.')}
+    <div
+      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-3xl rounded-lg border border-gray-200 bg-white p-4 shadow-xl sm:bottom-5 sm:flex sm:items-center sm:gap-4"
+      role="dialog"
+      aria-live="polite"
+      aria-label={text.title}
+    >
+      <p className="text-sm leading-5 text-gray-700 sm:flex-1">
+        {text.message}
       </p>
-      <div className="flex gap-3 flex-shrink-0">
+      <div className="mt-3 flex flex-col gap-2 sm:mt-0 sm:flex-row sm:flex-shrink-0">
         <button
-          onClick={acceptCookies}
-          className="px-4 py-2 bg-[#660000] text-white rounded-lg hover:bg-[#550000] transition-colors text-sm font-medium whitespace-nowrap"
+          type="button"
+          onClick={() => saveDecision(true)}
+          className="rounded-md bg-[#660000] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#550000] focus:outline-none focus:ring-2 focus:ring-[#660000] focus:ring-offset-2"
         >
-          {t('cookieConsent.accept', 'Принять')}
+          {text.accept}
         </button>
         <button
-          onClick={acceptCookies}
-          className="px-4 py-2 border border-[#660000] text-[#660000] rounded-lg hover:bg-[#660000]/5 transition-colors text-sm font-medium whitespace-nowrap"
+          type="button"
+          onClick={() => saveDecision(false)}
+          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#660000] focus:ring-offset-2"
         >
-          {t('cookieConsent.close', 'Закрыть')}
+          {text.essentialOnly}
         </button>
       </div>
     </div>

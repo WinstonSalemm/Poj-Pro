@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { serializeJSON } from '@/lib/json';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,14 +9,8 @@ export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   try {
-    // Check if user is admin
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { pathname } = new URL(req.url);
     const segments = pathname.split('/');

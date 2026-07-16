@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -7,18 +9,15 @@ export const revalidate = 0;
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await request.json();
-    
-    if (!userId || typeof userId !== 'string') {
-      return NextResponse.json({ error: 'Valid user ID is required' }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Use $executeRaw to update the timestamp directly
-    await prisma.$executeRaw`
-      UPDATE "User" 
-      SET "lastActive" = NOW()
-      WHERE id = ${userId}
-    `;
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { lastActive: new Date() },
+    });
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error: unknown) {

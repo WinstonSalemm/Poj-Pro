@@ -37,6 +37,7 @@
     font-family: var(--font-sans);
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
     line-height: 1.5;
     /* Base type scale: 15px on mobile, 16px from md */
     @apply text-[15px] md:text-base antialiased;

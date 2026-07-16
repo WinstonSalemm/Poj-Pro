@@ -47,12 +47,6 @@ export const metadata: Metadata = {
   keywords: 'огнетушители, пожарная безопасность, пожарное оборудование, Ташкент, POJ PRO, огнетушители ОП, огнетушители ОУ, пожарные шкафы, пожарные рукава, СИЗ, средства пожаротушения',
   alternates: {
     canonical: '/',
-    languages: {
-      'ru': SITE_URL,
-      'en': `${SITE_URL}/en`,
-      'uz': `${SITE_URL}/uz`,
-      'x-default': SITE_URL,
-    },
   },
   robots: {
     index: true,
@@ -291,7 +285,13 @@ export default async function RootLayout({
             <CartProvider>
               <TopBar />
               <Header />
-              <main id="main-content" className="flex-grow pt-[120px]">{children}</main>
+              <main
+                id="main-content"
+                className="flex-grow pt-[120px]"
+    style={{ paddingTop: 'calc(var(--topbar-height, 36px) + 104px)' }}
+              >
+                {children}
+              </main>
               <Footer />
               <ClientWidgets />
             </CartProvider>

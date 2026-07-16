@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { serializeJSON } from '@/lib/json';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,15 +25,11 @@ function serializeImages(images?: unknown): string {
   return JSON.stringify([]);
 }
 
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
-
 // GET /api/admin/products
 export async function GET() {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const products = await prisma.product.findMany({
       include: {
         i18n: {
@@ -68,9 +65,8 @@ export async function GET() {
 // POST /api/admin/products
 export async function POST(request: Request) {
   try {
-    if (!isAuthed(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const body = await request.json();
     const { slug, title, price, stock, images, categorySlug } = body as {

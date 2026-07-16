@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getAllCategories } from '@/lib/api/categories';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const revalidate = 0;
 
 export async function GET() {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
     const categories = await getAllCategories();
     const count = Array.isArray(categories) ? categories.length : 0;
     const sample = Array.isArray(categories) ? categories.slice(0, 3) : [];

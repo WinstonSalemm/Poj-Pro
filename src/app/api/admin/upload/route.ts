@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { randomUUID } from 'crypto';
+import sharp from 'sharp';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
 
 const ALLOWED_MIME_TYPES = new Set<string>([
   'image/jpeg',
@@ -17,8 +13,17 @@ const ALLOWED_MIME_TYPES = new Set<string>([
   'image/webp',
   'image/avif',
   'image/gif',
-  'image/svg+xml',
 ]);
+
+const MAX_FILES_PER_REQUEST = 10;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const MIME_BY_FORMAT: Record<string, string> = {
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  gif: 'image/gif',
+};
 
 function getExtensionFromName(filename: string): string | undefined {
   const lastDot = filename.lastIndexOf('.');
@@ -30,15 +35,18 @@ function getExtensionFromName(filename: string): string | undefined {
 // POST /api/admin/upload - Загрузка изображений в базу данных
 export async function POST(request: NextRequest) {
   try {
-    if (!isAuthed(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
 
     if (!files || files.length === 0) {
       return NextResponse.json({ success: false, message: 'No files provided' }, { status: 400 });
+    }
+
+    if (files.length > MAX_FILES_PER_REQUEST) {
+      return NextResponse.json({ success: false, message: `Maximum ${MAX_FILES_PER_REQUEST} files per upload` }, { status: 400 });
     }
 
     const uploadedImages: Array<{ id: string; url: string; data: string }> = [];
@@ -50,6 +58,13 @@ export async function POST(request: NextRequest) {
       if (!file.type.startsWith('image/')) {
         console.log(`[upload] Skipping non-image file: ${file.name}`);
         continue;
+      }
+
+      if (file.size <= 0 || file.size > MAX_FILE_BYTES) {
+        return NextResponse.json(
+          { success: false, message: `Each image must be no larger than ${MAX_FILE_BYTES / 1024 / 1024} MB` },
+          { status: 400 },
+        );
       }
 
       console.log(`[upload] Processing file ${i + 1}/${files.length}:`, {
@@ -74,6 +89,21 @@ export async function POST(request: NextRequest) {
       // Конвертируем File в ArrayBuffer для сохранения в БД
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+
+      let detectedMime: string | undefined;
+      try {
+        const metadata = await sharp(buffer, { animated: true }).metadata();
+        detectedMime = metadata.format ? MIME_BY_FORMAT[metadata.format] : undefined;
+      } catch {
+        detectedMime = undefined;
+      }
+
+      if (!detectedMime || detectedMime !== file.type) {
+        return NextResponse.json(
+          { success: false, message: 'The uploaded file content does not match a supported image format' },
+          { status: 400 },
+        );
+      }
 
       // Генерируем уникальный ID для изображения
       const imageId = randomUUID();
@@ -121,12 +151,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[admin/upload][POST] error', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Failed to upload files', 
-        error: String(error),
-        details: error instanceof Error ? { message: error.message, stack: error.stack } : undefined
-      },
+      { success: false, message: 'Failed to upload files' },
       { status: 500 }
     );
   }

@@ -70,9 +70,26 @@ export default function Header() {
       }
     };
 
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
 
   const changeLanguage = (lng: Lang) => {
     // Convert legacy codes to standard codes for i18n
@@ -117,7 +134,7 @@ export default function Header() {
             ${isScrolled ? "shadow-sm" : "shadow-none"}
             `}
         style={{
-          top: "var(--topbar-height, 36px)",
+          top: "calc(var(--topbar-height, 36px) - 1px)",
           paddingTop: 0,
           WebkitTransform: "translateZ(0)",
         }}
@@ -136,6 +153,7 @@ export default function Header() {
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
+                aria-controls="mobile-navigation"
                 className="relative z-[1002] lg:hidden inline-flex items-center justify-center w-11 h-11 -ml-1 rounded-md"
               >
                 <span className={`block w-7 h-[2px] bg-brand transition-transform ${mobileOpen ? "translate-y-[10px] rotate-45" : ""}`} />
@@ -185,7 +203,7 @@ export default function Header() {
 
           {/* Mobile menu */}
           {mobileOpen && (
-            <nav className="lg:hidden border-t border-neutral-200 bg-white">
+            <nav id="mobile-navigation" aria-label="Mobile navigation" className="relative z-[1001] lg:hidden border-t border-neutral-200 bg-white shadow-lg">
               {menuLeft.map((item) => (
                 <Link
                   key={item.id}
@@ -204,11 +222,19 @@ export default function Header() {
         </BlurReveal>
       </header>
 
+      {mobileOpen && (
+        <div
+          aria-hidden="true"
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-[997] bg-black/25 lg:hidden"
+        />
+      )}
+
       {/* Language Switcher Bar - Below Header */}
       <div
         className="fixed left-0 right-0 z-[998]"
         style={{
-          top: `calc(var(--topbar-height, 28px) + 58px)`,
+          top: `calc(var(--topbar-height, 28px) + 57px)`,
         }}
       >
         <div className="container-section flex items-center justify-end py-1.5"
@@ -217,12 +243,13 @@ export default function Header() {
             paddingRight: "max(12px, env(safe-area-inset-right))",
           }}
         >
-          <div className="flex items-center gap-0.5 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200/50 p-0.5 shadow-sm">
+          <div className="flex items-center gap-0.5 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200/60 p-0.5 shadow-sm">
             {languages.map((lang) => (
               <button
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
-                className={`relative px-2.5 py-0.5 text-[10px] font-medium rounded-md transition-all duration-300 ${currentLanguage === lang.code
+                aria-label={`Language: ${lang.label}`}
+                className={`relative min-h-9 min-w-11 px-2 py-1 text-xs md:min-h-7 md:min-w-0 md:px-2.5 md:py-0.5 md:text-[10px] font-medium rounded-md transition-all duration-300 ${currentLanguage === lang.code
                   ? "text-white shadow-sm"
                   : "text-gray-500 hover:text-[#660000] hover:bg-gray-50/50"
                   }`}
@@ -249,8 +276,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Spacer */}
-      <div className="h-[90px] lg:hidden" aria-hidden />
     </>
   );
 }

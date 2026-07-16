@@ -14,6 +14,28 @@ const securityHeaders = [
   // { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
 ];
 
+const noIndexHeaders = [
+  { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+];
+
+const noIndexRoutePatterns = [
+  '/admin/:path*',
+  '/adminProducts/:path*',
+  '/admin-console/:path*',
+  '/admin-categories-add/:path*',
+  '/admin-popular-products/:path*',
+  '/admin-products/:path*',
+  '/admin-products-add/:path*',
+  '/api/:path*',
+  '/cart/:path*',
+  '/debug/:path*',
+  '/login',
+  '/register',
+  '/Pbase/:path*',
+  '/supplies/:path*',
+  '/lp/:path*',
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -92,6 +114,10 @@ const nextConfig = {
         source: '/(.*)',
         headers: securityHeaders,
       },
+      ...noIndexRoutePatterns.map((source) => ({
+        source,
+        headers: noIndexHeaders,
+      })),
       // Strong caching for static assets — PRODUCTION ONLY
       ...(process.env.NODE_ENV === 'production' ? [{
         source: '/:path*(svg|jpg|jpeg|png|gif|ico|css|js)',
@@ -131,6 +157,23 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Storefront pages use a cookie-based language switcher. These legacy
+      // locale-only URLs must not remain as indexable alternate homepages.
+      {
+        source: '/ru',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/en',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/uz',
+        destination: '/',
+        permanent: true,
+      },
       {
         source: '/lp/:slug*',
         destination: '/catalog',

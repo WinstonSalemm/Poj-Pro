@@ -6,10 +6,10 @@ const DICT: Record<Locale, Rule[]> = {
     { pattern: /огнетушитель\s*ОП-?5/gi, to: () => '/catalog/ognetushiteli/op-5' },
   ],
   uz: [
-    { pattern: /o'g'ni o'chirgich\s*OP-?5/gi, to: () => '/uz/catalog/ognetushiteli/op-5' },
+    { pattern: /o'g'ni o'chirgich\s*OP-?5/gi, to: () => '/catalog/ognetushiteli/op-5' },
   ],
   en: [
-    { pattern: /extinguisher\s*OP-?5/gi, to: () => '/en/catalog/ognetushiteli/op-5' },
+    { pattern: /extinguisher\s*OP-?5/gi, to: () => '/catalog/ognetushiteli/op-5' },
   ],
 };
 

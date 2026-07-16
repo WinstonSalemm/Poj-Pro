@@ -216,7 +216,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: state.items.some(item => item.id === action.payload.id)
           ? state.items.map(item =>
               item.id === action.payload.id
-                ? { ...item, qty: item.qty + 1 }
+                ? {
+                    ...item,
+                    qty: item.qty + 1,
+                    price: item.price > 0 ? item.price : action.payload.price,
+                    name: item.name || action.payload.name,
+                    image: item.image || action.payload.image,
+                  }
                 : item
             )
           : [

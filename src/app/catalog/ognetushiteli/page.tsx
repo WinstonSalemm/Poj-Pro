@@ -63,19 +63,8 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   const canonical = `${SITE_URL}${CANONICAL_PATH}`;
 
   // Стратегия для query-фильтров: noindex,follow при множественных фильтрах, иначе индексируем
-  const robots = filterKeys.length > 1 ? { index: false, follow: true } : { index: true, follow: true };
-
   const ogImageFile = CATEGORY_IMAGE_MAP['fire-extinguishers'];
   const ogImage = ogImageFile ? `${SITE_URL}/CatalogImage/${ogImageFile}` : undefined;
-
-  // Generate proper hreflang URLs
-  const basePath = CANONICAL_PATH;
-  const hreflangUrls = {
-    'ru': `${SITE_URL}${basePath}`,
-    'en': `${SITE_URL}/en${basePath}`,
-    'uz': `${SITE_URL}/uz${basePath}`,
-    'x-default': `${SITE_URL}${basePath}`,
-  };
 
   const keywords = 'огнетушители, огнетушители ОП, огнетушители ОУ, порошковые огнетушители, углекислотные огнетушители, купить огнетушитель, Ташкент, POJ PRO, пожарная безопасность';
 
@@ -85,9 +74,8 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     keywords,
     alternates: {
       canonical,
-      languages: hreflangUrls,
     },
-    robots: filterKeys.length > 1
+    robots: filterKeys.length > 0
       ? { index: false, follow: true }
       : {
         index: true,
@@ -208,9 +196,6 @@ export default async function FireExtinguishersCategoryPage() {
       <JsonLd data={list} type="CollectionPage" keyOverride="itemlist" />
       <JsonLd data={faq} type="FAQPage" keyOverride="faq" />
 
-      {/* H1 */}
-      <h1 className="text-2xl font-semibold text-[#660000] mb-3">{h1Title}</h1>
-
       {(() => {
         const text = (p1 || '').toString();
         const plain = text.replace(/<[^>]+>/g, '');
@@ -245,7 +230,7 @@ export default async function FireExtinguishersCategoryPage() {
         products={products} 
         rawCategory={'ognetushiteli'} 
         lang={locale}
-        categoryName={NAME_BY_LANG[locale] || NAME_BY_LANG.ru}
+        categoryName={h1Title}
       />
 
       {/* Collapsible SEO/intro content below grid */}

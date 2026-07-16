@@ -181,18 +181,15 @@ export function generateSEOContentMetadata({
   
   // Generate canonical URL
   const path = section === 'homepage' ? '/' : `/${section?.replace(/\./g, '/') || ''}`;
-  const url = `${SITE_URL}${locale === 'ru' ? '' : `/${locale}`}${path}`;
+  // The public storefront uses cookie-based locale selection, so it has one
+  // canonical URL per page. Blog translations provide their own metadata.
+  const url = `${SITE_URL}${path}`;
   
   return {
     title,
     description,
     alternates: {
       canonical: url,
-      languages: {
-        'ru': locale === 'ru' ? url : `${SITE_URL}${path}`,
-        'uz': locale === 'uz' ? url : `${SITE_URL}/uz${path}`,
-        'en': locale === 'en' ? url : `${SITE_URL}/en${path}`,
-      },
     },
     openGraph: {
       title,

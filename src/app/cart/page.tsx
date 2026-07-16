@@ -40,7 +40,7 @@ const PLACEHOLDER_IMG = '/OtherPics/product2photo.jpg';
 
 function CartPageContent() {
   const { t, i18n } = useTranslation();
-  const { status } = useSession();
+  const { status, data: session } = useSession();
   const router = useRouter();
 
   const {
@@ -50,7 +50,11 @@ function CartPageContent() {
     clearCart,
   } = useCart();
 
-  const [, setCheckoutOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+  const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [checkout, setCheckout] = useState({ customerName: '', email: '', phone: '', address: '', notes: '' });
 
   // Google Ads: конверсия "Запрос цены" — по факту загрузки страницы корзины с товарами
   useEffect(() => {
@@ -218,7 +222,43 @@ function CartPageContent() {
         items: items.map(it => ({ id: it.id, name: localized[it.id]?.name || it.name, price: it.price, quantity: it.qty })),
       });
     } catch {}
+    setCheckout((current) => ({
+      ...current,
+      customerName: current.customerName || session?.user?.name || '',
+      email: current.email || session?.user?.email || '',
+    }));
+    setCheckoutError('');
+    setIdempotencyKey(crypto.randomUUID());
     setCheckoutOpen(true);
+  };
+
+  const submitOrder = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmittingOrder || !idempotencyKey) return;
+    setIsSubmittingOrder(true);
+    setCheckoutError('');
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey },
+        body: JSON.stringify({
+          ...checkout,
+          items: items.map((item) => ({ productId: String(item.id), quantity: item.qty })),
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload?.success || !payload?.data?.id) {
+        throw new Error(payload?.message || 'Не удалось оформить заказ');
+      }
+
+      clearCart();
+      router.push(`/cart/success?orderId=${encodeURIComponent(payload.data.id)}&total=${encodeURIComponent(String(payload.data.total))}`);
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : 'Не удалось оформить заказ');
+    } finally {
+      setIsSubmittingOrder(false);
+    }
   };
 
   const showSkeleton = bootLoading;
@@ -491,6 +531,47 @@ function CartPageContent() {
           </div> */}
         </div>
       </div>
+
+      {checkoutOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center overflow-y-auto bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+          <form onSubmit={submitOrder} className="my-auto w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <h2 id="checkout-title" className="text-xl font-semibold text-[#660000]">Оформление заявки</h2>
+                <p className="mt-1 text-sm text-gray-600">Менеджер подтвердит наличие, доставку и итоговые условия.</p>
+              </div>
+              <button type="button" onClick={() => setCheckoutOpen(false)} className="rounded p-2 text-gray-500 hover:bg-gray-100" aria-label="Закрыть оформление">×</button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700">Имя
+                <input required maxLength={191} value={checkout.customerName} onChange={(event) => setCheckout({ ...checkout, customerName: event.target.value })} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" autoComplete="name" />
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Email
+                <input required type="email" maxLength={191} value={checkout.email} onChange={(event) => setCheckout({ ...checkout, email: event.target.value })} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" autoComplete="email" />
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Телефон
+                <input maxLength={50} value={checkout.phone} onChange={(event) => setCheckout({ ...checkout, phone: event.target.value })} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" autoComplete="tel" inputMode="tel" />
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Адрес или способ получения
+                <input maxLength={191} value={checkout.address} onChange={(event) => setCheckout({ ...checkout, address: event.target.value })} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" autoComplete="street-address" />
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Комментарий
+                <textarea maxLength={191} value={checkout.notes} onChange={(event) => setCheckout({ ...checkout, notes: event.target.value })} className="mt-1 min-h-24 w-full rounded-lg border border-gray-300 px-3 py-2" />
+              </label>
+            </div>
+
+            {checkoutError && <p role="alert" className="mt-3 text-sm text-red-700">{checkoutError}</p>}
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => setCheckoutOpen(false)} disabled={isSubmittingOrder} className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50">Отмена</button>
+              <button type="submit" disabled={isSubmittingOrder} className="rounded-lg bg-[#660000] px-4 py-2 font-medium text-white hover:bg-[#8B0000] disabled:opacity-60">
+                {isSubmittingOrder ? 'Отправляем…' : `Отправить заявку · ${Math.round(total).toLocaleString('ru-UZ')} UZS`}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Модалка подтверждения очистки корзины */}
       {isClearModalOpen && (

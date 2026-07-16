@@ -2,23 +2,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { serializeJSON } from '@/lib/json';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
-
 // PUT /api/admin/products/full/[id] - Обновить товар со всеми полями
 export async function PUT(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { pathname } = new URL(req.url);
     const segments = pathname.split('/');

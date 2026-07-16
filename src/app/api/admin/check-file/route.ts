@@ -2,22 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { access } from 'fs/promises';
 import { join } from 'path';
 import { existsSync, readdirSync } from 'fs';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
-
 // GET /api/admin/check-file - Проверка доступа к файлам
 export async function GET(request: NextRequest) {
   try {
-    if (!isAuthed(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { searchParams } = new URL(request.url);
     const fileName = searchParams.get('file');

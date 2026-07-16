@@ -21,8 +21,6 @@ interface SeoHeadProps {
   section?: string;
   tags?: string[];
   structuredData?: StructuredData | StructuredData[];
-  // When true, canonical and hreflang will use subpath locales (/en, /uz). Default: false.
-  useLocaleSubpaths?: boolean;
 }
 
 export function SeoHead({
@@ -38,7 +36,6 @@ export function SeoHead({
   section,
   tags = [],
   structuredData,
-  useLocaleSubpaths = false,
 }: SeoHeadProps) {
   const siteName = SITE_NAME;
   // Use global site URL to ensure absolute canonicals
@@ -58,29 +55,13 @@ export function SeoHead({
   const fullOgImage = ogImage.startsWith('http')
     ? ogImage
     : (siteUrl ? `${siteUrl}${ogImage}` : ogImage);
-  // Locale-aware canonical (ru at root; en/uz prefixed)
+  // Storefront locale is cookie-based, so generic pages have one canonical URL.
   const pathname = clean(path);
   const localeLower = (locale || 'ru').toLowerCase();
   const isEn = localeLower.startsWith('en');
   const isUz = localeLower.startsWith('uz');
-  const canonicalPath = useLocaleSubpaths
-    ? (isEn ? `/en${pathname}` : isUz ? `/uz${pathname}` : pathname) // ru default at root
-    : pathname;
+  const canonicalPath = pathname;
   const canonicalUrl = isServicePath ? undefined : (siteUrl ? `${siteUrl}${canonicalPath}` : canonicalPath);
-
-  // Hreflang alternates for subpath locales (skip on service paths)
-  const altRuPath = pathname;
-  const altEnPath = `/en${pathname}`;
-  const altUzPath = `/uz${pathname}`;
-  const languageAlternates: Record<string, string> | null = isServicePath
-    ? null
-    : useLocaleSubpaths
-      ? {
-          ru: siteUrl ? `${siteUrl}${altRuPath}` : altRuPath,
-          en: siteUrl ? `${siteUrl}${altEnPath}` : altEnPath,
-          uz: siteUrl ? `${siteUrl}${altUzPath}` : altUzPath,
-        }
-      : null;
   const ogLocale = isEn ? 'en-US' : isUz ? 'uz-UZ' : 'ru-RU';
 
   return (
@@ -92,16 +73,6 @@ export function SeoHead({
         
         {/* Canonical URL (skipped on service paths) */}
         {!isServicePath && canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-        
-        {/* Language Alternates (ru root; en/uz prefixed). x-default -> ru */}
-        {!isServicePath && languageAlternates && (
-          <>
-            <link rel="alternate" hrefLang="x-default" href={languageAlternates.ru} />
-            {Object.entries(languageAlternates).map(([lang, href]) => (
-              <link key={lang} rel="alternate" hrefLang={lang} href={href} />
-            ))}
-          </>
-        )}
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content={type} />

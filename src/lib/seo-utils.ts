@@ -13,18 +13,13 @@ export const generateCategoryMetadata = async (
   
   const title = categoryData.title || `${t(`categories.${category}`, category)} | ${siteName}`;
   const description = categoryData.description || t('defaultCategoryDescription', { category });
-  const canonical = `https://poj-pro.uz/${locale === 'ru' ? '' : `${locale}/`}catalog/${category}`;
+  const canonical = `https://poj-pro.uz/catalog/${category}`;
 
   return {
     title,
     description,
     alternates: {
       canonical,
-      languages: {
-        'ru': `https://poj-pro.uz/catalog/${category}`,
-        'uz': `https://poj-pro.uz/uz/catalog/${category}`,
-        'en': `https://poj-pro.uz/en/catalog/${category}`,
-      },
     },
     openGraph: {
       title,

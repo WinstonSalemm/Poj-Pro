@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
       title: tr?.title || product.slug,
       summary: tr?.summary || null,
       description: tr?.description || null,
-      price: product.price ?? 0,
+      price: product.price != null ? Number(product.price) : 0,
       images: images,
       specs: specs,
       category: product.category ? {

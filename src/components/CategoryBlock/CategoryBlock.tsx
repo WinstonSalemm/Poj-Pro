@@ -47,6 +47,17 @@ function prettyFromSlug(slug: string) {
   return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function pickDbCategoryName(
+  i18n: Array<{ locale: string; name: string }> | undefined,
+  lang: CanonLang
+): string | undefined {
+  const dbLocale = lang === 'en' ? 'eng' : lang === 'uz' ? 'uzb' : 'ru';
+  return (
+    i18n?.find((item) => item.locale === dbLocale)?.name?.trim() ||
+    i18n?.find((item) => item.locale === 'ru')?.name?.trim()
+  );
+}
+
 export default async function CategoryBlock({ locale }: { locale: Locale }) {
   const dictionary = await getDictionary(locale) as Dictionary;
   const lang = normalizeLang(String(locale));
@@ -73,6 +84,10 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
       name: true,
       image: true,
       imageData: true,
+      i18n: {
+        where: { locale: { in: ['ru', 'eng', 'uzb'] } },
+        select: { locale: true, name: true },
+      },
     },
     orderBy: {
       name: 'asc',
@@ -86,17 +101,26 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
 
   // Используем только категории из БД
   const availableCategorySlugs = dbCategories.map((c) => c.slug);
+  const categoryMap = new Map(dbCategories.map((c) => [c.slug, c]));
 
   const labels: Record<string, string> = {};
   const missingLabels: string[] = [];
 
   // Обрабатываем только категории, которые есть в БД
   for (const slug of availableCategorySlugs) {
+    const category = categoryMap.get(slug);
     // Normalize slug format for consistent lookup
     const normalizedSlug = slug.replace(/_/g, '-');
     const altSlug = slug.replace(/-/g, '_');
+
+    // 1) Prefer localized category names stored in DB
+    const dbName = pickDbCategoryName(category?.i18n, lang);
+    if (dbName) {
+      labels[slug] = dbName;
+      continue;
+    }
     
-    // 1) Try manual overrides first (check both formats)
+    // 2) Try manual overrides first (check both formats)
     const override = pickByLang(CATEGORY_NAME_OVERRIDES[slug] || 
                               CATEGORY_NAME_OVERRIDES[normalizedSlug] || 
                               CATEGORY_NAME_OVERRIDES[altSlug] as Partial<Record<string, string>>, lang);
@@ -105,21 +129,26 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
       continue;
     }
     
-    // 2) Try general constants dictionary
+    // 3) Try general constants dictionary
     const constantName = pickByLang(CATEGORY_NAMES[slug] as Partial<Record<string, string>>, lang);
     if (constantName) {
       labels[slug] = constantName;
       continue;
     }
     
-    // 3) Try i18n dictionary
+    // 4) Try i18n dictionary
     const dictName = dictionary?.categories?.[slug];
     if (dictName) {
       labels[slug] = dictName;
       continue;
     }
+
+    if (category?.name?.trim()) {
+      labels[slug] = category.name.trim();
+      continue;
+    }
     
-    // 4) Fallback to pretty slug
+    // 5) Fallback to pretty slug
     const prettySlug = prettyFromSlug(slug);
     labels[slug] = prettySlug;
     
@@ -137,9 +166,6 @@ export default async function CategoryBlock({ locale }: { locale: Locale }) {
   const imageMap: Record<string, string> = {};
   const dir = path.join(process.cwd(), 'public', 'CatalogImage');
   const placeholderSlugs: string[] = [];
-
-  // Создаём мапу slug -> category для доступа к imageData
-  const categoryMap = new Map(dbCategories.map((c) => [c.slug, c]));
 
   for (const slug of availableCategorySlugs) {
     const category = categoryMap.get(slug);

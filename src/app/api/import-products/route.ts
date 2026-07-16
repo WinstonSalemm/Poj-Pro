@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 interface ProductData {
   id: number;
@@ -15,8 +16,11 @@ interface ProductData {
 }
 
 export async function POST() {
-  console.log('Starting import...');
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
+
+    console.log('Starting import...');
     // Read product data from JSON files
     const ruProducts: ProductData[] = JSON.parse(
       fs.readFileSync(path.join(process.cwd(), 'src/locales', 'ru/data/products.json'), 'utf-8')

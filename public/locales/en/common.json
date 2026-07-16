@@ -8,12 +8,5 @@
             "Special offers for customers"
         ]
     },
-    "goToCatalog": "Go to catalog",
-    "creator": {
-        "title": "Did you like the site?",
-        "description": "I developed this site myself. If you need a website or web solution for your project, you can contact me directly.",
-        "email": "Email",
-        "phone": "Phone",
-        "telegram": "Telegram"
-    }
+    "goToCatalog": "Go to catalog"
 }

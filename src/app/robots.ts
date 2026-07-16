@@ -3,32 +3,12 @@ import { SITE_URL } from '@/lib/site';
 
 // List of paths that should not be indexed
 const DISALLOWED_PATHS = [
-  '/admin',
-  '/admin/*',
-  '/adminProducts',
-  '/admin-console',
+  // API and diagnostics are not public documents. UI service pages are
+  // crawlable so bots can see their X-Robots-Tag: noindex response.
+  '/api',
   '/api/*',
-  '/_next/*',
-  '/_next/static/*',
-  '/_next/image/*',
-  '/404',
-  '/500',
-  '/_error',
-  '/cart',
-  '/cart/*',
-  '/checkout',
-  '/checkout/*',
-  '/account',
-  '/account/*',
-  '/login',
-  '/register',
-  '/password-reset',
   '/debug',
   '/debug/*',
-  '/supplies',
-  '/supplies/*',
-  '/Pbase',
-  '/lp/*',
 ];
 
 // Crawl delay for different bots (in seconds)

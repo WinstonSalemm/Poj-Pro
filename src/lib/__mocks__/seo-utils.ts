@@ -25,15 +25,9 @@ export const generateCategoryMetadata = (category: string, locale: 'ru' | 'uz' |
     description: `${category} catalog`,
   };
 
-  const canonical = `${baseUrl}/${locale}/catalog/${category}`;
+  const canonical = `${baseUrl}/catalog/${category}`;
   const alternates = {
     canonical,
-    languages: {
-      'x-default': canonical,
-      ru: `${baseUrl}/ru/catalog/${category}`,
-      uz: `${baseUrl}/uz/catalog/${category}`,
-      en: `${baseUrl}/en/catalog/${category}`,
-    },
   } as Metadata['alternates'];
 
   const metadata: Metadata = {

@@ -45,7 +45,7 @@ export default function SizCategoryModal({ sizCard, labels }: { sizCard: React.R
               {SIZ_SUBCATEGORIES.map((sub) => (
                 <Link
                   key={sub}
-                  href={`/catalog?category=${encodeURIComponent(sub)}`}
+                  href={`/catalog/${encodeURIComponent(sub)}`}
                   onClick={() => setShowSizSubs(false)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 hover:border-[#e63946] hover:bg-[#f8f9fa] transition-colors text-left"
                 >

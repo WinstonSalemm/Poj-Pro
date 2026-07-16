@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
 
 function parseImages(images: string | null): string[] {
   if (!images) return [];
@@ -23,9 +18,8 @@ function parseImages(images: string | null): string[] {
 // GET /api/admin/products/new - Получить список новых товаров
 export async function GET(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     // Новые товары: созданы за последние 14 дней
     // Если нет товаров за 14 дней - не показываем ничего

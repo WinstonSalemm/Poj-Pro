@@ -1,7 +1,7 @@
 import { usePathname } from 'next/navigation';
 import Head from 'next/head';
 import { useTranslation } from '@/i18n/useTranslation';
-import { DEFAULT_SEO, SITE_NAME, SITE_URL, i18nAlt } from '@/lib/site';
+import { DEFAULT_SEO, SITE_NAME, SITE_URL } from '@/lib/site';
 
 type SEOProps = {
   title?: string;
@@ -10,7 +10,7 @@ type SEOProps = {
   noindex?: boolean;
   canonicalUrl?: string;
   type?: 'website' | 'article' | 'product' | 'profile' | 'book' | 'music.song' | 'music.album' | 'music.playlist' | 'music.radio_station' | 'video.movie' | 'video.episode' | 'video.tv_show' | 'video.other';
-  locale?: keyof typeof i18nAlt;
+  locale?: 'ru' | 'en' | 'uz';
   siteName?: string;
   twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
   twitterSite?: string;
@@ -56,26 +56,6 @@ export const SEO = ({
     siteName: siteName || SITE_NAME,
   };
 
-  // Generate alternate language URLs
-  const alternates = (Object.keys(i18nAlt) as Array<keyof typeof i18nAlt>).map((lang) => ({
-    lang,
-    url: `${SITE_URL}${lang === 'ru' ? '' : `/${lang}`}${pathname.replace(/^\/(ru|en|uz)/, '')}`,
-  }));
-
-  // Generate language alternates for hreflang
-  const hreflangLinks = alternates.map((alt) => ({
-    rel: 'alternate',
-    hrefLang: alt.lang,
-    href: alt.url,
-  }));
-
-  // Add x-default hreflang
-  hreflangLinks.push({
-    rel: 'alternate',
-    hrefLang: 'x-default',
-    href: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://poj-pro.uz'}${pathname}`,
-  });
-
   // Open Graph meta tags
   const ogTags = [
     { property: 'og:title', content: seo.title },
@@ -114,11 +94,6 @@ export const SEO = ({
       
       {/* Canonical URL */}
       <link rel="canonical" href={seo.url} />
-      
-      {/* Language alternates */}
-      {hreflangLinks.map((link) => (
-        <link key={link.hrefLang} rel={link.rel} hrefLang={link.hrefLang} href={link.href} />
-      ))}
       
       {/* Open Graph / Facebook */}
       {ogTags.map((tag, index) => (

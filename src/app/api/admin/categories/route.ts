@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 type Locale = 'ru' | 'eng' | 'uzb';
-
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
 
 function normalizeCategoryName(i18n?: Partial<Record<Locale, string>>): string | null {
   if (!i18n) return null;
@@ -20,9 +15,8 @@ function normalizeCategoryName(i18n?: Partial<Record<Locale, string>>): string |
 // GET /api/admin/categories - Получить все категории для админа
 export async function GET(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const categories = await prisma.category.findMany({
       orderBy: [
@@ -63,9 +57,8 @@ export async function GET(req: NextRequest) {
 // POST /api/admin/categories - Создать новую категорию
 export async function POST(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const body = await req.json();
     const { slug, name, image, imageData, i18n } = body as {
@@ -251,9 +244,8 @@ export async function POST(req: NextRequest) {
 // DELETE /api/admin/categories - Удалить категорию
 export async function DELETE(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

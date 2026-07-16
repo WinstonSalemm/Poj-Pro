@@ -3,10 +3,6 @@ import { SITE_URL } from "@/lib/site";
 import { prisma } from "@/lib/prisma";
 import { getAllPostsAllLocales, getPostAlternates } from "@/lib/blog/loader";
 
-// Supported locales
-type Locale = "ru" | "uz" | "en";
-const DEFAULT_LOCALE: Locale = "ru";
-
 // Type for sitemap entry
 type SitemapEntry = {
   url: string;
@@ -25,12 +21,8 @@ type SitemapEntry = {
   };
 };
 
-// Note: Language switching is client-side via cookies, not separate URLs
-// Only blog has separate routes: /blog (ru), /en/blog (en), /uz/blog (uz)
-
-// Static pages that don't change often
-// Note: Language switching is client-side via cookies, no separate URLs for /ru/, /en/, /uz/
-// Only blog has separate routes: /blog (ru), /en/blog (en), /uz/blog (uz)
+// Storefront language is selected by cookie, so generic pages have one URL.
+// The only public locale URLs currently implemented are /en/blog and /uz/blog.
 function getStaticPages(): SitemapEntry[] {
   const baseRoutes = [
     { path: "/", priority: 1.0 },
@@ -40,18 +32,33 @@ function getStaticPages(): SitemapEntry[] {
     { path: "/documents", priority: 0.7 },
     { path: "/documents/certificates", priority: 0.7 },
     { path: "/guide", priority: 0.7 },
-    { path: "/blog", priority: 0.7 }, // Russian blog (default)
   ];
-  const staticRoutes = [...baseRoutes];
+  const staticRoutes = [
+    ...baseRoutes,
+    { path: "/en/blog", priority: 0.7 },
+    { path: "/uz/blog", priority: 0.7 },
+  ];
 
   const now = new Date().toISOString();
   const routesArr = Array.isArray(staticRoutes) ? staticRoutes : [];
-  return routesArr.map(({ path, priority }) => ({
-    url: `${SITE_URL}${path}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority,
-  }));
+  return routesArr.map(({ path, priority }) => {
+    const isBlogListing = path === '/en/blog' || path === '/uz/blog';
+    return {
+      url: `${SITE_URL}${path}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority,
+      ...(isBlogListing ? {
+        alternates: {
+          languages: {
+            en: `${SITE_URL}/en/blog`,
+            uz: `${SITE_URL}/uz/blog`,
+            'x-default': `${SITE_URL}/en/blog`,
+          },
+        },
+      } : {}),
+    };
+  });
 }
 
 // Generate product pages sitemap entries with correct URLs
@@ -181,9 +188,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const items = Array.isArray(itemsRaw) ? itemsRaw : [];
       const now = new Date().toISOString();
       return items.map(({ locale, post }): SitemapEntry => {
-        const path = `${locale === DEFAULT_LOCALE ? "" : `/${locale}`}/blog/${
-          post.slug
-        }`;
+        const path = `/${locale}/blog/${post.slug}`;
         const last = post.frontmatter.date
           ? new Date(post.frontmatter.date)
           : now;
@@ -191,6 +196,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const languages = Object.fromEntries(
           Object.entries(alts).map(([loc, p]) => [loc, `${SITE_URL}${p}`])
         );
+        languages['x-default'] = `${SITE_URL}${alts.en ?? alts.uz ?? path}`;
         return {
           url: `${SITE_URL}${path}`,
           lastModified: last,

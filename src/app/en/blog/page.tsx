@@ -2,15 +2,26 @@ import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog/loader';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/metadata';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-static';
 
-export const metadata: Metadata = buildPageMetadata({
-  defaultTitle: 'Blog',
-  defaultDescription: 'Articles on fire safety',
-  path: '/en/blog',
-  lang: 'eng',
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    defaultTitle: 'Blog',
+    defaultDescription: 'Articles on fire safety',
+    path: '/en/blog',
+    lang: 'eng',
+  }),
+  alternates: {
+    canonical: `${SITE_URL}/en/blog`,
+    languages: {
+      en: `${SITE_URL}/en/blog`,
+      uz: `${SITE_URL}/uz/blog`,
+      'x-default': `${SITE_URL}/en/blog`,
+    },
+  },
+};
 
 export default async function BlogListing({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
   const { page: pageParam } = (await searchParams) || {};

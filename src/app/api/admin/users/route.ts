@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { serializeJSON } from '@/lib/json';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 // This route uses NextAuth which relies on headers and cookies.
 // Force dynamic to avoid static rendering during build.
@@ -12,24 +11,8 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    // Check if user is authenticated
-    const session = await getServerSession(authOptions);
-    
-    // If no session, return 401 Unauthorized
-    if (!session) {
-      return NextResponse.json(
-        { error: 'You must be signed in to access this resource' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is admin
-    if (!session.user.isAdmin) {
-      return NextResponse.json(
-        { error: 'You do not have permission to access this resource' },
-        { status: 403 }
-      );
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     // Get all users with their orders
     const users = await prisma.user.findMany({

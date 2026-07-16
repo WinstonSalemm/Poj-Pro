@@ -1,20 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { serializeJSON } from '@/lib/json';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
-
 // GET /api/admin/popular-products - получить список популярных товаров
 export async function GET() {
   try {
+    const authError = await requireAdmin();
+    if (authError) return authError;
     const popularProducts = await prisma.popularProduct.findMany({
       include: {
         product: {
@@ -58,9 +55,8 @@ export async function GET() {
 // POST /api/admin/popular-products - добавить товар в популярные
 export async function POST(request: Request) {
   try {
-    if (!isAuthed(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const body = await request.json();
     const { productId, order } = body as {
@@ -140,9 +136,8 @@ export async function POST(request: Request) {
 // PUT /api/admin/popular-products - обновить порядок популярных товаров
 export async function PUT(request: Request) {
   try {
-    if (!isAuthed(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const body = await request.json();
     const { items } = body as {

@@ -86,15 +86,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const safeCategory = String(category || '').trim();
   const canonical = `${SITE_URL}/catalog/${safeCategory}/${dbProduct.slug}`.replace(/\/+/g, '/');
 
-  // Generate proper hreflang URLs
-  const basePath = `/catalog/${safeCategory}/${dbProduct.slug}`;
-  const hreflangUrls = {
-    'ru': `${SITE_URL}${basePath}`,
-    'en': `${SITE_URL}/en${basePath}`,
-    'uz': `${SITE_URL}/uz${basePath}`,
-    'x-default': `${SITE_URL}${basePath}`,
-  };
-
   // Generate keywords from product data
   const keywords = [
     title,
@@ -111,7 +102,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     keywords,
     alternates: {
       canonical,
-      languages: hreflangUrls,
     },
     robots: {
       index: true,
@@ -167,6 +157,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       },
       images: {
         orderBy: { order: 'asc' },
+      },
+      certificates: {
+        include: {
+          certificate: { select: { id: true, title: true, href: true } },
+        },
       },
     },
   });
@@ -369,6 +364,37 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const description = i18n?.description || null;
   const sitePath = `/catalog/${dbProduct.category?.slug || category}/${dbProduct.slug}`;
   const showBanner = ['siz', 'ballony'].includes(category);
+  const hasPrice = priceNumber !== null && Number.isFinite(priceNumber) && priceNumber > 0;
+  const certificates = dbProduct.certificates.map(({ certificate }) => certificate);
+  const productCopy = locale === 'en'
+    ? {
+        inStock: `In stock${dbProduct.stock > 0 ? ` · ${dbProduct.stock} pcs.` : ''} `,
+        availabilityOnRequest: 'Confirm availability with a specialist',
+        delivery: 'Delivery across Tashkent and Uzbekistan',
+        documents: 'Documents and certificates — on request',
+        consultation: 'Get a consultation',
+        catalog: 'Back to catalog',
+        certificatesTitle: 'Documents for this product',
+      }
+    : locale === 'uz'
+      ? {
+          inStock: `Mavjud${dbProduct.stock > 0 ? ` · ${dbProduct.stock} dona` : ''} `,
+          availabilityOnRequest: 'Mavjudligini mutaxassis bilan aniqlang',
+          delivery: 'Toshkent va Oʻzbekiston bo‘ylab yetkazib berish',
+          documents: 'Hujjatlar va sertifikatlar — so‘rov bo‘yicha',
+          consultation: 'Maslahat olish',
+          catalog: 'Katalogga qaytish',
+          certificatesTitle: 'Ushbu mahsulot hujjatlari',
+        }
+      : {
+          inStock: `В наличии${dbProduct.stock > 0 ? ` · ${dbProduct.stock} шт.` : ''} `,
+          availabilityOnRequest: 'Наличие уточнит специалист',
+          delivery: 'Доставка по Ташкенту и Узбекистану',
+          documents: 'Документы и сертификаты — по запросу',
+          consultation: 'Получить консультацию',
+          catalog: 'Вернуться в каталог',
+          certificatesTitle: 'Документы на этот товар',
+        };
 
   return (
     <>
@@ -381,31 +407,41 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <Breadcrumbs items={[{ name: t('common.catalog', 'Catalog'), href: "/catalog" }, ...(categorySlug ? [{ name: categoryLabel, href: `/catalog/${categorySlug}` }] : []), { name: title }]} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
-              <div className="relative w-full aspect-[4/3] lg:aspect-square max-h-[60vh]">
+              <div className="relative mx-auto w-full max-w-[420px] aspect-[4/3] lg:max-w-[360px] xl:max-w-[390px] lg:aspect-[3/4] max-h-[52vh]">
                 <Image
                   src={mainImage}
                   alt={title}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 88vw, (max-width: 1280px) 360px, 390px"
                   priority
                   className="object-contain"
                   placeholder="blur"
                   blurDataURL={BLUR_DATA}
                 />
               </div>
-              <div className="mt-4 flex flex-col sm:flex-row gap-4">
-                <QuantityAddToCart productId={dbProduct.id} className="flex-1" />
-                <Link href={`/catalog/${dbProduct.category?.slug || category}`} className="flex-1 border border-gray-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium !text-[#660000] bg-white hover:bg-gray-50">
-                  <T k="common.backToCatalog" />
+              <div className="mt-4">
+                <Link href={`/catalog/${dbProduct.category?.slug || category}`} className="min-h-11 w-full rounded-xl border border-gray-300 px-4 py-2.5 flex items-center justify-center text-sm font-medium !text-[#660000] bg-white hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40">
+                  {productCopy.catalog}
                 </Link>
               </div>
             </div>
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               <h1 className="text-2xl md:text-3xl font-bold text-[#660000] mb-4">{title}</h1>
               {summary && <p className="text-gray-700 text-lg mb-6">{summary}</p>}
-              <div className="mt-6 mb-8">
+              <div className="rounded-2xl border border-[#660000]/15 bg-[#fff9f8] p-4 md:p-5">
                 <div className="text-3xl font-bold text-[#660000]">
-                  <Price price={priceNumber} />
+                  <Price price={hasPrice ? priceNumber : null} />
+                </div>
+                <div className="mt-4 space-y-2 text-sm text-gray-700">
+                  <p className="flex items-start gap-2"><span aria-hidden="true" className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${dbProduct.stock > 0 ? 'bg-emerald-600' : 'bg-amber-500'}`} />{dbProduct.stock > 0 ? productCopy.inStock : productCopy.availabilityOnRequest}</p>
+                  <p className="flex items-start gap-2"><span aria-hidden="true" className="mt-1 text-[#660000]">✓</span>{productCopy.delivery}</p>
+                  <p className="flex items-start gap-2"><span aria-hidden="true" className="mt-1 text-[#660000]">✓</span>{productCopy.documents}</p>
+                </div>
+                <div className="mt-5 grid gap-3">
+                  {hasPrice && <QuantityAddToCart productId={dbProduct.id} className="w-full" />}
+                  <Link href={`/contacts?product=${encodeURIComponent(dbProduct.slug)}`} className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#660000] px-4 py-2.5 text-center font-semibold !text-[#660000] transition-colors hover:bg-[#660000]/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40">
+                    {productCopy.consultation}
+                  </Link>
                 </div>
               </div>
               <div className="space-y-6">
@@ -419,6 +455,20 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                   <div>
                     <h2 className="text-lg font-semibold !text-[#660000] mb-3"><T k="productDetail.characteristics" /></h2>
                     <ProductSpecs specs={specsEntries} />
+                  </div>
+                )}
+                {certificates.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-semibold !text-[#660000] mb-3">{productCopy.certificatesTitle}</h2>
+                    <ul className="space-y-2">
+                      {certificates.map((certificate) => (
+                        <li key={certificate.id}>
+                          <Link href={certificate.href} className="inline-flex min-h-10 items-center rounded-lg border border-gray-200 px-3 text-sm font-medium !text-[#660000] hover:bg-gray-50">
+                            {certificate.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>

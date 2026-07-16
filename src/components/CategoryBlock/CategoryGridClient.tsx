@@ -81,7 +81,7 @@ export default function CategoryGridClient({ dictionary, labels, imageMap, categ
               return <SizCategoryModal key={cat} sizCard={cardContent} labels={labels} />;
             }
             return (
-              <Link key={cat} href={`/catalog?category=${encodeURIComponent(cat)}`} className="block">
+              <Link key={cat} href={`/catalog/${encodeURIComponent(cat)}`} className="block">
                 {cardContent}
               </Link>
             );

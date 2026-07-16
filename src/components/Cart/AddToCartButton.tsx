@@ -19,6 +19,16 @@ function normalizeImageUrl(u?: string): string {
   return s;
 }
 
+function normalizePrice(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value === 'string') {
+    const normalized = value.replace(/[^\d.,-]/g, '').replace(',', '.');
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
 interface AddToCartButtonProps {
   productId: string | number;
   quantity?: number;
@@ -65,7 +75,7 @@ export function AddToCartButton({
       const json = await res.json();
       const data = json?.data || {};
       const title: string = (data.title as string) || String(productId);
-      const price: number = typeof data.price === 'number' ? data.price : 0;
+      const price = normalizePrice(data.price);
       const rawImage: string = Array.isArray(data.images) && data.images[0]
         ? data.images[0]
         : PLACEHOLDER_IMG;

@@ -90,15 +90,6 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
   const ogImageFile = CATEGORY_IMAGE_MAP['fire-extinguishers'];
   const ogImage = ogImageFile ? `${SITE_URL}/CatalogImage/${ogImageFile}` : undefined;
 
-  // Generate proper hreflang URLs
-  const basePath = `${CANONICAL_BASE}/type/${type}`;
-  const hreflangUrls = {
-    'ru': `${SITE_URL}${basePath}`,
-    'en': `${SITE_URL}/en${basePath}`,
-    'uz': `${SITE_URL}/uz${basePath}`,
-    'x-default': `${SITE_URL}${basePath}`,
-  };
-
   const keywords = [
     titleMap[type],
     'огнетушители',
@@ -113,7 +104,6 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     keywords,
     alternates: {
       canonical,
-      languages: hreflangUrls,
     },
     robots: extraFilterKeys.length > 0
       ? { index: false, follow: true }

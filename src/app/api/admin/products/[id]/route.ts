@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { serializeJSON } from '@/lib/json';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,18 +25,11 @@ function serializeImages(images?: unknown): string {
   return JSON.stringify([]);
 }
 
-function isAuthed(request: Request): boolean {
-  const token = request.headers.get('x-admin-token');
-  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin-ship-2025';
-  return token === adminPassword;
-}
-
 // GET /api/admin/products/[id] - Получить полные данные товара для редактирования
 export async function GET(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { pathname } = new URL(req.url);
     const segments = pathname.split('/');
@@ -125,9 +119,8 @@ export async function GET(req: NextRequest) {
 // PUT /api/admin/products/[id]
 export async function PUT(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { pathname } = new URL(req.url);
     const segments = pathname.split('/');
@@ -185,9 +178,8 @@ export async function PUT(req: NextRequest) {
 // DELETE /api/admin/products/[id]
 export async function DELETE(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
+    const authError = await requireAdmin();
+    if (authError) return authError;
 
     const { pathname } = new URL(req.url);
     const segments = pathname.split('/');

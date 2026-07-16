@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import dynamic from "next/dynamic";
+import EmailForm from "@/components/EmailForm/EmailForm";
 
 const MapSection = dynamic(() => import("@/components/MapSection/MapSection"), {
   ssr: false,
@@ -88,6 +89,10 @@ export default function ContactsClient() {
             </article>
           </>
         )}
+      </section>
+
+      <section className={`mt-10 transition-opacity duration-500 ${bootLoading ? "opacity-0" : "opacity-100"}`}>
+        <EmailForm />
       </section>
 
       {/* Карта */}
