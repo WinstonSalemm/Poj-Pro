@@ -107,6 +107,11 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
     const imageUrl = normalizeImageUrl(primary);
     addItem(product.id, priceNum, titleText, imageUrl);
     try {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("cart:add", { detail: { delta: 1 } }));
+      }
+    } catch {}
+    try {
       trackAddToCart({
         item_id: product.id,
         item_name: titleText,
@@ -131,20 +136,36 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
   const inc = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setQty((q) => q + 1); };
 
   const highlightCls = popularVariant ? 'ring-1 ring-[#660000]/20' : '';
+  const compact = popularVariant;
+
   return (
     <div
       onClick={() => onClick?.(product)}
-      className={`group relative flex h-full flex-col bg-white rounded-2xl p-3 md:p-4 border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-[border-color,background-color,box-shadow] duration-300 ${highlightCls}`}
+      className={`group relative flex h-full flex-col bg-white border border-gray-200 hover:border-[#660000]/50 hover:bg-gray-50 hover:shadow-md transition-[border-color,background-color,box-shadow] duration-300 ${
+        compact
+          ? `rounded-xl p-2 sm:p-2.5 ${highlightCls}`
+          : `rounded-2xl p-3 md:p-4 ${highlightCls}`
+      }`}
     >
       {/* изображение */}
-      <div className="relative w-full overflow-hidden rounded-xl bg-gray-100 aspect-square">
+      <div
+        className={`relative w-full overflow-hidden bg-gray-100 ${
+          compact ? "aspect-[5/4] rounded-lg" : "aspect-square rounded-xl"
+        }`}
+      >
         <Image
           src={normalizeImageUrl((product.image && product.image) || (Array.isArray(product.images) && product.images[0]) || undefined)}
           alt={`${titleText} — купить в Ташкенте`}
           fill
           priority={priority}
-          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-contain p-2 transition-transform duration-300 transform-gpu group-hover:scale-105"
+          sizes={
+            compact
+              ? "(min-width: 1024px) 20vw, (min-width: 640px) 30vw, 45vw"
+              : "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          }
+          className={`object-contain transition-transform duration-300 transform-gpu group-hover:scale-105 ${
+            compact ? "p-1.5" : "p-2"
+          }`}
           loading={priority ? undefined : "lazy"}
           placeholder="blur"
           blurDataURL={BLUR_DATA}
@@ -155,7 +176,11 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
         <button
           onClick={addToCart}
           aria-label="Add to cart"
-          className="absolute top-2 right-2 z-10 rounded-full border border-[#660000] text-[#660000] bg-white/90 backdrop-blur px-3 py-1 text-xs shadow-sm hover:bg-[#660000] hover:text-white transition-colors"
+          className={`absolute z-10 rounded-full border border-[#660000] text-[#660000] bg-white/90 backdrop-blur shadow-sm hover:bg-[#660000] hover:text-white transition-colors ${
+            compact
+              ? "top-1.5 right-1.5 px-2 py-0.5 text-[11px]"
+              : "top-2 right-2 px-3 py-1 text-xs"
+          }`}
           data-testid="product-card-add"
         >
           +
@@ -164,23 +189,35 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
 
       {/* заголовок */}
       <h3
-        className="mt-2 font-semibold text-[#660000] line-clamp-3 min-h-[3.6rem] text-[0.9rem] md:text-[0.95rem] leading-tight break-words"
+        className={`font-semibold text-[#660000] leading-tight break-words ${
+          compact
+            ? "mt-1.5 line-clamp-2 min-h-[2.4rem] text-[0.78rem] sm:text-[0.85rem]"
+            : "mt-2 line-clamp-3 min-h-[3.6rem] text-[0.9rem] md:text-[0.95rem]"
+        }`}
         title={titleText}
       >
         {titleText}
       </h3>
 
       {/* цена */}
-      <div className="mt-1 min-h-[1.2rem] text-xs text-gray-600">
+      <div
+        className={
+          compact
+            ? "mt-1 min-h-[1.35rem] text-sm font-bold tabular-nums text-[#660000] sm:text-[0.95rem]"
+            : "mt-1 min-h-[1.2rem] text-xs font-semibold text-gray-800"
+        }
+      >
         {priceNum > 0 ? `${priceNum.toLocaleString("ru-UZ")} UZS` : ""}
       </div>
 
       {/* действия */}
-      <div className="mt-auto flex flex-col gap-2 pt-3">
+      <div className={`mt-auto flex flex-col ${compact ? "gap-1.5 pt-2" : "gap-2 pt-3"}`}>
         {showDetailsLink && (
           <Link
             href={detailsHref}
-            className="block w-full text-center rounded-xl border border-gray-300 text-[#660000] py-2 hover:bg-[#660000]/5"
+            className={`block w-full text-center border border-gray-300 text-[#660000] hover:bg-[#660000]/5 ${
+              compact ? "rounded-lg py-1.5 text-xs" : "rounded-xl py-2"
+            }`}
             aria-label={titleText}
             onClick={() => {
               try {
@@ -198,21 +235,26 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
 
         <button
           onClick={addToCart}
-          className="w-full rounded-xl py-2 font-medium bg-[#660000] text-white hover:bg-[#8B0000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40 transition-colors duration-200"
+          className={`w-full font-medium bg-[#660000] text-white hover:bg-[#8B0000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40 transition-colors duration-200 ${
+            compact ? "rounded-lg py-1.5 text-xs sm:text-sm" : "rounded-xl py-2"
+          }`}
           data-testid="product-card-add"
         >
           {t(TRANSLATION_KEYS.addToCart, "В корзину")}
         </button>
 
-        <div
-          className="pt-1"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div onClick={(e) => e.stopPropagation()}>
           <div className="mx-auto w-full flex items-center justify-center">
-            <div className="inline-flex items-center rounded-full border border-gray-300 px-2 py-1 text-[#660000]">
+            <div
+              className={`inline-flex items-center rounded-full border border-gray-300 text-[#660000] ${
+                compact ? "px-1 py-0.5" : "px-2 py-1"
+              }`}
+            >
               <button
                 onClick={dec}
-                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[#660000]/5"
+                className={`flex items-center justify-center rounded-full hover:bg-[#660000]/5 ${
+                  compact ? "h-6 w-6 text-sm" : "h-7 w-7"
+                }`}
                 aria-label="Уменьшить количество"
               >
                 −
@@ -224,12 +266,16 @@ const ProductCard = memo(function ProductCard({ product, onClick, showDetailsLin
                 value={qty}
                 onChange={onQtyChange}
                 onKeyDown={onQtyKeyDown}
-                className="w-10 text-center bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className={`text-center bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                  compact ? "w-7 text-xs" : "w-10"
+                }`}
                 aria-label="Количество"
               />
               <button
                 onClick={inc}
-                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-[#660000]/5"
+                className={`flex items-center justify-center rounded-full hover:bg-[#660000]/5 ${
+                  compact ? "h-6 w-6 text-sm" : "h-7 w-7"
+                }`}
                 aria-label="Увеличить количество"
               >
                 +

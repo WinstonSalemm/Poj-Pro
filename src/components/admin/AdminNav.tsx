@@ -3,71 +3,51 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navigation = [
-  { name: 'Dashboard', href: '/admin' },
-  { name: 'Orders', href: '/admin/orders' },
-  { name: 'Products', href: '/admin-products' },
-  { name: 'Popular Products', href: '/admin-popular-products' },
-  { name: 'Акции', href: '/admin/promotions' },
-  { name: 'Customers', href: '/admin/customers' },
-];
+export const ADMIN_NAV_LINKS = [
+  { href: '/admin', label: 'Dashboard', hint: 'Обзор и пользователи' },
+  { href: '/admin-categories-add', label: 'Категории', hint: 'Добавить или править' },
+  { href: '/admin-products', label: 'Товары', hint: 'Список и добавление' },
+  { href: '/admin-popular-products', label: 'Популярное', hint: 'Блок на главной' },
+  { href: '/admin/promotions', label: 'Акции', hint: 'Скидки и спецпредложения' },
+] as const;
+
+function isActivePath(pathname: string | null, href: string): boolean {
+  if (!pathname) return false;
+  if (href === '/admin') return pathname === '/admin';
+  // Exact match, or nested path under href/ (avoids /admin-products matching /admin-products-add)
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export default function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-gray-800">Admin</span>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {navigation.map((item) => {
-                const isCurrent = pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`${
-                      isCurrent
-                        ? 'border-[#660000] text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
-                    }`}
-                    aria-current={isCurrent ? 'page' : undefined}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div className="sm:hidden">
-        <div className="pt-2 pb-3 space-y-1">
-          {navigation.map((item) => {
-            const isCurrent = pathname === item.href;
+    <div className="border-b border-[#660000]/10 bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <nav
+          aria-label="Админ-навигация"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        >
+          {ADMIN_NAV_LINKS.map((item) => {
+            const active = isActivePath(pathname, item.href);
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 href={item.href}
-                className={`${
-                  isCurrent
-                    ? 'bg-blue-50 border-[#660000] !text-[#660000] block pl-3 pr-4 py-2 border-l-4 text-base font-medium'
-                    : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium'
+                aria-current={active ? 'page' : undefined}
+                className={`rounded-2xl border px-4 py-4 shadow-[0_4px_16px_rgba(102,0,0,0.04)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/35 ${
+                  active
+                    ? 'border-[#660000] bg-[#fff9f8]'
+                    : 'border-[#660000]/12 bg-white hover:border-[#660000]/30 hover:shadow-[0_8px_24px_rgba(102,0,0,0.08)]'
                 }`}
-                aria-current={isCurrent ? 'page' : undefined}
               >
-                {item.name}
+                <div className="text-sm font-semibold text-[#660000]">{item.label}</div>
+                <div className="mt-1 text-xs text-gray-500">{item.hint}</div>
               </Link>
             );
           })}
-        </div>
+        </nav>
       </div>
-    </nav>
+    </div>
   );
 }

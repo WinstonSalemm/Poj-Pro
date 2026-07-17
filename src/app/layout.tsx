@@ -288,7 +288,10 @@ export default async function RootLayout({
               <main
                 id="main-content"
                 className="flex-grow pt-[120px]"
-    style={{ paddingTop: 'calc(var(--topbar-height, 36px) + 104px)' }}
+                style={{
+                  paddingTop:
+                    'calc(var(--topbar-height, 36px) + 58px + var(--langbar-height, 46px))',
+                }}
               >
                 {children}
               </main>

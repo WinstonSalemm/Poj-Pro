@@ -7,7 +7,43 @@ import dynamic from "next/dynamic";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useRouter, usePathname } from "next/navigation";
 import BlurReveal from "@/components/ui/BlurReveal";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { FireExtinguisher } from "lucide-react";
+
+/** Мини-огнетушитель со струей — когда меню открыто */
+function MenuExtinguisherActive({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={`h-6 w-6 overflow-visible ${className}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <g className="animate-menu-ext-shake">
+        {/* корпус */}
+        <rect x="6" y="8" width="8" height="12" rx="2" />
+        {/* ручка */}
+        <path d="M8 8V6h4v2" />
+        <path d="M9 5h2" />
+        {/* шланг */}
+        <path d="M14 10c2-1 3.5-.5 4.5.5" />
+        {/* сопло */}
+        <path d="M18.5 10.5h1.5" />
+      </g>
+      {/* струя */}
+      <g fill="currentColor" stroke="none">
+        <circle className="animate-menu-ext-spray" cx="21" cy="10" r="1.1" style={{ animationDelay: "0ms" }} />
+        <circle className="animate-menu-ext-spray" cx="21.5" cy="9.2" r="0.9" style={{ animationDelay: "120ms" }} />
+        <circle className="animate-menu-ext-spray" cx="21.2" cy="10.8" r="0.85" style={{ animationDelay: "220ms" }} />
+        <circle className="animate-menu-ext-spray" cx="22" cy="9.8" r="0.7" style={{ animationDelay: "320ms" }} />
+      </g>
+    </svg>
+  );
+}
 
 // Defer non-critical header widgets
 const CartIcon = dynamic(() => import("../Cart/CartIcon"), {
@@ -28,10 +64,15 @@ interface MenuItem {
   translationKey: string;
 }
 
+function isAdminRoute(pathname: string | null): boolean {
+  return Boolean(pathname?.startsWith("/admin"));
+}
+
 export default function Header() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const isAdmin = isAdminRoute(pathname);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -63,6 +104,23 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    document.documentElement.dataset.adminPanel = isAdmin ? "1" : "0";
+    document.documentElement.style.setProperty(
+      "--langbar-height",
+      isAdmin ? "0px" : "46px",
+    );
+    if (isAdmin) {
+      document.documentElement.style.setProperty("--topbar-height", "0px");
+      setMobileOpen(false);
+    }
+    return () => {
+      document.documentElement.removeAttribute("data-admin-panel");
+      document.documentElement.style.removeProperty("--langbar-height");
+    };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (isAdmin) return;
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
       if (headerRef.current && !headerRef.current.contains(target)) {
@@ -80,16 +138,16 @@ export default function Header() {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
-    if (!mobileOpen) return;
+    if (isAdmin || !mobileOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, isAdmin]);
 
   const changeLanguage = (lng: Lang) => {
     // Convert legacy codes to standard codes for i18n
@@ -119,6 +177,53 @@ export default function Header() {
 
   if (pathname === "/login" || pathname === "/register") {
     return null;
+  }
+
+  if (isAdmin) {
+    return (
+      <header
+        ref={headerRef}
+        className={`fixed left-0 right-0 top-0 z-[999] w-full
+            border-b border-neutral-200
+            bg-white/80 backdrop-blur
+            supports-[backdrop-filter]:bg-white/70
+            transition-shadow duration-200
+            ${isScrolled ? "shadow-sm" : "shadow-none"}
+            `}
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          WebkitTransform: "translateZ(0)",
+        }}
+      >
+        <BlurReveal>
+          <div
+            className="container-section relative flex min-h-[58px] items-center justify-center"
+            style={{
+              paddingLeft: "max(12px, env(safe-area-inset-left))",
+              paddingRight: "max(12px, env(safe-area-inset-right))",
+            }}
+          >
+            <Link href="/" aria-label="Go home" className="shrink-0">
+              <Image
+                src="/OtherPics/logo.svg"
+                alt="POJ PRO"
+                width={180}
+                height={60}
+                className="object-contain w-[140px] sm:w-[170px] md:w-[180px]"
+              />
+            </Link>
+            <div
+              className="absolute top-1/2 flex -translate-y-1/2 items-center"
+              style={{
+                right: "max(12px, env(safe-area-inset-right))",
+              }}
+            >
+              <AuthButton />
+            </div>
+          </div>
+        </BlurReveal>
+      </header>
+    );
   }
 
   return (
@@ -151,14 +256,16 @@ export default function Header() {
             <div className="flex min-w-[44px] items-center justify-start">
               <button
                 onClick={() => setMobileOpen((v) => !v)}
-                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-navigation"
-                className="relative z-[1002] lg:hidden inline-flex items-center justify-center w-11 h-11 -ml-1 rounded-md"
+                className="relative z-[1002] lg:hidden inline-flex h-11 w-11 -ml-1 items-center justify-center rounded-md text-[#660000] transition-colors hover:bg-[#660000]/5 hover:text-[#8B0000]"
               >
-                <span className={`block w-7 h-[2px] bg-brand transition-transform ${mobileOpen ? "translate-y-[10px] rotate-45" : ""}`} />
-                <span className={`block w-7 h-[2px] bg-brand my-[6px] transition-opacity ${mobileOpen ? "opacity-0" : "opacity-100"}`} />
-                <span className={`block w-7 h-[2px] bg-brand transition-transform ${mobileOpen ? "-translate-y-[10px] -rotate-45" : ""}`} />
+                {mobileOpen ? (
+                  <MenuExtinguisherActive />
+                ) : (
+                  <FireExtinguisher className="h-6 w-6" strokeWidth={2} aria-hidden />
+                )}
               </button>
 
               <nav className="hidden lg:flex items-center gap-[28px]">
@@ -188,62 +295,86 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* RIGHT */}
-            <div className="flex min-w-[44px] items-center justify-end gap-2">
-              <div className="md:hidden text-brand">
-                <CartIcon />
-              </div>
-
-              <div className="hidden md:flex items-center gap-2 md:gap-3">
-                <CartIcon />
-                <AuthButton />
-              </div>
+            {/* RIGHT — корзина всегда в шапке */}
+            <div className="flex min-w-[44px] items-center justify-end gap-2 text-brand">
+              <CartIcon />
             </div>
           </div>
 
-          {/* Mobile menu */}
-          {mobileOpen && (
-            <nav id="mobile-navigation" aria-label="Mobile navigation" className="relative z-[1001] lg:hidden border-t border-neutral-200 bg-white shadow-lg">
-              {menuLeft.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-5 py-4 text-[17px] text-brand border-b border-neutral-200"
-                >
-                  {t(item.translationKey)}
-                </Link>
-              ))}
-              <div className="px-4 py-3 border-b border-neutral-200">
-                <AuthButton />
-              </div>
-            </nav>
-          )}
+          {/* Mobile menu — тот же тон, что у header (без второго белого слоя) */}
+          <AnimatePresence initial={false}>
+            {mobileOpen ? (
+              <motion.nav
+                key="mobile-nav"
+                id="mobile-navigation"
+                aria-label="Mobile navigation"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+                className="relative z-[1001] overflow-hidden border-t border-neutral-200 bg-transparent lg:hidden"
+              >
+                {menuLeft.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{
+                      duration: 0.22,
+                      delay: 0.04 + index * 0.035,
+                      ease: "easeOut",
+                    }}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block border-b border-neutral-200 bg-transparent px-5 py-4 text-[17px] text-brand transition-colors hover:bg-black/[0.03]"
+                    >
+                      {t(item.translationKey)}
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.nav>
+            ) : null}
+          </AnimatePresence>
         </BlurReveal>
       </header>
 
-      {mobileOpen && (
-        <div
-          aria-hidden="true"
-          onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-[997] bg-black/25 lg:hidden"
-        />
-      )}
+      <AnimatePresence>
+        {mobileOpen ? (
+          <motion.div
+            key="mobile-nav-backdrop"
+            aria-hidden="true"
+            onClick={() => setMobileOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            className="fixed inset-0 z-[997] bg-black/25 backdrop-blur-[1px] lg:hidden"
+          />
+        ) : null}
+      </AnimatePresence>
 
-      {/* Language Switcher Bar - Below Header */}
+      {/* Auth + язык — всегда видны под шапкой */}
       <div
         className="fixed left-0 right-0 z-[998]"
         style={{
           top: `calc(var(--topbar-height, 28px) + 57px)`,
         }}
       >
-        <div className="container-section flex items-center justify-end py-1.5"
+        <div
+          className="container-section flex items-center justify-between gap-2 py-1.5"
           style={{
             paddingLeft: "max(12px, env(safe-area-inset-left))",
             paddingRight: "max(12px, env(safe-area-inset-right))",
           }}
         >
-          <div className="flex items-center gap-0.5 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200/60 p-0.5 shadow-sm">
+          <div className="min-w-0 shrink">
+            <AuthButton />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-0.5 rounded-lg border border-gray-200/60 bg-white/80 p-0.5 shadow-sm backdrop-blur-sm">
             {languages.map((lang) => (
               <button
                 key={lang.code}

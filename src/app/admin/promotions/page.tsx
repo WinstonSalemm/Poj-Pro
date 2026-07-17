@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import { Upload, X } from "lucide-react";
 import AdminGate from "@/components/admin/AdminGate";
 
 type I18nRow = {
@@ -76,6 +77,8 @@ export default function AdminPromotionsPage() {
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm());
   const [showForm, setShowForm] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const reload = async () => {
     try {
@@ -131,6 +134,14 @@ export default function AdminPromotionsPage() {
 
   const onUpload = async (file: File | null) => {
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Выберите изображение");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Максимум 5MB");
+      return;
+    }
     setUploading(true);
     try {
       const fd = new FormData();
@@ -147,12 +158,21 @@ export default function AdminPromotionsPage() {
       toast.error("Не удалось загрузить фото");
     } finally {
       setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   const onSave = async () => {
-    if (!form.titleRu.trim()) {
-      toast.error("Укажите заголовок (RU)");
+    if (!form.titleRu.trim() || !form.titleEn.trim() || !form.titleUz.trim()) {
+      toast.error("Заполните название на RU, ENG и UZB");
+      return;
+    }
+    if (!form.summaryRu.trim() || !form.summaryEn.trim() || !form.summaryUz.trim()) {
+      toast.error("Заполните краткое описание на RU, ENG и UZB");
+      return;
+    }
+    if (!form.descriptionRu.trim() || !form.descriptionEn.trim() || !form.descriptionUz.trim()) {
+      toast.error("Заполните полное описание на RU, ENG и UZB");
       return;
     }
     setSaving(true);
@@ -169,29 +189,21 @@ export default function AdminPromotionsPage() {
           {
             locale: "ru",
             title: form.titleRu.trim(),
-            summary: form.summaryRu.trim() || null,
-            description: form.descriptionRu.trim() || null,
+            summary: form.summaryRu.trim(),
+            description: form.descriptionRu.trim(),
           },
-          ...(form.titleEn.trim()
-            ? [
-                {
-                  locale: "eng",
-                  title: form.titleEn.trim(),
-                  summary: form.summaryEn.trim() || null,
-                  description: form.descriptionEn.trim() || null,
-                },
-              ]
-            : []),
-          ...(form.titleUz.trim()
-            ? [
-                {
-                  locale: "uzb",
-                  title: form.titleUz.trim(),
-                  summary: form.summaryUz.trim() || null,
-                  description: form.descriptionUz.trim() || null,
-                },
-              ]
-            : []),
+          {
+            locale: "eng",
+            title: form.titleEn.trim(),
+            summary: form.summaryEn.trim(),
+            description: form.descriptionEn.trim(),
+          },
+          {
+            locale: "uzb",
+            title: form.titleUz.trim(),
+            summary: form.summaryUz.trim(),
+            description: form.descriptionUz.trim(),
+          },
         ],
       };
 
@@ -306,82 +318,145 @@ export default function AdminPromotionsPage() {
               </h2>
 
               <div className="grid gap-3">
-                <label className="grid gap-1 text-sm">
-                  <span>Заголовок (RU) *</span>
-                  <input
-                    className="rounded-lg border border-gray-300 px-3 py-2"
-                    value={form.titleRu}
-                    onChange={(e) => setForm((p) => ({ ...p, titleRu: e.target.value }))}
-                  />
-                </label>
-                <label className="grid gap-1 text-sm">
-                  <span>Краткое описание (RU)</span>
-                  <textarea
-                    className="rounded-lg border border-gray-300 px-3 py-2"
-                    rows={2}
-                    value={form.summaryRu}
-                    onChange={(e) => setForm((p) => ({ ...p, summaryRu: e.target.value }))}
-                  />
-                </label>
-                <label className="grid gap-1 text-sm">
-                  <span>Полное описание (RU)</span>
-                  <textarea
-                    className="rounded-lg border border-gray-300 px-3 py-2"
-                    rows={4}
-                    value={form.descriptionRu}
-                    onChange={(e) => setForm((p) => ({ ...p, descriptionRu: e.target.value }))}
-                  />
-                </label>
+                <div className="grid gap-3 rounded-2xl border border-gray-200 p-3">
+                  <p className="text-sm font-semibold text-[#660000]">Название *</p>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Название RU</span>
+                    <input
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      value={form.titleRu}
+                      onChange={(e) => setForm((p) => ({ ...p, titleRu: e.target.value }))}
+                    />
+                  </label>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Название ENG</span>
+                    <input
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      value={form.titleEn}
+                      onChange={(e) => setForm((p) => ({ ...p, titleEn: e.target.value }))}
+                    />
+                  </label>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Название UZB</span>
+                    <input
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      value={form.titleUz}
+                      onChange={(e) => setForm((p) => ({ ...p, titleUz: e.target.value }))}
+                    />
+                  </label>
+                </div>
+
+                <div className="grid gap-3 rounded-2xl border border-gray-200 p-3">
+                  <p className="text-sm font-semibold text-[#660000]">Краткое описание *</p>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Краткое описание RU</span>
+                    <textarea
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      rows={2}
+                      value={form.summaryRu}
+                      onChange={(e) => setForm((p) => ({ ...p, summaryRu: e.target.value }))}
+                    />
+                  </label>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Краткое описание ENG</span>
+                    <textarea
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      rows={2}
+                      value={form.summaryEn}
+                      onChange={(e) => setForm((p) => ({ ...p, summaryEn: e.target.value }))}
+                    />
+                  </label>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Краткое описание UZB</span>
+                    <textarea
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      rows={2}
+                      value={form.summaryUz}
+                      onChange={(e) => setForm((p) => ({ ...p, summaryUz: e.target.value }))}
+                    />
+                  </label>
+                </div>
+
+                <div className="grid gap-3 rounded-2xl border border-gray-200 p-3">
+                  <p className="text-sm font-semibold text-[#660000]">Полное описание *</p>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Полное описание RU</span>
+                    <textarea
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      rows={3}
+                      value={form.descriptionRu}
+                      onChange={(e) => setForm((p) => ({ ...p, descriptionRu: e.target.value }))}
+                    />
+                  </label>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Полное описание ENG</span>
+                    <textarea
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      rows={3}
+                      value={form.descriptionEn}
+                      onChange={(e) => setForm((p) => ({ ...p, descriptionEn: e.target.value }))}
+                    />
+                  </label>
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
+                    <span>Полное описание UZB</span>
+                    <textarea
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
+                      rows={3}
+                      value={form.descriptionUz}
+                      onChange={(e) => setForm((p) => ({ ...p, descriptionUz: e.target.value }))}
+                    />
+                  </label>
+                </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="grid gap-1 text-sm">
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
                     <span>Дата старта</span>
                     <input
                       type="date"
-                      className="rounded-lg border border-gray-300 px-3 py-2"
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
                       value={form.startsAt}
                       onChange={(e) => setForm((p) => ({ ...p, startsAt: e.target.value }))}
                     />
                   </label>
-                  <label className="grid gap-1 text-sm">
+                  <label className="grid gap-1 text-sm font-medium text-gray-900">
                     <span>Дата окончания</span>
                     <input
                       type="date"
-                      className="rounded-lg border border-gray-300 px-3 py-2"
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
                       value={form.endsAt}
                       onChange={(e) => setForm((p) => ({ ...p, endsAt: e.target.value }))}
                     />
                   </label>
                 </div>
 
-                <label className="grid gap-1 text-sm">
+                <label className="grid gap-1 text-sm font-medium text-gray-900">
                   <span>Slug</span>
                   <input
-                    className="rounded-lg border border-gray-300 px-3 py-2"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
                     value={form.slug}
                     onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
                     placeholder="auto from title if empty"
                   />
                 </label>
-                <label className="grid gap-1 text-sm">
-                  <span>CTA ссылка (опционально)</span>
+                <label className="grid gap-1 text-sm font-medium text-gray-900">
+                  <span>CTA ссылка</span>
                   <input
-                    className="rounded-lg border border-gray-300 px-3 py-2"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
                     value={form.ctaUrl}
                     onChange={(e) => setForm((p) => ({ ...p, ctaUrl: e.target.value }))}
                     placeholder="/catalog или https://..."
                   />
                 </label>
-                <label className="grid gap-1 text-sm">
+                <label className="grid gap-1 text-sm font-medium text-gray-900">
                   <span>Порядок</span>
                   <input
                     type="number"
-                    className="rounded-lg border border-gray-300 px-3 py-2"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400"
                     value={form.sortOrder}
                     onChange={(e) => setForm((p) => ({ ...p, sortOrder: Number(e.target.value) || 0 }))}
                   />
                 </label>
-                <label className="inline-flex items-center gap-2 text-sm">
+                <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-900">
                   <input
                     type="checkbox"
                     checked={form.isActive}
@@ -390,66 +465,81 @@ export default function AdminPromotionsPage() {
                   Активна
                 </label>
 
-                <div className="grid gap-2 text-sm">
-                  <span>Фото</span>
+                <div className="grid gap-2 text-sm font-medium text-gray-900">
+                  <span>Фото акции</span>
                   {form.image ? (
-                    <div className="relative h-36 w-full overflow-hidden rounded-xl bg-gray-100">
-                      <Image src={form.image} alt="" fill className="object-cover" unoptimized />
+                    <div className="relative overflow-hidden rounded-2xl border border-[#660000]/15 bg-[#F8F9FA]">
+                      <div className="relative h-44 w-full">
+                        <Image src={form.image} alt="" fill className="object-cover" unoptimized />
+                      </div>
+                      <div className="flex items-center justify-between gap-2 border-t border-gray-100 bg-white px-3 py-2">
+                        <button
+                          type="button"
+                          disabled={uploading}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-[#660000] hover:bg-[#fff9f8] disabled:opacity-60"
+                        >
+                          {uploading ? "Загрузка…" : "Заменить"}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={uploading}
+                          onClick={() => setForm((p) => ({ ...p, image: "" }))}
+                          className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-red-600 disabled:opacity-60"
+                        >
+                          <X size={14} />
+                          Удалить
+                        </button>
+                      </div>
                     </div>
-                  ) : null}
+                  ) : (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                      onClick={() => !uploading && fileInputRef.current?.click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDragOver(true);
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        setDragOver(false);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDragOver(false);
+                        onUpload(e.dataTransfer.files?.[0] || null);
+                      }}
+                      className={`cursor-pointer rounded-2xl border-2 border-dashed px-4 py-8 text-center transition-colors ${
+                        dragOver
+                          ? "border-[#660000] bg-[#fff9f8]"
+                          : "border-gray-300 bg-white hover:border-[#660000]/50 hover:bg-[#fff9f8]"
+                      } ${uploading ? "pointer-events-none opacity-60" : ""}`}
+                    >
+                      <Upload className="mx-auto mb-2 h-9 w-9 text-[#660000]/70" />
+                      <p className="text-sm font-medium text-gray-800">
+                        {uploading ? "Загрузка…" : "Перетащите фото или нажмите для выбора"}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">JPG, PNG, WEBP · до 5MB</p>
+                    </div>
+                  )}
                   <input
+                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
+                    className="hidden"
                     disabled={uploading}
                     onChange={(e) => onUpload(e.target.files?.[0] || null)}
                   />
                 </div>
-
-                <details className="rounded-xl border border-gray-200 p-3">
-                  <summary className="cursor-pointer font-medium">EN / UZ (опционально)</summary>
-                  <div className="mt-3 grid gap-3">
-                    <input
-                      className="rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="Title EN"
-                      value={form.titleEn}
-                      onChange={(e) => setForm((p) => ({ ...p, titleEn: e.target.value }))}
-                    />
-                    <textarea
-                      className="rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="Summary EN"
-                      rows={2}
-                      value={form.summaryEn}
-                      onChange={(e) => setForm((p) => ({ ...p, summaryEn: e.target.value }))}
-                    />
-                    <textarea
-                      className="rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="Description EN"
-                      rows={3}
-                      value={form.descriptionEn}
-                      onChange={(e) => setForm((p) => ({ ...p, descriptionEn: e.target.value }))}
-                    />
-                    <input
-                      className="rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="Title UZ"
-                      value={form.titleUz}
-                      onChange={(e) => setForm((p) => ({ ...p, titleUz: e.target.value }))}
-                    />
-                    <textarea
-                      className="rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="Summary UZ"
-                      rows={2}
-                      value={form.summaryUz}
-                      onChange={(e) => setForm((p) => ({ ...p, summaryUz: e.target.value }))}
-                    />
-                    <textarea
-                      className="rounded-lg border border-gray-300 px-3 py-2"
-                      placeholder="Description UZ"
-                      rows={3}
-                      value={form.descriptionUz}
-                      onChange={(e) => setForm((p) => ({ ...p, descriptionUz: e.target.value }))}
-                    />
-                  </div>
-                </details>
               </div>
 
               <div className="mt-5 flex gap-2">

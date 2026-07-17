@@ -12,11 +12,18 @@
 
   /* Совпадает с min-h TopBar: на мобилке нет зазора между TopBar и Header */
   --topbar-height: 36px;
+  /* Полоса переключателя языка под Header */
+  --langbar-height: 46px;
 }
 @media (min-width: 640px) {
   :root {
     --topbar-height: 32px;
   }
+}
+
+html[data-admin-panel='1'] {
+  --topbar-height: 0px;
+  --langbar-height: 0px;
 }
 
 /* ===== Remove Tailwind v4-only @theme usage (kept CSS variables) ===== */
@@ -90,6 +97,38 @@ a {
 }
 .animate-fadeIn { animation: fadeIn .25s ease-out }
 
+@keyframes cartBadgePop {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.55); }
+  45% { transform: scale(0.88); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.animate-cart-badge-pop {
+  animation: cartBadgePop 0.55s cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+
+@keyframes cartIconNudge {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-12deg) scale(1.08); }
+  40% { transform: rotate(10deg) scale(1.08); }
+  60% { transform: rotate(-6deg) scale(1.04); }
+  80% { transform: rotate(4deg) scale(1.02); }
+}
+.animate-cart-icon-nudge {
+  animation: cartIconNudge 0.55s ease-in-out;
+}
+
+@keyframes cartPlusFloat {
+  0% { opacity: 0; transform: translateY(6px) scale(0.7); }
+  25% { opacity: 1; transform: translateY(0) scale(1.05); }
+  70% { opacity: 1; transform: translateY(-10px) scale(1); }
+  100% { opacity: 0; transform: translateY(-18px) scale(0.9); }
+}
+.animate-cart-plus-float {
+  animation: cartPlusFloat 1s ease-out forwards;
+}
+
 @keyframes slideBar {
   0% { transform: translateX(-120%) }
   60% { transform: translateX(160%) }
@@ -138,20 +177,72 @@ a {
   100% { transform: translateX(100%) }
 }
 
-@keyframes extinguisherMove {
+/* TopBar: огнетушитель — плавный ход + лёгкая отдача (без 3D edge-on) */
+@keyframes topbarExtMove {
+  0%, 100% { transform: translateX(0) rotate(-3deg); }
+  40% { transform: translateX(18px) rotate(4deg); }
+  55% { transform: translateX(22px) rotate(2deg); }
+  70% { transform: translateX(10px) rotate(-2deg); }
+}
+.animate-topbar-ext-move {
+  animation: topbarExtMove 3.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  transform-origin: 30% 70%;
+  will-change: transform;
+}
+
+@keyframes topbarExtSpray {
   0% {
-    transform: translateX(-50px) rotateY(0deg) rotateX(5deg);
+    opacity: 0;
+    transform: translate(0, 0) scale(0.35);
   }
-  25% {
-    transform: translateX(-25px) rotateY(90deg) rotateX(5deg);
-  }
-  50% {
-    transform: translateX(0px) rotateY(180deg) rotateX(5deg);
-  }
-  75% {
-    transform: translateX(-25px) rotateY(270deg) rotateX(5deg);
-  }
+  22% { opacity: 0.85; }
   100% {
-    transform: translateX(-50px) rotateY(360deg) rotateX(5deg);
+    opacity: 0;
+    transform: translate(13px, -1px) scale(1.4);
   }
+}
+@keyframes topbarExtSprayUp {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.35); }
+  22% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(12px, -4px) scale(1.3); }
+}
+@keyframes topbarExtSprayDown {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.35); }
+  22% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(12px, 3px) scale(1.3); }
+}
+.animate-topbar-ext-spray {
+  animation: topbarExtSpray 0.55s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+.animate-topbar-ext-spray-up {
+  animation: topbarExtSprayUp 0.55s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+.animate-topbar-ext-spray-down {
+  animation: topbarExtSprayDown 0.55s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+/* Мини-огнетушитель в мобильном меню */
+@keyframes menuExtShake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(6deg); }
+}
+.animate-menu-ext-shake {
+  animation: menuExtShake 0.35s ease-in-out infinite;
+  transform-origin: 40% 70%;
+}
+
+@keyframes menuExtSpray {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  35% { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(10px, -2px) scale(1.4); }
+}
+.animate-menu-ext-spray {
+  animation: menuExtSpray 0.45s ease-out infinite;
 }

@@ -21,6 +21,7 @@ export async function GET() {
         name: true,
         email: true,
         isAdmin: true,
+        personalPromoCode: true,
         lastActive: true,
         createdAt: true,
         _count: {

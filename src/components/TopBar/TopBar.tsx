@@ -8,17 +8,26 @@ export default function TopBar() {
   const pathname = usePathname();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    // Устанавливаем CSS переменную для высоты TopBar
-    const topbar = document.querySelector('[data-topbar]') as HTMLElement;
-    if (topbar) {
-      const height = topbar.offsetHeight;
-      document.documentElement.style.setProperty('--topbar-height', `${height}px`);
-    }
-  }, []);
+  const isAdmin = Boolean(pathname?.startsWith("/admin"));
+  const hidden =
+    pathname === "/login" || pathname === "/register" || isAdmin;
 
-  // Скрываем TopBar на страницах логина и регистрации
-  if (pathname === "/login" || pathname === "/register") {
+  useEffect(() => {
+    if (hidden) {
+      document.documentElement.style.setProperty("--topbar-height", "0px");
+      return;
+    }
+    const topbar = document.querySelector("[data-topbar]") as HTMLElement | null;
+    if (topbar) {
+      document.documentElement.style.setProperty(
+        "--topbar-height",
+        `${topbar.offsetHeight}px`,
+      );
+    }
+  }, [hidden, pathname]);
+
+  // Скрываем TopBar на логине/регистрации и во всей админке
+  if (hidden) {
     return null;
   }
 
@@ -30,119 +39,104 @@ export default function TopBar() {
         paddingTop: "max(6px, env(safe-area-inset-top))",
       }}
     >
-      <div className="container mx-auto flex flex-row items-center justify-center min-[900px]:justify-between gap-2 sm:gap-3 md:gap-4 pl-1 pr-14 sm:pr-20 md:pr-32 min-w-0 ml-[10px]">
-        {/* Анимация огнетушителя — всегда слева, видна на любом экране, по центру по высоте */}
-        <div 
-          className="relative flex items-center justify-center shrink-0 w-14 min-[400px]:w-[90px] sm:w-[110px] md:w-[130px]" 
-          style={{ 
-            height: '100%',
-            minHeight: '100%',
-            position: 'relative',
-            perspective: '1000px',
-            perspectiveOrigin: 'center center',
-            overflow: 'visible',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+      <div className="container mx-auto flex flex-row items-center justify-center md:justify-between gap-2 sm:gap-3 md:gap-4 px-1 sm:pr-8 md:pr-16 min-w-0">
+        {/* Огнетушитель — только на md+; без 3D-переворота «на ребро» */}
+        <div
+          className="relative hidden md:flex items-center justify-start shrink-0 w-[120px] lg:w-[140px] overflow-visible"
+          aria-hidden
         >
-          <div
-            style={{
-              animation: 'extinguisherMove 8s ease-in-out infinite',
-              transformStyle: 'preserve-3d',
-              transformOrigin: 'center center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+          <div className="animate-topbar-ext-move">
             <svg
-              viewBox="0 0 32 20"
-              className="relative z-10 w-6 min-[400px]:w-7 sm:w-8 h-auto"
-              style={{
-                transformStyle: 'preserve-3d',
-                filter: 'drop-shadow(2px 2px 4px rgba(102, 0, 0, 0.4))',
-                minWidth: '24px',
-              }}
+              viewBox="0 0 40 22"
+              className="h-7 w-auto lg:h-8 drop-shadow-[1px_2px_2px_rgba(102,0,0,0.25)]"
             >
-              {/* Тень для объёма */}
               <defs>
-                <linearGradient id="extinguisherGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#660000" stopOpacity="1" />
-                  <stop offset="50%" stopColor="#7a1a1a" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#520000" stopOpacity="1" />
+                <linearGradient id="tbExtBody" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#7a1a1a" />
+                  <stop offset="55%" stopColor="#660000" />
+                  <stop offset="100%" stopColor="#4a0000" />
                 </linearGradient>
-                <linearGradient id="extinguisherInnerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#660000" stopOpacity="0.3" />
-                  <stop offset="50%" stopColor="#660000" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#660000" stopOpacity="0.25" />
-                </linearGradient>
-                <filter id="extinguisherShadow">
-                  <feDropShadow dx="2" dy="2" stdDeviation="2" floodColor="#660000" floodOpacity="0.4"/>
-                </filter>
+                <radialGradient id="tbExtSpray" cx="30%" cy="50%" r="70%">
+                  <stop offset="0%" stopColor="#660000" stopOpacity="0.85" />
+                  <stop offset="100%" stopColor="#660000" stopOpacity="0" />
+                </radialGradient>
               </defs>
-              
-              {/* Корпус огнетушителя с объёмом - боковая грань для 3D эффекта */}
-              <rect x="2" y="6" width="1" height="12" rx="0.5" fill="#520000" opacity="0.8" />
-              {/* Основной корпус */}
-              <rect x="2" y="6" width="8" height="12" rx="2" fill="url(#extinguisherGradient)" opacity="0.95" filter="url(#extinguisherShadow)" />
-              {/* Блик сверху для объёма */}
-              <ellipse cx="6" cy="8" rx="2.5" ry="1.5" fill="white" opacity="0.4" />
-              {/* Тень внутри для глубины */}
-              <rect x="3" y="7" width="6" height="10" rx="1.5" fill="url(#extinguisherInnerGradient)" />
-              {/* Правая грань для объёма */}
-              <rect x="9" y="6" width="0.5" height="12" rx="0.25" fill="#520000" opacity="0.6" />
-              {/* Ручка с объёмом */}
-              <rect x="4" y="4" width="4" height="2" rx="0.5" fill="url(#extinguisherGradient)" opacity="0.95" />
-              <rect x="4.5" y="4.2" width="3" height="0.8" rx="0.3" fill="#660000" opacity="0.6" />
-              {/* Шланг - изогнутый, выходит с самого верха огнетушителя */}
+
+              {/* корпус */}
+              <rect x="3" y="7" width="9" height="13" rx="2.2" fill="url(#tbExtBody)" />
+              <ellipse cx="7.5" cy="9.2" rx="2.8" ry="1.4" fill="white" opacity="0.28" />
+              {/* ручка */}
+              <rect x="5" y="4.5" width="5" height="2.4" rx="0.7" fill="url(#tbExtBody)" />
+              <rect x="5.6" y="4.8" width="3.8" height="0.9" rx="0.4" fill="#3a0000" opacity="0.45" />
+              {/* шланг + сопло */}
               <path
-                d="M 6 6 Q 10 4, 18 6"
+                d="M12 9.5 C15 7.2, 19 7.5, 22 9"
                 stroke="#660000"
                 strokeWidth="2"
                 fill="none"
-                opacity="0.9"
                 strokeLinecap="round"
-                filter="url(#extinguisherShadow)"
               />
-              {/* Сопло на конце шланга с объёмом */}
-              <rect x="17" y="5" width="3" height="2" rx="0.5" fill="url(#extinguisherGradient)" opacity="0.95" filter="url(#extinguisherShadow)" />
-              <rect x="17.3" y="5.2" width="2.4" height="0.6" rx="0.2" fill="#660000" opacity="0.5" />
-              {/* Струя - выходит из сопла вправо */}
-              <g className="extinguisher-stream">
-                {/* Частицы струи - движутся вправо */}
-                <circle cx="20" cy="6" r="1.5" fill="#660000" opacity="0.9">
-                  <animate attributeName="cx" values="20;24;20" dur="0.4s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.9;0.4;0.9" dur="0.4s" repeatCount="indefinite" />
-                  <animate attributeName="r" values="1.5;2;1.5" dur="0.4s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="21" cy="5.5" r="1.2" fill="#660000" opacity="0.7">
-                  <animate attributeName="cx" values="21;25;21" dur="0.4s" begin="0.1s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.7;0.3;0.7" dur="0.4s" begin="0.1s" repeatCount="indefinite" />
-                  <animate attributeName="r" values="1.2;1.8;1.2" dur="0.4s" begin="0.1s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="21" cy="6.5" r="1.2" fill="#660000" opacity="0.7">
-                  <animate attributeName="cx" values="21;25;21" dur="0.4s" begin="0.15s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.7;0.3;0.7" dur="0.4s" begin="0.15s" repeatCount="indefinite" />
-                  <animate attributeName="r" values="1.2;1.8;1.2" dur="0.4s" begin="0.15s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="22" cy="6" r="1" fill="#660000" opacity="0.5">
-                  <animate attributeName="cx" values="22;26;22" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.5;0.2;0.5" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
-                  <animate attributeName="r" values="1;1.5;1" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="23" cy="6" r="0.8" fill="#660000" opacity="0.3">
-                  <animate attributeName="cx" values="23;27;23" dur="0.4s" begin="0.3s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.3;0.1;0.3" dur="0.4s" begin="0.3s" repeatCount="indefinite" />
-                  <animate attributeName="r" values="0.8;1.2;0.8" dur="0.4s" begin="0.3s" repeatCount="indefinite" />
-                </circle>
+              <rect x="21.5" y="7.8" width="3.2" height="2.4" rx="0.6" fill="#660000" />
+
+              {/* струя */}
+              <g fill="url(#tbExtSpray)">
+                <ellipse
+                  className="animate-topbar-ext-spray"
+                  cx="26"
+                  cy="9"
+                  rx="2.2"
+                  ry="1.4"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <ellipse
+                  className="animate-topbar-ext-spray-up"
+                  cx="26.5"
+                  cy="8.2"
+                  rx="1.8"
+                  ry="1.1"
+                  style={{ animationDelay: "140ms" }}
+                />
+                <ellipse
+                  className="animate-topbar-ext-spray-down"
+                  cx="26.5"
+                  cy="9.8"
+                  rx="1.9"
+                  ry="1.2"
+                  style={{ animationDelay: "260ms" }}
+                />
+                <ellipse
+                  className="animate-topbar-ext-spray"
+                  cx="27"
+                  cy="9"
+                  rx="1.5"
+                  ry="0.95"
+                  style={{ animationDelay: "380ms" }}
+                />
+                <circle
+                  className="animate-topbar-ext-spray-up"
+                  cx="27.5"
+                  cy="8.5"
+                  r="0.9"
+                  fill="#660000"
+                  opacity="0.55"
+                  style={{ animationDelay: "90ms" }}
+                />
+                <circle
+                  className="animate-topbar-ext-spray-down"
+                  cx="27.5"
+                  cy="9.6"
+                  r="0.75"
+                  fill="#660000"
+                  opacity="0.45"
+                  style={{ animationDelay: "310ms" }}
+                />
               </g>
             </svg>
           </div>
         </div>
 
-        {/* Правая группа: контакты — график и 2 номера на широких экранах, 1 номер на узких */}
-        <div className="flex flex-row items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 min-w-0">
+        {/* Контакты */}
+        <div className="flex flex-row items-center justify-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 min-w-0">
           {/* График работы — только на широких экранах (>= 900px) */}
           <div className="hidden min-[900px]:block text-[#660000]/90 whitespace-nowrap text-xs">
             {t("contacts.hours.weekdays")}, {t("contacts.hours.saturday")}

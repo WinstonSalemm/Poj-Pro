@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { signIn, signOut, useSession, SessionProvider } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useTranslation } from '@/i18n/useTranslation';
+import { UserRound } from 'lucide-react';
 
 export function AuthButton() {
   const { t } = useTranslation();
-  // локальный помощник перевода с фолбэком, если ключа нет
   const tr = (key: string, fallback: string) => {
     const val = t(key);
     return val === key ? fallback : val;
@@ -26,45 +26,15 @@ export function AuthButton() {
     router.push('/');
   };
 
-  // ---- стили кнопок / размеры ----
   const brandBtn =
     'inline-flex items-center justify-center rounded-md font-semibold !text-white cursor-pointer bg-[#660000] hover:bg-[#520000] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40 focus-visible:ring-offset-2 whitespace-nowrap';
   const lightBtn =
     'inline-flex items-center justify-center rounded-md font-medium text-gray-900 bg-white cursor-pointer hover:bg-gray-50 border border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 whitespace-nowrap';
 
-  const base = 'px-3 py-1.5 text-xs';                // мобилка
-  const larger = 'lg:px-4 lg:py-2 lg:text-sm';       // ≥ 1024px
+  const base = 'px-2.5 py-1.5 text-xs sm:px-3';
+  const larger = 'lg:px-4 lg:py-2 lg:text-sm';
   const ultraNarrow = 'max-[380px]:px-2 max-[380px]:py-1 max-[380px]:text-[11px]';
 
-  // ---- 1) Первый визит + ширина < 1024px (без раннего return) ----
-  // Инициализируем без доступа к window, потом уточняем в effect
-  const [firstVisit, setFirstVisit] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    try {
-      const seen = localStorage.getItem('pp_seen_auth_choice');
-      setFirstVisit(!seen);
-      localStorage.setItem('pp_seen_auth_choice', '1');
-    } catch {
-      setFirstVisit(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1023.98px)');
-    const apply = () => setIsMobile(mq.matches);
-    apply();
-    mq.addEventListener?.('change', apply);
-    return () => mq.removeEventListener?.('change', apply);
-  }, []);
-  // ---------------------------------------------------------------
-
-  // ---- 2) Авто-уменьшение имени (хуки всегда объявлены) ----
-  const nameWrapRef = useRef<HTMLSpanElement>(null);
-  const nameRef = useRef<HTMLSpanElement>(null);
-
-  // Очень узкие экраны: используем короткие подписи кнопок
   const [isTiny, setIsTiny] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 420px)');
@@ -78,46 +48,20 @@ export function AuthButton() {
     return session?.user?.name || session?.user?.email?.split('@')[0] || 'Профиль';
   }, [session]);
 
-  useEffect(() => {
-    if (!session) return;
-    const wrap = nameWrapRef.current;
-    const el = nameRef.current;
-    if (!wrap || !el) return;
-
-    const fit = () => {
-      let size = 14; // старт
-      const min = 10;
-      el.style.whiteSpace = 'nowrap';
-      el.style.fontSize = size + 'px';
-      while (el.scrollWidth > wrap.clientWidth && size > min) {
-        size -= 0.5;
-        el.style.fontSize = size + 'px';
-      }
-    };
-
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(wrap);
-    window.addEventListener('resize', fit);
-    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
-  }, [displayName, session]);
-  // -----------------------------------------------------------
-
-  // Вертикальная раскладка только для НЕ авторизованных, первого визита и мобилки
-  const stackMobile = !session && firstVisit && isMobile;
+  const shell =
+    'flex items-center gap-1.5 sm:gap-2 rounded-lg border border-gray-200/60 bg-white/80 p-0.5 shadow-sm backdrop-blur-sm';
 
   if (session) {
     return (
-      <div className="flex items-center gap-3 sm:gap-4">
-        <span
-          ref={nameWrapRef}
-          className="inline-block align-middle max-w-[120px] sm:max-w-[140px] lg:max-w-[160px] leading-none"
-          title={displayName}
+      <div className={shell}>
+        <Link
+          href="/profile"
+          aria-label={`Профиль: ${displayName}`}
+          title={`${displayName} — профиль`}
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-[#660000] transition-colors hover:bg-[#660000]/5 hover:text-[#8B0000] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/30"
         >
-          <span ref={nameRef} className="text-gray-700 align-middle select-none">
-            {displayName}
-          </span>
-        </span>
+          <UserRound className="h-6 w-6" strokeWidth={2} aria-hidden />
+        </Link>
 
         <button
           onClick={handleSignOut}
@@ -130,32 +74,8 @@ export function AuthButton() {
     );
   }
 
-  // Не авторизован
-  if (stackMobile) {
-    // Первый визит + мобилка: кнопки вертикально (Регистрация над Войти)
-    return (
-      <div className="flex flex-col items-stretch gap-1.5 w-[112px] sm:w-[128px]">
-        <Link
-          href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-          aria-label="Регистрация"
-          className={`${lightBtn} ${base} ${ultraNarrow} cursor-pointer`}
-        >
-          {isTiny ? tr('auth.registerShort', 'Рег.') : tr('auth.register', 'Регистрация')}
-        </Link>
-        <button
-          onClick={handleSignIn}
-          aria-label="Войти"
-          className={`${lightBtn} ${base} ${ultraNarrow} cursor-pointer`}
-        >
-          {isTiny ? tr('auth.signInShort', 'Войти') : tr('auth.signIn', 'Войти')}
-        </button>
-      </div>
-    );
-  }
-
-  // Прочие случаи — горизонтально
   return (
-    <div className="flex items-center gap-3 sm:gap-4">
+    <div className={shell}>
       <button
         onClick={handleSignIn}
         aria-label="Войти"
@@ -175,8 +95,6 @@ export function AuthButton() {
   );
 }
 
-// Default export wrapper to provide SessionProvider locally,
-// allowing us to avoid a global provider in the root layout.
 export default function AuthButtonWithProvider() {
   return (
     <SessionProvider>

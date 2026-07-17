@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import AdminGate from '@/components/admin/AdminGate';
-import { toast } from 'react-hot-toast';
+import { Suspense, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import AdminGate from "@/components/admin/AdminGate";
+import ProductFormModal from "@/components/admin/ProductFormModal";
+import { toast } from "react-hot-toast";
 
 type ProductRow = {
   id: string;
@@ -16,48 +18,80 @@ type ProductRow = {
   images: string[];
 };
 
-const emptyForm = {
-  id: '' as string | undefined,
-  slug: '',
-  title: '',
-  price: 0,
-  stock: 0,
-  categorySlug: '' as string | undefined,
-  imagesCsv: ''
-};
-
-type FormState = typeof emptyForm;
-
-export default function AdminProductsPage() {
+function AdminProductsPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [rows, setRows] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [q, setQ] = useState('');
-  const [form, setForm] = useState<FormState>(emptyForm);
+  const [q, setQ] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const token = useMemo(() => {
-    if (typeof window === 'undefined') return '';
-    return localStorage.getItem('adminToken') || '';
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("adminToken") || "";
   }, []);
+
+  useEffect(() => {
+    const edit = searchParams.get("edit");
+    const isNew = searchParams.get("new");
+    if (edit) {
+      setEditId(edit);
+      setModalOpen(true);
+      router.replace("/admin-products");
+    } else if (isNew === "1") {
+      setEditId(null);
+      setModalOpen(true);
+      router.replace("/admin-products");
+    }
+  }, [searchParams, router]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return rows;
-    return rows.filter((r) =>
-      r.slug.toLowerCase().includes(s) || r.title.toLowerCase().includes(s)
+    return rows.filter(
+      (r) =>
+        r.slug.toLowerCase().includes(s) ||
+        r.title.toLowerCase().includes(s) ||
+        (r.category?.slug || "").toLowerCase().includes(s)
     );
   }, [q, rows]);
 
   const reload = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/products');
+      const res = await fetch("/api/admin/products");
       const json = await res.json();
-      if (!json.success) throw new Error(json.message || 'failed');
-      setRows(json.data as ProductRow[]);
+      if (!json.success) throw new Error(json.message || "failed");
+
+      const products = (json.data as Array<Record<string, unknown>>).map((p) => {
+        let images: string[] = [];
+        if (Array.isArray(p.images)) {
+          images = p.images as string[];
+        } else if (typeof p.images === "string") {
+          try {
+            const parsed = JSON.parse(p.images);
+            images = Array.isArray(parsed) ? parsed : [];
+          } catch {
+            images = [];
+          }
+        }
+        return {
+          id: String(p.id),
+          slug: String(p.slug || ""),
+          title: String(p.title || p.slug || ""),
+          price: Number(p.price) || 0,
+          stock: Number(p.stock) || 0,
+          isActive: Boolean(p.isActive ?? true),
+          category: (p.category as ProductRow["category"]) || null,
+          images,
+        };
+      });
+
+      setRows(products);
     } catch (e) {
       console.error(e);
-      toast.error('Не удалось загрузить товары');
+      toast.error("Не удалось загрузить товары");
     } finally {
       setLoading(false);
     }
@@ -67,244 +101,134 @@ export default function AdminProductsPage() {
     reload();
   }, []);
 
-  const onEdit = (p: ProductRow) => {
-    setForm({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      price: p.price ?? 0,
-      stock: p.stock ?? 0,
-      categorySlug: p.category?.slug,
-      imagesCsv: (p.images || []).join(',')
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const openCreate = () => {
+    setEditId(null);
+    setModalOpen(true);
   };
 
-  const resetForm = () => setForm(emptyForm);
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setSubmitting(true);
-      const base = {
-        slug: form.slug.trim(),
-        title: form.title.trim(),
-        price: Number(form.price) || 0,
-        stock: Number(form.stock) || 0,
-        categorySlug: form.categorySlug?.trim() || undefined,
-        images: form.imagesCsv
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean),
-      };
-
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        'x-admin-token': token,
-      };
-
-      if (form.id) {
-        const res = await fetch(`/api/admin/products/${form.id}`, {
-          method: 'PUT',
-          headers,
-          body: JSON.stringify(base),
-        });
-        if (!res.ok) throw new Error('update failed');
-        toast.success('Товар обновлён');
-      } else {
-        const res = await fetch('/api/admin/products', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(base),
-        });
-        if (!res.ok) throw new Error('create failed');
-        toast.success('Товар создан');
-      }
-      resetForm();
-      await reload();
-    } catch (e) {
-      console.error(e);
-      toast.error('Ошибка сохранения товара');
-    } finally {
-      setSubmitting(false);
-    }
+  const openEdit = (id: string) => {
+    setEditId(id);
+    setModalOpen(true);
   };
 
   const onDelete = async (id: string) => {
-    if (!confirm('Удалить товар?')) return;
+    if (!confirm("Удалить товар?")) return;
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
-        method: 'DELETE',
-        headers: { 'x-admin-token': token },
+        method: "DELETE",
+        headers: { "x-admin-token": token },
       });
-      if (!res.ok) throw new Error('delete failed');
-      toast.success('Товар удалён');
+      if (!res.ok) throw new Error("delete failed");
+      toast.success("Товар удалён");
       await reload();
     } catch (e) {
       console.error(e);
-      toast.error('Ошибка удаления товара');
+      toast.error("Ошибка удаления товара");
     }
   };
 
   return (
     <AdminGate>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Управление товарами</h1>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin/new"
-              className="px-4 py-2 rounded border border-[#660000] text-[#660000] hover:bg-[#660000] hover:text-white transition-colors"
-            >
-              Новые товары
-            </Link>
-            <Link
-              href="/admin-products-add"
-              className="px-4 py-2 rounded bg-[#660000] text-white hover:bg-[#7a1a1a] transition-colors"
-            >
-              + Добавить товар
-            </Link>
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#660000]">Товары</h1>
+            <p className="mt-1 text-sm text-gray-600">Список товаров каталога</p>
           </div>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#660000] px-4 text-sm font-semibold text-white hover:bg-[#8B0000]"
+          >
+            Добавить товар
+          </button>
         </div>
 
-        <form onSubmit={onSubmit} className="bg-white shadow rounded-lg p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
-            <input
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              className="w-full rounded border border-gray-300 px-3 py-2"
-              placeholder="acm-210e-bt"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Название (ru)</label>
-            <input
-              value={form.title}
-              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              className="w-full rounded border border-gray-300 px-3 py-2"
-              placeholder="Название товара"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Цена</label>
-            <input
-              type="number"
-              value={form.price}
-              onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
-              className="w-full rounded border border-gray-300 px-3 py-2"
-              min={0}
-              step={1}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Количество (stock)</label>
-            <input
-              type="number"
-              value={form.stock}
-              onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))}
-              className="w-full rounded border border-gray-300 px-3 py-2"
-              min={0}
-              step={1}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Категория (slug)</label>
-            <input
-              value={form.categorySlug || ''}
-              onChange={(e) => setForm((f) => ({ ...f, categorySlug: e.target.value }))}
-              className="w-full rounded border border-gray-300 px-3 py-2"
-              placeholder="audio-systems"
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Изображения (через запятую)</label>
-            <input
-              value={form.imagesCsv}
-              onChange={(e) => setForm((f) => ({ ...f, imagesCsv: e.target.value }))}
-              className="w-full rounded border border-gray-300 px-3 py-2"
-              placeholder="/public/ProductImages/ACM-210E-BT.png, /public/ProductImages/ACM-210E-BT-2.png"
-            />
-          </div>
-          <div className="md:col-span-2 flex gap-3 justify-end">
-            {form.id && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-4 py-2 rounded border border-gray-300 text-gray-700"
-                disabled={submitting}
-              >
-                Отменить
-              </button>
-            )}
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-[#660000] text-white disabled:opacity-60"
-              disabled={submitting}
-            >
-              {form.id ? 'Сохранить изменения' : 'Создать товар'}
-            </button>
-          </div>
-        </form>
+        <div className="mb-4">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Поиск по названию, slug, категории…"
+            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#660000] focus:outline-none focus:ring-2 focus:ring-[#660000]/20"
+          />
+        </div>
 
-        <div className="bg-white shadow rounded-lg">
-          <div className="p-4 flex items-center justify-between gap-4 border-b">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Поиск по названию или slug"
-              className="w-full max-w-md rounded border border-gray-300 px-3 py-2"
-            />
-          </div>
-          {loading ? (
-            <div className="p-8 text-center text-gray-600">Загрузка...</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Название</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Цена</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Кол-во</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Категория</th>
-                    <th className="px-4 py-2" />
+        {loading ? (
+          <p className="text-gray-600">Загрузка…</p>
+        ) : filtered.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600">
+            Товаров нет. Добавьте первый.
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-[0_4px_16px_rgba(102,0,0,0.04)]">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-[#F8F9FA] text-gray-600">
+                <tr>
+                  <th className="px-3 py-3">Фото</th>
+                  <th className="px-3 py-3">Название</th>
+                  <th className="px-3 py-3">Slug</th>
+                  <th className="px-3 py-3">Категория</th>
+                  <th className="px-3 py-3">Цена</th>
+                  <th className="px-3 py-3">Stock</th>
+                  <th className="px-3 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((row) => (
+                  <tr key={row.id} className="border-t border-gray-100 hover:bg-[#fff9f8]">
+                    <td className="px-3 py-3">
+                      <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-100">
+                        {row.images[0] ? (
+                          <Image src={row.images[0]} alt="" fill className="object-cover" unoptimized />
+                        ) : null}
+                      </div>
+                    </td>
+                    <td className="px-3 py-3 font-medium text-gray-900">{row.title}</td>
+                    <td className="px-3 py-3 font-mono text-xs text-gray-600">{row.slug}</td>
+                    <td className="px-3 py-3 text-gray-600">{row.category?.slug || "—"}</td>
+                    <td className="px-3 py-3 text-gray-900">{Number(row.price).toLocaleString("ru-RU")}</td>
+                    <td className="px-3 py-3 text-gray-900">{row.stock}</td>
+                    <td className="px-3 py-3 text-right whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(row.id)}
+                        className="mr-2 text-[#660000] hover:underline"
+                      >
+                        Изменить
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDelete(row.id)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Удалить
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filtered.map((p) => (
-                    <tr key={p.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-2">
-                        <div className="text-sm font-medium text-gray-900">{p.title}</div>
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-600">{p.slug}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600">{p.price?.toLocaleString('ru-RU')}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600">{p.stock}</td>
-                      <td className="px-4 py-2 text-sm text-gray-600">{p.category?.name || '-'}</td>
-                      <td className="px-4 py-2 text-right whitespace-nowrap">
-                        <a
-                          href={`/admin-products-add?id=${p.id}`}
-                          className="text-[#660000] hover:text-[#7a1a1a] mr-3"
-                        >
-                          Редактировать
-                        </a>
-                        <button
-                          onClick={() => onDelete(p.id)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          Удалить
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <ProductFormModal
+          open={modalOpen}
+          productId={editId}
+          onClose={() => {
+            setModalOpen(false);
+            setEditId(null);
+          }}
+          onSaved={reload}
+        />
       </div>
     </AdminGate>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={<p className="p-6 text-center text-gray-600">Загрузка…</p>}>
+      <AdminProductsPageInner />
+    </Suspense>
   );
 }

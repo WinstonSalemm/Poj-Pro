@@ -69,16 +69,16 @@ export default async function PopularProductsBlock({ locale }: { locale: Locale 
   }
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-8 sm:py-10 bg-gray-50">
       <div className="max-w-[1200px] mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-[#660000] mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-[#660000] mb-5 sm:mb-6">
           {dictionary.popularProducts.title}
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {products.map((p) => (
             <div key={p.slug}>
-              <ProductCard product={p} showDetailsLink={false} popularVariant />
+              <ProductCard product={p} showDetailsLink popularVariant />
             </div>
           ))}
         </div>

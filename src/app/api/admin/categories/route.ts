@@ -23,7 +23,11 @@ export async function GET(req: NextRequest) {
         { name: 'asc' },
         { slug: 'asc' },
       ],
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        image: true,
         i18n: {
           where: { locale: { in: ['ru', 'eng', 'uzb'] } },
           select: { locale: true, name: true },
@@ -31,19 +35,34 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    // Check blob presence without loading MediumBlob into Node
+    const blobFlags = await prisma.$queryRaw<Array<{ id: string; hasBlob: number | boolean }>>`
+      SELECT id, (imageData IS NOT NULL AND LENGTH(imageData) > 0) AS hasBlob
+      FROM Category
+    `;
+    const hasBlobById = new Map(
+      blobFlags.map((row) => [row.id, Boolean(row.hasBlob)])
+    );
+
     return NextResponse.json({
       success: true,
-      data: categories.map((category) => ({
-        id: category.id,
-        slug: category.slug,
-        name: category.name,
-        image: category.image,
-        i18n: {
-          ru: category.i18n.find((t) => t.locale === 'ru')?.name || '',
-          eng: category.i18n.find((t) => t.locale === 'eng')?.name || '',
-          uzb: category.i18n.find((t) => t.locale === 'uzb')?.name || '',
-        },
-      })),
+      data: categories.map((category) => {
+        const image =
+          category.image ||
+          (hasBlobById.get(category.id) ? `/api/admin/image/${category.id}` : null);
+
+        return {
+          id: category.id,
+          slug: category.slug,
+          name: category.name,
+          image,
+          i18n: {
+            ru: category.i18n.find((t) => t.locale === 'ru')?.name || '',
+            eng: category.i18n.find((t) => t.locale === 'eng')?.name || '',
+            uzb: category.i18n.find((t) => t.locale === 'uzb')?.name || '',
+          },
+        };
+      }),
     });
   } catch (error) {
     console.error('[admin/categories][GET] error', error);
@@ -148,6 +167,15 @@ export async function POST(req: NextRequest) {
       });
       
       console.log('[admin/categories][POST] Category created with ID:', category.id);
+    }
+
+    // If we stored blob bytes but no public URL, point image at the serve endpoint
+    if (categoryData.imageData && !category.image) {
+      const imageUrl = `/api/admin/image/${category.id}`;
+      category = await prisma.category.update({
+        where: { id: category.id },
+        data: { image: imageUrl },
+      });
     }
 
     const translations = Object.entries(normalizedI18n)
