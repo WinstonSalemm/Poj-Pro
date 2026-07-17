@@ -227,6 +227,172 @@ a {
   transform-origin: left center;
 }
 
+/* Меню: явный пожар → тушение, цикл 16с */
+@keyframes menuExtIdleAim {
+  0%, 18% { transform: rotate(0deg) translate(0, 0); }
+  22% { transform: rotate(-18deg) translate(1px, 1px); }
+  26%, 48% { transform: rotate(-22deg) translate(2px, 1px); }
+  52% { transform: rotate(-6deg) translate(0, 0); }
+  56%, 100% { transform: rotate(0deg) translate(0, 0); }
+}
+.animate-menu-ext-idle-aim {
+  animation: menuExtIdleAim 16s ease-in-out infinite;
+  transform-origin: 30% 85%;
+}
+
+@keyframes menuExtIdleRecoil {
+  0%, 24%, 28%, 32%, 36%, 40%, 44%, 100% { transform: translateX(0); }
+  25%, 29%, 33%, 37%, 41% { transform: translateX(-1.5px); }
+  26%, 30%, 34%, 38%, 42% { transform: translateX(0.5px); }
+}
+.animate-menu-ext-idle-recoil {
+  animation: menuExtIdleRecoil 16s linear infinite;
+}
+
+/* Появление → пик → ступени меньше и меньше */
+@keyframes menuExtIdleFlame {
+  0%, 10% {
+    opacity: 0;
+    transform: scale(0.15) translateY(6px);
+  }
+  14% {
+    opacity: 1;
+    transform: scale(0.55) translateY(2px);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1.15) translateY(0);
+  }
+  22% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-1px);
+  }
+  /* начало тушения — пошаговое уменьшение */
+  28% {
+    opacity: 1;
+    transform: scale(0.88) translateY(0);
+  }
+  34% {
+    opacity: 0.95;
+    transform: scale(0.68) translateY(1px);
+  }
+  40% {
+    opacity: 0.85;
+    transform: scale(0.48) translateY(2px);
+  }
+  46% {
+    opacity: 0.55;
+    transform: scale(0.28) translateY(3px);
+  }
+  50% {
+    opacity: 0.2;
+    transform: scale(0.12) translateY(4px);
+  }
+  54%, 100% {
+    opacity: 0;
+    transform: scale(0.05) translateY(5px);
+  }
+}
+.animate-menu-ext-idle-flame {
+  animation: menuExtIdleFlame 16s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+
+@keyframes menuExtIdleFlameFlicker {
+  0%, 100% { transform: scaleY(1) scaleX(1) rotate(0deg); }
+  25% { transform: scaleY(1.18) scaleX(0.88) rotate(-3deg); }
+  50% { transform: scaleY(0.92) scaleX(1.08) rotate(2deg); }
+  75% { transform: scaleY(1.14) scaleX(0.9) rotate(-2deg); }
+}
+.animate-menu-ext-idle-flame-flicker {
+  animation: menuExtIdleFlameFlicker 0.22s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  transform-box: fill-box;
+}
+
+@keyframes menuExtIdleGlow {
+  0%, 10%, 54%, 100% { opacity: 0; }
+  14% { opacity: 0.35; }
+  18%, 22% { opacity: 0.55; }
+  34% { opacity: 0.3; }
+  46% { opacity: 0.12; }
+  50% { opacity: 0; }
+}
+.animate-menu-ext-idle-glow {
+  animation: menuExtIdleGlow 16s ease-in-out infinite;
+}
+
+@keyframes menuExtIdleSprayLoop {
+  0%, 24% { opacity: 0; }
+  26%, 48% { opacity: 1; }
+  52%, 100% { opacity: 0; }
+}
+.animate-menu-ext-idle-spray-loop {
+  animation: menuExtIdleSprayLoop 16s linear infinite;
+}
+
+@keyframes menuExtIdleSprayMid {
+  0% { opacity: 0.95; transform: translate(0, 0) scale(0.55); }
+  100% { opacity: 0; transform: translate(13px, 0) scale(1.4); }
+}
+@keyframes menuExtIdleSprayUp {
+  0% { opacity: 0.95; transform: translate(0, 0) scale(0.55); }
+  100% { opacity: 0; transform: translate(12px, -4px) scale(1.35); }
+}
+@keyframes menuExtIdleSprayDown {
+  0% { opacity: 0.95; transform: translate(0, 0) scale(0.55); }
+  100% { opacity: 0; transform: translate(12px, 3px) scale(1.35); }
+}
+.animate-menu-ext-idle-spray-mid {
+  animation: menuExtIdleSprayMid 0.38s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+.animate-menu-ext-idle-spray-up {
+  animation: menuExtIdleSprayUp 0.38s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+.animate-menu-ext-idle-spray-down {
+  animation: menuExtIdleSprayDown 0.38s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+@keyframes menuExtIdleSmoke {
+  0%, 48% { opacity: 0; transform: translateY(0) scale(0.4); }
+  52% { opacity: 0.5; transform: translateY(-4px) scale(1); }
+  58% { opacity: 0.25; transform: translateY(-9px) scale(1.35); }
+  64%, 100% { opacity: 0; transform: translateY(-14px) scale(1.5); }
+}
+.animate-menu-ext-idle-smoke {
+  animation: menuExtIdleSmoke 16s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-menu-ext-idle-aim,
+  .animate-menu-ext-idle-recoil,
+  .animate-menu-ext-idle-flame,
+  .animate-menu-ext-idle-flame-flicker,
+  .animate-menu-ext-idle-glow,
+  .animate-menu-ext-idle-spray-loop,
+  .animate-menu-ext-idle-spray-mid,
+  .animate-menu-ext-idle-spray-up,
+  .animate-menu-ext-idle-spray-down,
+  .animate-menu-ext-idle-smoke {
+    animation: none !important;
+  }
+  .animate-menu-ext-idle-flame,
+  .animate-menu-ext-idle-glow,
+  .animate-menu-ext-idle-spray-loop,
+  .animate-menu-ext-idle-smoke {
+    opacity: 0 !important;
+  }
+}
+
 /* Мини-огнетушитель в мобильном меню */
 @keyframes menuExtShake {
   0%, 100% { transform: rotate(0deg); }

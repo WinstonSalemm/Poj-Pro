@@ -8,7 +8,89 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { useRouter, usePathname } from "next/navigation";
 import BlurReveal from "@/components/ui/BlurReveal";
 import { AnimatePresence, motion } from "framer-motion";
-import { FireExtinguisher } from "lucide-react";
+/** Мини-сцена: явный огонь → тушение ступенями (меню закрыто), цикл 16с */
+function MenuExtinguisherIdle() {
+  return (
+    <svg
+      viewBox="0 0 36 26"
+      className="h-7 w-9 overflow-visible"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.85"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <defs>
+        <radialGradient id="menuFlameGlow" cx="50%" cy="70%" r="50%">
+          <stop offset="0%" stopColor="#ffb000" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="#ffb000" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Свечение под огнём */}
+      <ellipse
+        className="animate-menu-ext-idle-glow"
+        cx="27.5"
+        cy="20"
+        rx="6"
+        ry="4"
+        fill="url(#menuFlameGlow)"
+        stroke="none"
+      />
+
+      {/* Огонь — крупный, читаемый */}
+      <g className="animate-menu-ext-idle-flame">
+        <g className="animate-menu-ext-idle-flame-flicker">
+          <path
+            d="M27.5 21.5 C24.2 18.2, 24.8 14.2, 26.2 11.6 C26.6 13.4, 27.8 14.2, 27.8 14.2 C27.8 11.2, 29.2 9.2, 30.8 8 C31.4 10.6, 32.8 12.8, 32.8 15.6 C32.8 18.8, 30.6 21.5, 27.5 21.5 Z"
+            fill="#d45500"
+            stroke="none"
+          />
+          <path
+            d="M27.5 21.2 C25.4 18.6, 25.8 15.6, 26.8 13.6 C27.1 14.8, 28 15.4, 28 15.4 C28 13.2, 28.9 11.6, 30 10.6 C30.4 12.4, 31.4 14, 31.4 16 C31.4 18.6, 29.8 21.2, 27.5 21.2 Z"
+            fill="#ff8a00"
+            stroke="none"
+          />
+          <path
+            d="M27.6 21 C26.4 19.2, 26.7 17.2, 27.4 15.8 C27.6 16.6, 28.2 17, 28.2 17 C28.2 15.6, 28.8 14.6, 29.5 14 C29.8 15.2, 30.4 16.2, 30.4 17.4 C30.4 19.2, 29.2 21, 27.6 21 Z"
+            fill="#ffd24a"
+            stroke="none"
+          />
+          <ellipse cx="28.2" cy="19.6" rx="1.1" ry="1.6" fill="#fff3c4" stroke="none" opacity="0.9" />
+        </g>
+      </g>
+
+      {/* Дым после тушения */}
+      <g className="animate-menu-ext-idle-smoke" fill="#660000" stroke="none">
+        <circle cx="27" cy="16" r="1.4" opacity="0.35" />
+        <circle cx="29" cy="14.2" r="1.1" opacity="0.28" />
+        <circle cx="26.2" cy="14.5" r="0.9" opacity="0.22" />
+        <circle cx="28" cy="12.5" r="0.8" opacity="0.18" />
+      </g>
+
+      {/* Огнетушитель */}
+      <g className="animate-menu-ext-idle-aim">
+        <g className="animate-menu-ext-idle-recoil">
+          <rect x="3" y="9" width="8" height="13" rx="2" fill="none" />
+          <path d="M5.2 9V6.6h3.6V9" />
+          <path d="M6 5.4h2" />
+          <path d="M11 11.2 C13.2 9.4, 15.2 9.6, 16.8 10.8" />
+          <rect x="16.4" y="9.6" width="2.6" height="2.2" rx="0.5" fill="currentColor" stroke="none" />
+
+          {/* Струя: поток частиц пока тушит */}
+          <g className="animate-menu-ext-idle-spray-loop" fill="currentColor" stroke="none">
+            <circle className="animate-menu-ext-idle-spray-mid" cx="19.2" cy="10.6" r="1.2" style={{ animationDelay: "0ms" }} />
+            <circle className="animate-menu-ext-idle-spray-up" cx="19.4" cy="9.6" r="1" style={{ animationDelay: "80ms" }} />
+            <circle className="animate-menu-ext-idle-spray-down" cx="19.3" cy="11.6" r="0.95" style={{ animationDelay: "140ms" }} />
+            <circle className="animate-menu-ext-idle-spray-mid" cx="19.7" cy="10.3" r="0.8" style={{ animationDelay: "210ms" }} />
+            <circle className="animate-menu-ext-idle-spray-up" cx="19.5" cy="10" r="0.7" style={{ animationDelay: "280ms" }} />
+          </g>
+        </g>
+      </g>
+    </svg>
+  );
+}
 
 /** Мини-огнетушитель со струей — когда меню открыто */
 function MenuExtinguisherActive({ className = "" }: { className?: string }) {
@@ -24,17 +106,12 @@ function MenuExtinguisherActive({ className = "" }: { className?: string }) {
       aria-hidden
     >
       <g className="animate-menu-ext-shake">
-        {/* корпус */}
         <rect x="6" y="8" width="8" height="12" rx="2" />
-        {/* ручка */}
         <path d="M8 8V6h4v2" />
         <path d="M9 5h2" />
-        {/* шланг */}
         <path d="M14 10c2-1 3.5-.5 4.5.5" />
-        {/* сопло */}
         <path d="M18.5 10.5h1.5" />
       </g>
-      {/* струя */}
       <g fill="currentColor" stroke="none">
         <circle className="animate-menu-ext-spray" cx="21" cy="10" r="1.1" style={{ animationDelay: "0ms" }} />
         <circle className="animate-menu-ext-spray" cx="21.5" cy="9.2" r="0.9" style={{ animationDelay: "120ms" }} />
@@ -259,13 +336,9 @@ export default function Header() {
                 aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-navigation"
-                className="relative z-[1002] lg:hidden inline-flex h-11 w-11 -ml-1 items-center justify-center rounded-md text-[#660000] transition-colors hover:bg-[#660000]/5 hover:text-[#8B0000]"
+                className="relative z-[1002] lg:hidden inline-flex h-11 w-11 -ml-1 items-center justify-center overflow-visible rounded-md text-[#660000] transition-colors hover:bg-[#660000]/5 hover:text-[#8B0000]"
               >
-                {mobileOpen ? (
-                  <MenuExtinguisherActive />
-                ) : (
-                  <FireExtinguisher className="h-6 w-6" strokeWidth={2} aria-hidden />
-                )}
+                {mobileOpen ? <MenuExtinguisherActive /> : <MenuExtinguisherIdle />}
               </button>
 
               <nav className="hidden lg:flex items-center gap-[28px]">
@@ -374,35 +447,33 @@ export default function Header() {
             <AuthButton />
           </div>
 
-          <div className="flex shrink-0 items-center gap-0.5 rounded-lg border border-gray-200/60 bg-white/80 p-0.5 shadow-sm backdrop-blur-sm">
-            {languages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => changeLanguage(lang.code)}
-                aria-label={`Language: ${lang.label}`}
-                className={`relative min-h-9 min-w-11 px-2 py-1 text-xs md:min-h-7 md:min-w-0 md:px-2.5 md:py-0.5 md:text-[10px] font-medium rounded-md transition-all duration-300 ${currentLanguage === lang.code
-                  ? "text-white shadow-sm"
-                  : "text-gray-500 hover:text-[#660000] hover:bg-gray-50/50"
+          <div className="relative flex shrink-0 rounded-lg border border-gray-200/60 bg-white/80 p-0.5 shadow-sm backdrop-blur-sm">
+            {/* Общий трек для индикатора — равные трети, без layoutId */}
+            <div className="pointer-events-none absolute inset-0.5 overflow-hidden rounded-md">
+              <motion.div
+                className="h-full w-1/3 rounded-md bg-[#660000] shadow-sm"
+                initial={false}
+                animate={{ x: `${Math.max(0, languages.findIndex((l) => l.code === currentLanguage)) * 100}%` }}
+                transition={{ type: "tween", duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
+              />
+            </div>
+            {languages.map((lang) => {
+              const active = currentLanguage === lang.code;
+              return (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => changeLanguage(lang.code)}
+                  aria-label={`Language: ${lang.label}`}
+                  aria-pressed={active}
+                  className={`relative z-10 min-h-9 w-11 px-0 text-xs font-medium transition-colors duration-200 md:min-h-7 md:w-10 md:text-[10px] ${
+                    active ? "text-white" : "text-gray-500 hover:text-[#660000]"
                   }`}
-              >
-                {currentLanguage === lang.code && (
-                  <motion.div
-                    layoutId="activeLangBar"
-                    className="absolute inset-0 bg-[#660000] rounded-md"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                  />
-                )}
-                <motion.span
-                  key={currentLanguage}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="relative z-10"
                 >
                   {lang.label}
-                </motion.span>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
