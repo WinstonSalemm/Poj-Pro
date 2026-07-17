@@ -3,6 +3,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { isProd } from '@/lib/analytics';
+import ScrollToTop from '@/components/ScrollToTop';
 
 // Defer non-critical client widgets to reduce initial JS and TBT
 const AnalyticsLazy = dynamic(() => import('@/components/Analytics'), { ssr: false });
@@ -13,6 +14,7 @@ const CartAddToastLazy = dynamic(() => import('@/components/Cart/CartAddToast'),
 export default function ClientWidgets() {
   return (
     <>
+      <ScrollToTop />
       <CartAddToastLazy />
       <CookieConsentModalLazy />
       <ClientWrapperLazy />

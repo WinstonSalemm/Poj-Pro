@@ -33,13 +33,13 @@ export default function QuantityAddToCart({ productId, className = "" }: Props) 
   };
 
   return (
-    <div className={`flex flex-col gap-2 ${className}`}>
-      <div className="inline-flex w-full h-11 items-stretch rounded-lg border border-gray-300 overflow-hidden shadow-sm bg-white">
+    <div className={`flex w-full min-w-0 flex-col gap-2 ${className}`}>
+      <div className="flex h-11 w-full min-w-0 items-stretch overflow-hidden rounded-lg border border-gray-300 bg-white shadow-sm">
         <button
           type="button"
           aria-label={t("cart.decreaseQuantity") || "Decrease quantity"}
           onClick={() => { dec(); applyIfInCart(); }}
-          className="w-11 flex items-center justify-center text-xl !text-[#660000] hover:bg-gray-100 disabled:opacity-50"
+          className="flex w-10 shrink-0 items-center justify-center text-xl !text-[#660000] hover:bg-gray-100 disabled:opacity-50 sm:w-11"
           disabled={qty <= 1}
         >
           −
@@ -50,20 +50,20 @@ export default function QuantityAddToCart({ productId, className = "" }: Props) 
           pattern="[0-9]*"
           value={qty}
           onChange={(e) => { onInput(e); applyIfInCart(); }}
-          className="flex-1 min-w-0 text-center text-base font-medium outline-none !text-[#660000] focus:ring-2 focus:ring-[#660000]/40"
+          className="min-w-0 flex-1 text-center text-base font-medium outline-none !text-[#660000] focus:ring-2 focus:ring-[#660000]/40"
           aria-label={t("cart.quantity") || "Quantity"}
         />
         <button
           type="button"
           aria-label={t("cart.increaseQuantity") || "Increase quantity"}
           onClick={() => { inc(); applyIfInCart(); }}
-          className="w-11 flex items-center justify-center text-xl !text-[#660000] hover:bg-gray-100"
+          className="flex w-10 shrink-0 items-center justify-center text-xl !text-[#660000] hover:bg-gray-100 sm:w-11"
         >
           +
         </button>
       </div>
 
-      <AddToCartButton productId={productId} quantity={qty} className="w-full h-11 rounded-lg" />
+      <AddToCartButton productId={productId} quantity={qty} className="h-11 w-full min-w-0 max-w-full rounded-lg text-sm sm:text-base" />
     </div>
   );
 }

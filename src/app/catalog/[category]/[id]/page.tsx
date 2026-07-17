@@ -405,8 +405,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <main className="bg-[#F8F9FA] min-h-screen">
         <section className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <Breadcrumbs items={[{ name: t('common.catalog', 'Catalog'), href: "/catalog" }, ...(categorySlug ? [{ name: categoryLabel, href: `/catalog/${categorySlug}` }] : []), { name: title }]} />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-w-0">
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm min-w-0">
               <div className="relative mx-auto w-full max-w-[420px] aspect-[4/3] lg:max-w-[360px] xl:max-w-[390px] lg:aspect-[3/4] max-h-[52vh]">
                 <Image
                   src={mainImage}
@@ -425,11 +425,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                 </Link>
               </div>
             </div>
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 shadow-sm min-w-0">
               <h1 className="text-2xl md:text-3xl font-bold text-[#660000] mb-4">{title}</h1>
               {summary && <p className="text-gray-700 text-lg mb-6">{summary}</p>}
-              <div className="rounded-2xl border border-[#660000]/15 bg-[#fff9f8] p-4 md:p-5">
-                <div className="text-3xl font-bold text-[#660000]">
+              <div className="rounded-2xl border border-[#660000]/15 bg-[#fff9f8] p-3 sm:p-4 md:p-5 min-w-0">
+                <div className="text-2xl sm:text-3xl font-bold text-[#660000] break-words">
                   <Price price={hasPrice ? priceNumber : null} />
                 </div>
                 <div className="mt-4 space-y-2 text-sm text-gray-700">
@@ -437,9 +437,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                   <p className="flex items-start gap-2"><span aria-hidden="true" className="mt-1 text-[#660000]">✓</span>{productCopy.delivery}</p>
                   <p className="flex items-start gap-2"><span aria-hidden="true" className="mt-1 text-[#660000]">✓</span>{productCopy.documents}</p>
                 </div>
-                <div className="mt-5 grid gap-3">
-                  {hasPrice && <QuantityAddToCart productId={dbProduct.id} className="w-full" />}
-                  <Link href={`/contacts?product=${encodeURIComponent(dbProduct.slug)}`} className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#660000] px-4 py-2.5 text-center font-semibold !text-[#660000] transition-colors hover:bg-[#660000]/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40">
+                <div className="mt-5 flex w-full min-w-0 flex-col gap-3">
+                  {hasPrice && <QuantityAddToCart productId={dbProduct.id} className="w-full min-w-0" />}
+                  <Link href={`/contacts?product=${encodeURIComponent(dbProduct.slug)}`} className="flex min-h-11 w-full min-w-0 items-center justify-center rounded-xl border border-[#660000] px-3 sm:px-4 py-2.5 text-center text-sm sm:text-base font-semibold !text-[#660000] transition-colors hover:bg-[#660000]/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40">
                     {productCopy.consultation}
                   </Link>
                 </div>

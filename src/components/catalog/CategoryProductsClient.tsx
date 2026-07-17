@@ -13,18 +13,30 @@ import FiltersSidebar, { type FiltersState, type SortKey } from "./FiltersSideba
 import MobileFiltersDrawer from "./MobileFiltersDrawer";
 import Link from "next/link";
 import Image from "next/image";
-import { CATEGORY_NAMES, CATEGORY_IMAGE_MAP } from "@/constants/categories";
+import { CATEGORY_IMAGE_MAP } from "@/constants/categories";
 import { CATEGORY_SEO, resolveCategoryKey } from "@/constants/categorySeo";
 import FAQAccordion from "@/components/seo/FAQAccordion";
 import ProductJsonLd from "@/components/seo/ProductJsonLd";
-import { CATEGORY_NAME_OVERRIDES, type Lang } from "@/constants/categoryNameOverrides";
+import { type Lang } from "@/constants/categoryNameOverrides";
 
-function fallbackName(key: string): string {
-  return key
-    .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace(/\s+/g, ' ')
-    .trim();
+type RelatedCategory = {
+  slug: string;
+  name: string;
+  image?: string | null;
+  imageData?: string | null;
+};
+
+function resolveRelatedImage(cat: RelatedCategory): string {
+  if (cat.imageData) {
+    return `data:image/png;base64,${cat.imageData}`;
+  }
+  if (cat.image) {
+    return cat.image;
+  }
+  const normalized = cat.slug.replace(/_/g, "-");
+  const key = resolveCategoryKey(normalized) || normalized;
+  const file = CATEGORY_IMAGE_MAP[key] || CATEGORY_IMAGE_MAP[cat.slug];
+  return file ? `/CatalogImage/${file}` : "/OtherPics/logo.png";
 }
 
 export default function CategoryProductsClient({
@@ -50,7 +62,7 @@ export default function CategoryProductsClient({
   const [sort, setSort] = useState<SortKey>("relevance");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [bootLoading, setBootLoading] = useState(true);
-  const [existingCategories, setExistingCategories] = useState<string[]>([]);
+  const [existingCategories, setExistingCategories] = useState<RelatedCategory[]>([]);
 
   // Load existing categories from API (categories that have active products)
   useEffect(() => {
@@ -59,7 +71,18 @@ export default function CategoryProductsClient({
         const res = await fetch(`/api/categories?locale=${lang}`);
         const data = await res.json();
         if (data?.categories && Array.isArray(data.categories)) {
-          setExistingCategories(data.categories.map((c: { slug: string }) => c.slug));
+          setExistingCategories(
+            data.categories
+              .filter((c: RelatedCategory & { products?: unknown[] }) =>
+                Array.isArray(c.products) && c.products.length > 0
+              )
+              .map((c: RelatedCategory) => ({
+                slug: c.slug,
+                name: c.name,
+                image: c.image,
+                imageData: c.imageData,
+              }))
+          );
         }
       } catch (e) {
         console.error('Failed to load existing categories:', e);
@@ -523,24 +546,32 @@ export default function CategoryProductsClient({
 
           {/* Related categories */}
           {(() => {
-            const key = resolveCategoryKey(rawCategory.replace(/_/g, '-')) || rawCategory.replace(/_/g, '-');
-            // Filter only existing categories (that have active products) and exclude current category
+            const currentKey =
+              resolveCategoryKey(rawCategory.replace(/_/g, "-")) ||
+              rawCategory.replace(/_/g, "-");
             const existingRelated = existingCategories
-              .filter((k) => k !== key && k !== rawCategory && k !== rawCategory.replace(/_/g, '-'))
+              .filter((cat) => {
+                const catKey =
+                  resolveCategoryKey(cat.slug.replace(/_/g, "-")) ||
+                  cat.slug.replace(/_/g, "-");
+                return (
+                  catKey !== currentKey &&
+                  cat.slug !== rawCategory &&
+                  cat.slug !== rawCategory.replace(/_/g, "-")
+                );
+              })
               .slice(0, 6);
 
-            // If no existing categories loaded yet or no related categories, don't show
             if (existingRelated.length === 0) return null;
             return (
               <section className="mt-10">
                 <h2 className="text-2xl font-bold mb-6 text-center text-[#660000]">{t('catalog.relatedTitle', 'Смотрите также')}</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                  {existingRelated.map((k) => {
-                    const label = CATEGORY_NAMES[k]?.[lang] || fallbackName(k);
-                    const img = CATEGORY_IMAGE_MAP[k] ? `/CatalogImage/${CATEGORY_IMAGE_MAP[k]}` : "/OtherPics/logo.png";
-                    const href = `/catalog/${k}`;
+                  {existingRelated.map((cat) => {
+                    const label = cat.name?.trim() || cat.slug;
+                    const img = resolveRelatedImage(cat);
                     return (
-                      <Link key={k} href={href} className="block group border border-gray-200 rounded-xl bg-white hover:shadow transition">
+                      <Link key={cat.slug} href={`/catalog/${cat.slug}`} className="block group border border-gray-200 rounded-xl bg-white hover:shadow transition">
                         <div className="aspect-square rounded-t-xl overflow-hidden bg-gray-100 relative">
                           <Image
                             src={img}
@@ -550,6 +581,7 @@ export default function CategoryProductsClient({
                             className="object-contain"
                             loading="lazy"
                             priority={false}
+                            unoptimized={img.startsWith("data:")}
                           />
                         </div>
                         <div className="p-2 text-center text-sm text-[#660000] group-hover:underline">

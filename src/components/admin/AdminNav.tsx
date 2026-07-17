@@ -8,6 +8,7 @@ const navigation = [
   { name: 'Orders', href: '/admin/orders' },
   { name: 'Products', href: '/admin-products' },
   { name: 'Popular Products', href: '/admin-popular-products' },
+  { name: 'Акции', href: '/admin/promotions' },
   { name: 'Customers', href: '/admin/customers' },
 ];
 

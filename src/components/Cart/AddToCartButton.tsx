@@ -134,7 +134,7 @@ export function AddToCartButton({
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${className}
-        rounded-md font-medium transition-all duration-200 flex items-center justify-center
+        rounded-md font-medium transition-all duration-200 flex min-w-0 max-w-full items-center justify-center
         ${isAdding ? 'opacity-75 cursor-not-allowed' : ''}
         ${isSuccess ? 'bg-green-600 hover:bg-green-700' : ''}
         ${isInCart(productId) ? 'bg-gray-400 hover:bg-gray-400 cursor-default' : ''}

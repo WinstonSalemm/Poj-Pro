@@ -215,3 +215,38 @@ model PopularProduct {
   @@index([productId])
   @@map("popular_products")
 }
+
+model Promotion {
+  id        String          @id @default(cuid())
+  slug      String          @unique
+  image     String?         @db.VarChar(500)
+  imageData Bytes?          @db.MediumBlob
+  isActive  Boolean         @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  sortOrder Int             @default(0)
+  ctaUrl    String?         @db.VarChar(500)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  i18n      PromotionI18n[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([startsAt, endsAt])
+  @@map("promotions")
+}
+
+model PromotionI18n {
+  id          String    @id @default(cuid())
+  promotionId String
+  locale      String    @db.VarChar(5)
+  title       String    @db.VarChar(300)
+  summary     String?   @db.Text
+  description String?   @db.Text
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  @@unique([promotionId, locale])
+  @@index([locale])
+  @@index([promotionId])
+  @@map("promotion_i18n")
+}

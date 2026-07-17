@@ -1,0 +1,128 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import type { PromotionCard } from "@/types/promotion";
+import { PROMOTION_ROUTES } from "@/types/promotion";
+import PromotionModal from "./PromotionModal";
+
+type Copy = {
+  title: string;
+  subtitle: string;
+  all: string;
+  empty: string;
+};
+
+const COPY: Record<"ru" | "en" | "uz", Copy> = {
+  ru: {
+    title: "Активные акции",
+    subtitle: "Скидки и спецпредложения",
+    all: "Все акции",
+    empty: "Сейчас акций нет — следите за обновлениями.",
+  },
+  en: {
+    title: "Active promotions",
+    subtitle: "Discounts and special offers",
+    all: "All promotions",
+    empty: "No active promotions right now — check back soon.",
+  },
+  uz: {
+    title: "Faol aksiyalar",
+    subtitle: "Chegirmalar va maxsus takliflar",
+    all: "Barcha aksiyalar",
+    empty: "Hozircha aksiyalar yo‘q — yangilanishlarni kuzatib boring.",
+  },
+};
+
+type Props = {
+  locale: string;
+  promotions: PromotionCard[];
+  /** Compact preview for homepage */
+  preview?: boolean;
+  showHeader?: boolean;
+};
+
+export default function PromotionsGridClient({
+  locale,
+  promotions,
+  preview = false,
+  showHeader = true,
+}: Props) {
+  const lang = locale === "en" || locale === "uz" ? locale : "ru";
+  const copy = COPY[lang];
+  const [active, setActive] = useState<PromotionCard | null>(null);
+  const list = preview ? promotions.slice(0, 4) : promotions;
+
+  // On homepage preview, hide the whole block until there is at least one promo
+  if (preview && list.length === 0) return null;
+
+  return (
+    <section className={preview ? "container-section mt-4 md:mt-6" : undefined}>
+      {showHeader ? (
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className={`font-semibold text-[#660000] ${preview ? "text-lg sm:text-xl" : "text-2xl sm:text-3xl"}`}>
+              {copy.title}
+            </h2>
+            {preview ? <p className="mt-1 text-sm text-gray-600">{copy.subtitle}</p> : null}
+          </div>
+          {preview ? (
+            <Link
+              href={PROMOTION_ROUTES.publicPage}
+              className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl border border-[#660000]/20 px-4 py-2 text-sm font-semibold text-[#660000] transition-colors hover:bg-[#660000]/5"
+            >
+              {copy.all}
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+
+      {list.length === 0 ? (
+        <div className="rounded-2xl border border-gray-200 bg-white px-5 py-8 text-center text-sm text-gray-600 shadow-sm">
+          {copy.empty}
+        </div>
+      ) : (
+        <div
+          className={`grid gap-3 ${
+            preview
+              ? "grid-cols-2 sm:grid-cols-4"
+              : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          }`}
+        >
+          {list.map((promo) => (
+            <button
+              key={promo.id}
+              type="button"
+              onClick={() => setActive(promo)}
+              className="group overflow-hidden rounded-2xl border border-gray-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40"
+            >
+              <div className={`relative bg-gray-100 ${preview ? "aspect-square" : "aspect-[16/10]"}`}>
+                {promo.imageUrl ? (
+                  <Image
+                    src={promo.imageUrl}
+                    alt={promo.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    sizes={preview ? "(max-width: 640px) 50vw, 25vw" : "(max-width: 640px) 100vw, 33vw"}
+                    unoptimized={promo.imageUrl.startsWith("data:") || promo.imageUrl.startsWith("/api/")}
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-xs text-gray-400">POJ PRO</div>
+                )}
+              </div>
+              <div className="p-3">
+                <h3 className="line-clamp-2 text-sm font-semibold text-[#660000] sm:text-base">{promo.title}</h3>
+                {!preview && promo.summary ? (
+                  <p className="mt-1 line-clamp-2 text-sm text-gray-600">{promo.summary}</p>
+                ) : null}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <PromotionModal promotion={active} locale={lang} onClose={() => setActive(null)} />
+    </section>
+  );
+}
