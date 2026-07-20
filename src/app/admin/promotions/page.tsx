@@ -6,11 +6,14 @@ import { toast } from "react-hot-toast";
 import { Upload, X } from "lucide-react";
 import AdminGate from "@/components/admin/AdminGate";
 
+type LocaleKey = "ru" | "en" | "uz";
+
 type I18nRow = {
   locale: string;
   title: string;
   summary?: string | null;
   description?: string | null;
+  image?: string | null;
 };
 
 type PromotionRow = {
@@ -29,7 +32,6 @@ type PromotionRow = {
 type FormState = {
   id?: string;
   slug: string;
-  image: string;
   isActive: boolean;
   startsAt: string;
   endsAt: string;
@@ -38,17 +40,19 @@ type FormState = {
   titleRu: string;
   summaryRu: string;
   descriptionRu: string;
+  imageRu: string;
   titleEn: string;
   summaryEn: string;
   descriptionEn: string;
+  imageEn: string;
   titleUz: string;
   summaryUz: string;
   descriptionUz: string;
+  imageUz: string;
 };
 
 const emptyForm = (): FormState => ({
   slug: "",
-  image: "",
   isActive: true,
   startsAt: "",
   endsAt: "",
@@ -57,28 +61,48 @@ const emptyForm = (): FormState => ({
   titleRu: "",
   summaryRu: "",
   descriptionRu: "",
+  imageRu: "",
   titleEn: "",
   summaryEn: "",
   descriptionEn: "",
+  imageEn: "",
   titleUz: "",
   summaryUz: "",
   descriptionUz: "",
+  imageUz: "",
 });
+
+const IMAGE_SLOTS: Array<{ key: LocaleKey; label: string; field: "imageRu" | "imageEn" | "imageUz" }> = [
+  { key: "ru", label: "RU", field: "imageRu" },
+  { key: "en", label: "ENG", field: "imageEn" },
+  { key: "uz", label: "UZB", field: "imageUz" },
+];
 
 function toDateInput(value: string | null | undefined): string {
   if (!value) return "";
   return value.slice(0, 10);
 }
 
+function pickPreviewImage(row: PromotionRow): string | null {
+  const ru = row.i18n.find((x) => x.locale === "ru")?.image;
+  const en = row.i18n.find((x) => x.locale === "eng" || x.locale === "en")?.image;
+  const uz = row.i18n.find((x) => x.locale === "uzb" || x.locale === "uz")?.image;
+  return ru || en || uz || row.image || null;
+}
+
 export default function AdminPromotionsPage() {
   const [items, setItems] = useState<PromotionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingLocale, setUploadingLocale] = useState<LocaleKey | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm());
   const [showForm, setShowForm] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragOverLocale, setDragOverLocale] = useState<LocaleKey | null>(null);
+  const fileInputRefs = useRef<Record<LocaleKey, HTMLInputElement | null>>({
+    ru: null,
+    en: null,
+    uz: null,
+  });
 
   const reload = async () => {
     try {
@@ -110,10 +134,10 @@ export default function AdminPromotionsPage() {
     const ru = row.i18n.find((x) => x.locale === "ru");
     const en = row.i18n.find((x) => x.locale === "eng" || x.locale === "en");
     const uz = row.i18n.find((x) => x.locale === "uzb" || x.locale === "uz");
+    const legacy = row.image || "";
     setForm({
       id: row.id,
       slug: row.slug,
-      image: row.image || "",
       isActive: row.isActive,
       startsAt: toDateInput(row.startsAt),
       endsAt: toDateInput(row.endsAt),
@@ -122,17 +146,20 @@ export default function AdminPromotionsPage() {
       titleRu: ru?.title || row.title || "",
       summaryRu: ru?.summary || "",
       descriptionRu: ru?.description || "",
+      imageRu: ru?.image || legacy,
       titleEn: en?.title || "",
       summaryEn: en?.summary || "",
       descriptionEn: en?.description || "",
+      imageEn: en?.image || legacy,
       titleUz: uz?.title || "",
       summaryUz: uz?.summary || "",
       descriptionUz: uz?.description || "",
+      imageUz: uz?.image || legacy,
     });
     setShowForm(true);
   };
 
-  const onUpload = async (file: File | null) => {
+  const onUpload = async (locale: LocaleKey, file: File | null) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       toast.error("Выберите изображение");
@@ -142,7 +169,7 @@ export default function AdminPromotionsPage() {
       toast.error("Максимум 5MB");
       return;
     }
-    setUploading(true);
+    setUploadingLocale(locale);
     try {
       const fd = new FormData();
       fd.append("files", file);
@@ -151,15 +178,24 @@ export default function AdminPromotionsPage() {
       if (!json.success) throw new Error(json.message || "upload failed");
       const url = json.data?.images?.[0]?.url as string | undefined;
       if (!url) throw new Error("no url");
-      setForm((prev) => ({ ...prev, image: url }));
-      toast.success("Фото загружено");
+      const field = IMAGE_SLOTS.find((s) => s.key === locale)?.field;
+      if (!field) return;
+      setForm((prev) => ({ ...prev, [field]: url }));
+      toast.success(`Фото ${locale.toUpperCase()} загружено`);
     } catch (e) {
       console.error(e);
       toast.error("Не удалось загрузить фото");
     } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setUploadingLocale(null);
+      const input = fileInputRefs.current[locale];
+      if (input) input.value = "";
     }
+  };
+
+  const clearImage = (locale: LocaleKey) => {
+    const field = IMAGE_SLOTS.find((s) => s.key === locale)?.field;
+    if (!field) return;
+    setForm((prev) => ({ ...prev, [field]: "" }));
   };
 
   const onSave = async () => {
@@ -179,7 +215,7 @@ export default function AdminPromotionsPage() {
     try {
       const payload = {
         slug: form.slug.trim() || undefined,
-        image: form.image || null,
+        image: form.imageRu || form.imageEn || form.imageUz || null,
         isActive: form.isActive,
         startsAt: form.startsAt || null,
         endsAt: form.endsAt || null,
@@ -191,18 +227,21 @@ export default function AdminPromotionsPage() {
             title: form.titleRu.trim(),
             summary: form.summaryRu.trim(),
             description: form.descriptionRu.trim(),
+            image: form.imageRu || null,
           },
           {
             locale: "eng",
             title: form.titleEn.trim(),
             summary: form.summaryEn.trim(),
             description: form.descriptionEn.trim(),
+            image: form.imageEn || null,
           },
           {
             locale: "uzb",
             title: form.titleUz.trim(),
             summary: form.summaryUz.trim(),
             description: form.descriptionUz.trim(),
+            image: form.imageUz || null,
           },
         ],
       };
@@ -273,38 +312,41 @@ export default function AdminPromotionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((row) => (
-                  <tr key={row.id} className="border-t border-gray-100">
-                    <td className="px-3 py-2">
-                      <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-100">
-                        {row.image ? (
-                          <Image src={row.image} alt="" fill className="object-cover" unoptimized />
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 font-medium text-gray-900">{row.title}</td>
-                    <td className="px-3 py-2 text-gray-600">
-                      {toDateInput(row.startsAt) || "—"} → {toDateInput(row.endsAt) || "—"}
-                    </td>
-                    <td className="px-3 py-2">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                          row.isActive ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        {row.isActive ? "Активна" : "Выкл"}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-right">
-                      <button type="button" onClick={() => openEdit(row)} className="mr-2 text-[#660000] hover:underline">
-                        Изменить
-                      </button>
-                      <button type="button" onClick={() => onDelete(row.id)} className="text-red-600 hover:underline">
-                        Удалить
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {items.map((row) => {
+                  const preview = pickPreviewImage(row);
+                  return (
+                    <tr key={row.id} className="border-t border-gray-100">
+                      <td className="px-3 py-2">
+                        <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-gray-100">
+                          {preview ? (
+                            <Image src={preview} alt="" fill className="object-cover" unoptimized />
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 font-medium text-gray-900">{row.title}</td>
+                      <td className="px-3 py-2 text-gray-600">
+                        {toDateInput(row.startsAt) || "—"} → {toDateInput(row.endsAt) || "—"}
+                      </td>
+                      <td className="px-3 py-2">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                            row.isActive ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {row.isActive ? "Активна" : "Выкл"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        <button type="button" onClick={() => openEdit(row)} className="mr-2 text-[#660000] hover:underline">
+                          Изменить
+                        </button>
+                        <button type="button" onClick={() => onDelete(row.id)} className="text-red-600 hover:underline">
+                          Удалить
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -465,80 +507,98 @@ export default function AdminPromotionsPage() {
                   Активна
                 </label>
 
-                <div className="grid gap-2 text-sm font-medium text-gray-900">
-                  <span>Фото акции</span>
-                  {form.image ? (
-                    <div className="relative overflow-hidden rounded-2xl border border-[#660000]/15 bg-[#F8F9FA]">
-                      <div className="relative h-44 w-full">
-                        <Image src={form.image} alt="" fill className="object-cover" unoptimized />
+                <div className="grid gap-3 rounded-2xl border border-gray-200 p-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[#660000]">Фото акции по языкам</p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      Загрузите отдельное изображение для RU, ENG и UZB — на сайте покажется фото выбранного языка.
+                    </p>
+                  </div>
+
+                  {IMAGE_SLOTS.map(({ key, label, field }) => {
+                    const imageUrl = form[field];
+                    const uploading = uploadingLocale === key;
+                    const dragOver = dragOverLocale === key;
+                    return (
+                      <div key={key} className="grid gap-2 text-sm font-medium text-gray-900">
+                        <span>Фото {label}</span>
+                        {imageUrl ? (
+                          <div className="relative overflow-hidden rounded-2xl border border-[#660000]/15 bg-[#F8F9FA]">
+                            <div className="relative h-36 w-full">
+                              <Image src={imageUrl} alt={`Фото ${label}`} fill className="object-cover" unoptimized />
+                            </div>
+                            <div className="flex items-center justify-between gap-2 border-t border-gray-100 bg-white px-3 py-2">
+                              <button
+                                type="button"
+                                disabled={Boolean(uploadingLocale)}
+                                onClick={() => fileInputRefs.current[key]?.click()}
+                                className="rounded-lg px-3 py-1.5 text-sm font-medium text-[#660000] hover:bg-[#fff9f8] disabled:opacity-60"
+                              >
+                                {uploading ? "Загрузка…" : "Заменить"}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={Boolean(uploadingLocale)}
+                                onClick={() => clearImage(key)}
+                                className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-red-600 disabled:opacity-60"
+                              >
+                                <X size={14} />
+                                Удалить
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                fileInputRefs.current[key]?.click();
+                              }
+                            }}
+                            onClick={() => !uploadingLocale && fileInputRefs.current[key]?.click()}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setDragOverLocale(key);
+                            }}
+                            onDragLeave={(e) => {
+                              e.preventDefault();
+                              setDragOverLocale(null);
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setDragOverLocale(null);
+                              onUpload(key, e.dataTransfer.files?.[0] || null);
+                            }}
+                            className={`cursor-pointer rounded-2xl border-2 border-dashed px-4 py-6 text-center transition-colors ${
+                              dragOver
+                                ? "border-[#660000] bg-[#fff9f8]"
+                                : "border-gray-300 bg-white hover:border-[#660000]/50 hover:bg-[#fff9f8]"
+                            } ${uploadingLocale ? "pointer-events-none opacity-60" : ""}`}
+                          >
+                            <Upload className="mx-auto mb-2 h-8 w-8 text-[#660000]/70" />
+                            <p className="text-sm font-medium text-gray-800">
+                              {uploading ? "Загрузка…" : `Фото ${label}: перетащите или выберите`}
+                            </p>
+                            <p className="mt-1 text-xs text-gray-500">JPG, PNG, WEBP · до 5MB</p>
+                          </div>
+                        )}
+                        <input
+                          ref={(el) => {
+                            fileInputRefs.current[key] = el;
+                          }}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={Boolean(uploadingLocale)}
+                          onChange={(e) => onUpload(key, e.target.files?.[0] || null)}
+                        />
                       </div>
-                      <div className="flex items-center justify-between gap-2 border-t border-gray-100 bg-white px-3 py-2">
-                        <button
-                          type="button"
-                          disabled={uploading}
-                          onClick={() => fileInputRef.current?.click()}
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium text-[#660000] hover:bg-[#fff9f8] disabled:opacity-60"
-                        >
-                          {uploading ? "Загрузка…" : "Заменить"}
-                        </button>
-                        <button
-                          type="button"
-                          disabled={uploading}
-                          onClick={() => setForm((p) => ({ ...p, image: "" }))}
-                          className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-red-600 disabled:opacity-60"
-                        >
-                          <X size={14} />
-                          Удалить
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          fileInputRef.current?.click();
-                        }
-                      }}
-                      onClick={() => !uploading && fileInputRef.current?.click()}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setDragOver(true);
-                      }}
-                      onDragLeave={(e) => {
-                        e.preventDefault();
-                        setDragOver(false);
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setDragOver(false);
-                        onUpload(e.dataTransfer.files?.[0] || null);
-                      }}
-                      className={`cursor-pointer rounded-2xl border-2 border-dashed px-4 py-8 text-center transition-colors ${
-                        dragOver
-                          ? "border-[#660000] bg-[#fff9f8]"
-                          : "border-gray-300 bg-white hover:border-[#660000]/50 hover:bg-[#fff9f8]"
-                      } ${uploading ? "pointer-events-none opacity-60" : ""}`}
-                    >
-                      <Upload className="mx-auto mb-2 h-9 w-9 text-[#660000]/70" />
-                      <p className="text-sm font-medium text-gray-800">
-                        {uploading ? "Загрузка…" : "Перетащите фото или нажмите для выбора"}
-                      </p>
-                      <p className="mt-1 text-xs text-gray-500">JPG, PNG, WEBP · до 5MB</p>
-                    </div>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    disabled={uploading}
-                    onChange={(e) => onUpload(e.target.files?.[0] || null)}
-                  />
+                    );
+                  })}
                 </div>
               </div>
 

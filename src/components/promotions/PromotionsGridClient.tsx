@@ -83,38 +83,33 @@ export default function PromotionsGridClient({
           {copy.empty}
         </div>
       ) : (
-        <div
-          className={`grid gap-3 ${
-            preview
-              ? "grid-cols-2 sm:grid-cols-4"
-              : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          }`}
-        >
+        <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
           {list.map((promo) => (
             <button
               key={promo.id}
               type="button"
               onClick={() => setActive(promo)}
-              className="group overflow-hidden rounded-2xl border border-gray-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#660000]/40"
             >
-              <div className={`relative bg-gray-100 ${preview ? "aspect-square" : "aspect-[16/10]"}`}>
+              <div className="w-full bg-gray-100">
                 {promo.imageUrl ? (
                   <Image
                     src={promo.imageUrl}
                     alt={promo.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    sizes={preview ? "(max-width: 640px) 50vw, 25vw" : "(max-width: 640px) 100vw, 33vw"}
+                    width={1200}
+                    height={600}
+                    className="h-auto w-full object-contain"
+                    sizes="(max-width: 640px) 100vw, 50vw"
                     unoptimized={promo.imageUrl.startsWith("data:") || promo.imageUrl.startsWith("/api/")}
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-gray-400">POJ PRO</div>
+                  <div className="flex aspect-[4/3] items-center justify-center text-xs text-gray-400">POJ PRO</div>
                 )}
               </div>
-              <div className="p-3">
-                <h3 className="line-clamp-2 text-sm font-semibold text-[#660000] sm:text-base">{promo.title}</h3>
+              <div className="px-2.5 py-1.5">
+                <h3 className="line-clamp-2 text-sm font-medium text-[#660000]">{promo.title}</h3>
                 {!preview && promo.summary ? (
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-600">{promo.summary}</p>
+                  <p className="mt-0.5 line-clamp-2 text-xs text-gray-600">{promo.summary}</p>
                 ) : null}
               </div>
             </button>

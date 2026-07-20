@@ -245,6 +245,7 @@ model PromotionI18n {
   title       String    @db.VarChar(300)
   summary     String?   @db.Text
   description String?   @db.Text
+  image       String?   @db.VarChar(500)
   promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
 
   @@unique([promotionId, locale])

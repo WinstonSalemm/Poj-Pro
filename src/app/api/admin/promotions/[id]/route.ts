@@ -12,6 +12,7 @@ type I18nInput = {
   title: string;
   summary?: string | null;
   description?: string | null;
+  image?: string | null;
 };
 
 export async function GET(
@@ -91,21 +92,32 @@ export async function PATCH(
               title: row.title.trim(),
               summary: row.summary || null,
               description: row.description || null,
+              image: row.image || null,
             },
             update: {
               title: row.title.trim(),
               summary: row.summary || null,
               description: row.description || null,
+              ...(row.image !== undefined ? { image: row.image || null } : {}),
             },
           });
         }
       }
 
+      const fallbackImage =
+        image !== undefined
+          ? image
+          : i18n?.length
+            ? i18n.find((x) => x.locale === "ru")?.image ||
+              i18n.find((x) => x.image)?.image ||
+              undefined
+            : undefined;
+
       return tx.promotion.update({
         where: { id },
         data: {
           ...(slug !== undefined ? { slug: slug.trim() } : {}),
-          ...(image !== undefined ? { image } : {}),
+          ...(fallbackImage !== undefined ? { image: fallbackImage } : {}),
           ...(imageData !== undefined
             ? { imageData: imageData ? Buffer.from(imageData, "base64") : null }
             : {}),

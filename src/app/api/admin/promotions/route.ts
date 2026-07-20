@@ -12,6 +12,7 @@ type I18nInput = {
   title: string;
   summary?: string | null;
   description?: string | null;
+  image?: string | null;
 };
 
 function slugify(input: string): string {
@@ -95,10 +96,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: "At least one localized title is required" }, { status: 400 });
     }
 
+    const i18nRows = i18n
+      .filter((x) => x.title?.trim())
+      .map((x) => ({
+        locale: x.locale,
+        title: x.title.trim(),
+        summary: x.summary || null,
+        description: x.description || null,
+        image: x.image || null,
+      }));
+    const fallbackImage =
+      image ||
+      i18nRows.find((x) => x.locale === "ru")?.image ||
+      i18nRows.find((x) => x.image)?.image ||
+      null;
+
     const created = await prisma.promotion.create({
       data: {
         slug,
-        image: image || null,
+        image: fallbackImage,
         imageData: imageData ? Buffer.from(imageData, "base64") : undefined,
         isActive: Boolean(isActive),
         startsAt: startsAt ? new Date(startsAt) : null,
@@ -106,14 +122,7 @@ export async function POST(request: NextRequest) {
         sortOrder: Number(sortOrder) || 0,
         ctaUrl: ctaUrl || null,
         i18n: {
-          create: i18n
-            .filter((x) => x.title?.trim())
-            .map((x) => ({
-              locale: x.locale,
-              title: x.title.trim(),
-              summary: x.summary || null,
-              description: x.description || null,
-            })),
+          create: i18nRows,
         },
       },
       include: { i18n: true },

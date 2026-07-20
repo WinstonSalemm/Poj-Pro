@@ -52,13 +52,14 @@ export default function PromotionModal({ promotion, locale, onClose }: Props) {
         className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative aspect-[16/10] bg-gray-100">
+        <div className="bg-gray-100">
           {promotion.imageUrl ? (
             <Image
               src={promotion.imageUrl}
               alt={promotion.title}
-              fill
-              className="object-cover"
+              width={1200}
+              height={1200}
+              className="h-auto w-full object-contain"
               sizes="(max-width: 640px) 100vw, 512px"
               unoptimized={promotion.imageUrl.startsWith("data:") || promotion.imageUrl.startsWith("/api/")}
             />

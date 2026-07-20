@@ -10,7 +10,13 @@ function toDbLocale(locale: AppLocale): "ru" | "eng" | "uzb" {
 }
 
 function pickI18n(
-  rows: Array<{ locale: string; title: string; summary: string | null; description: string | null }>,
+  rows: Array<{
+    locale: string;
+    title: string;
+    summary: string | null;
+    description: string | null;
+    image: string | null;
+  }>,
   locale: AppLocale
 ) {
   const db = toDbLocale(locale);
@@ -22,8 +28,11 @@ function pickI18n(
   );
 }
 
-function resolveImageUrl(image: string | null | undefined): string | null {
-  return image || null;
+function resolveImageUrl(
+  localeImage: string | null | undefined,
+  fallbackImage: string | null | undefined
+): string | null {
+  return localeImage || fallbackImage || null;
 }
 
 export function isPromotionActiveNow(p: {
@@ -60,7 +69,7 @@ export async function getActivePromotions(
       startsAt: true,
       endsAt: true,
       i18n: {
-        select: { locale: true, title: true, summary: true, description: true },
+        select: { locale: true, title: true, summary: true, description: true, image: true },
       },
     },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -75,7 +84,7 @@ export async function getActivePromotions(
       title: t?.title || row.slug,
       summary: t?.summary || "",
       description: t?.description || null,
-      imageUrl: resolveImageUrl(row.image),
+      imageUrl: resolveImageUrl(t?.image, row.image),
       href: row.ctaUrl,
       startsAt: row.startsAt ? row.startsAt.toISOString() : null,
       endsAt: row.endsAt ? row.endsAt.toISOString() : null,
