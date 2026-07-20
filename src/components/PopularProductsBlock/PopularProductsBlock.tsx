@@ -75,9 +75,12 @@ export default async function PopularProductsBlock({ locale }: { locale: Locale 
           {dictionary.popularProducts.title}
         </h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
           {products.map((p) => (
-            <div key={p.slug}>
+            <div
+              key={p.slug}
+              className="w-[calc((100%-0.75rem)/2)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)]"
+            >
               <ProductCard product={p} showDetailsLink popularVariant />
             </div>
           ))}
