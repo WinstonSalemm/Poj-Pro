@@ -1,14 +1,28 @@
 import { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site';
 
-// List of paths that should not be indexed
+// Paths that should not be crawled (private, auth, admin, transactional)
 const DISALLOWED_PATHS = [
-  // API and diagnostics are not public documents. UI service pages are
-  // crawlable so bots can see their X-Robots-Tag: noindex response.
   '/api',
   '/api/*',
   '/debug',
   '/debug/*',
+  '/admin',
+  '/admin/*',
+  '/admin-console',
+  '/admin-products',
+  '/admin-products-add',
+  '/admin-categories-add',
+  '/admin-popular-products',
+  '/adminProducts',
+  '/cart',
+  '/cart/*',
+  '/login',
+  '/register',
+  '/profile',
+  '/Pbase',
+  '/lp',
+  '/lp/*',
 ];
 
 // Crawl delay for different bots (in seconds)
