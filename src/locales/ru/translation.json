@@ -362,6 +362,9 @@
   "catalog": {
     "categoriesTitle": "Категории каталога",
     "backToCategories": "Вернуться к категориям",
+    "noProductsFound": "Пока нет в наличии. О наличии можно узнать тут:",
+    "contactTelegramChannel": "Telegram-канал",
+    "contactTelegramDm": "Telegram",
     "faq": {
       "fallbackQ1": "Как выбрать {{category}}?",
       "fallbackA1": "Подскажем оптимальные модели с учётом норм и условий эксплуатации. Обратитесь за консультацией — поможем подобрать {{category}}.",

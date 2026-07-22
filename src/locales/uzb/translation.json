@@ -556,7 +556,10 @@
   },
   "catalog": {
     "categoriesTitle": "Katalog kategoriyalari",
-    "backToCategories": "Kategoriyalarga qaytish"
+    "backToCategories": "Kategoriyalarga qaytish",
+    "noProductsFound": "Hozircha mavjud emas. Mavjudligi haqida shu yerda bilib oling:",
+    "contactTelegramChannel": "Telegram kanal",
+    "contactTelegramDm": "Telegram"
   },
   "catalog.faqTitle": "Ko‘p so‘raladigan savollar",
   "catalog.relatedTitle": "Shuningdek qarang",

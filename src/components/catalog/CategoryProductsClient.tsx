@@ -437,8 +437,35 @@ export default function CategoryProductsClient({
               ) : sortedProducts.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-lg text-gray-600">
-                    {t("catalog.noProductsFound", "No products found.")}
+                    {t(
+                      "catalog.noProductsFound",
+                      "Пока нет в наличии. О наличии можно узнать тут:"
+                    )}
                   </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-medium">
+                    <a
+                      href="https://t.me/Pro_security_uz"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="!text-[#660000] underline underline-offset-2 hover:opacity-80"
+                    >
+                      {t("catalog.contactTelegramChannel", "Telegram-канал")}
+                    </a>
+                    <a
+                      href="https://t.me/pojsystema"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="!text-[#660000] underline underline-offset-2 hover:opacity-80"
+                    >
+                      {t("catalog.contactTelegramDm", "Telegram")}
+                    </a>
+                    <a
+                      href="tel:+998712536616"
+                      className="!text-[#660000] underline underline-offset-2 hover:opacity-80"
+                    >
+                      +998 71 253 66 16
+                    </a>
+                  </div>
                   {(searchQuery || filters.minPrice || filters.maxPrice) && (
                     <button
                       onClick={() => { setSearchQuery(""); setFilters({}); setSort("relevance"); }}

@@ -372,6 +372,9 @@
   "catalog": {
     "categoriesTitle": "Catalog Categories",
     "backToCategories": "Back to Categories",
+    "noProductsFound": "Currently out of stock. Check availability here:",
+    "contactTelegramChannel": "Telegram channel",
+    "contactTelegramDm": "Telegram",
     "faq": {
       "fallbackQ1": "How to choose {{category}}?",
       "fallbackA1": "We will suggest optimal models considering standards and operating conditions. Contact us — we will help you choose {{category}}.",
