@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next';
-import { buildSitemap, SITEMAP_REVALIDATE_SECONDS } from '@/lib/sitemap';
+import { buildSitemap } from '@/lib/sitemap';
 import { SITE_URL } from '@/lib/site';
 
-export const revalidate = SITEMAP_REVALIDATE_SECONDS;
+// Must be a literal — Next.js statically analyzes segment config exports.
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {

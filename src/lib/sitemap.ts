@@ -5,7 +5,7 @@ import { getAllPostsAllLocales, getPostAlternates } from '@/lib/blog/loader';
 import { CATEGORY_IMAGE_MAP } from '@/constants/categories';
 import type { ChangeFrequency, SitemapEntry, StaticRouteConfig } from '@/types/sitemap';
 
-/** How often Next.js may regenerate the sitemap in production. */
+/** Keep in sync with `export const revalidate` in `src/app/sitemap.ts` (must be a literal there). */
 export const SITEMAP_REVALIDATE_SECONDS = 3600;
 
 const OGNETUSHITELI_TYPES = ['op', 'ou', 'mpp', 'recharge'] as const;
