@@ -5,6 +5,8 @@ export type PostFrontmatter = {
   description?: string;
   tags?: string[];
   date: string; // ISO string
+  /** Optional explicit update time; preferred over `date` for sitemap lastmod. */
+  updated?: string;
   cover?: string;
 };
 
